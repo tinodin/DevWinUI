@@ -9,6 +9,7 @@
 	xmlns:local="using:DevWinUI"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ui="using:CommunityToolkit.WinUI"
+	TabNavigation="Cycle"
 	mc:Ignorable="d">
 
 	<UserControl.Resources>
@@ -48,20 +49,22 @@
 										BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
 										BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
 										CornerRadius="{TemplateBinding CornerRadius}">
-										<FontIcon
-											x:Name="Arrow"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											FontFamily="{ThemeResource SymbolThemeFontFamily}"
-											FontSize="{ThemeResource FlipViewButtonFontSize}"
-											Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-											Glyph="&#xEDDB;"
-											RenderTransformOrigin="0.5, 0.5"
-											UseLayoutRounding="False">
-											<FontIcon.RenderTransform>
-												<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
-											</FontIcon.RenderTransform>
-										</FontIcon>
+										<Border.Child>
+											<FontIcon
+												x:Name="Arrow"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												FontSize="{ThemeResource FlipViewButtonFontSize}"
+												Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
+												Glyph="&#xEDDB;"
+												RenderTransformOrigin="0.5, 0.5"
+												UseLayoutRounding="False">
+												<FontIcon.RenderTransform>
+													<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
+												</FontIcon.RenderTransform>
+											</FontIcon>
+										</Border.Child>
 										<VisualStateManager.VisualStateGroups>
 											<VisualStateGroup x:Name="CommonStates">
 												<VisualState x:Name="Normal" />
@@ -116,20 +119,22 @@
 										BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
 										BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
 										CornerRadius="{TemplateBinding CornerRadius}">
-										<FontIcon
-											x:Name="Arrow"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											FontFamily="{ThemeResource SymbolThemeFontFamily}"
-											FontSize="{ThemeResource FlipViewButtonFontSize}"
-											Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-											Glyph="&#xEDDC;"
-											RenderTransformOrigin="0.5, 0.5"
-											UseLayoutRounding="False">
-											<FontIcon.RenderTransform>
-												<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
-											</FontIcon.RenderTransform>
-										</FontIcon>
+										<Border.Child>
+											<FontIcon
+												x:Name="Arrow"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												FontSize="{ThemeResource FlipViewButtonFontSize}"
+												Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
+												Glyph="&#xEDDC;"
+												RenderTransformOrigin="0.5, 0.5"
+												UseLayoutRounding="False">
+												<FontIcon.RenderTransform>
+													<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
+												</FontIcon.RenderTransform>
+											</FontIcon>
+										</Border.Child>
 										<VisualStateManager.VisualStateGroups>
 											<VisualStateGroup x:Name="CommonStates">
 												<VisualState x:Name="Normal" />
@@ -184,21 +189,23 @@
 										BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
 										BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
 										CornerRadius="{TemplateBinding CornerRadius}">
-										<FontIcon
-											x:Name="Arrow"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											FontFamily="{ThemeResource SymbolThemeFontFamily}"
-											FontSize="{ThemeResource FlipViewButtonFontSize}"
-											Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-											Glyph="&#xEDD9;"
-											MirroredWhenRightToLeft="True"
-											RenderTransformOrigin="0.5, 0.5"
-											UseLayoutRounding="False">
-											<FontIcon.RenderTransform>
-												<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
-											</FontIcon.RenderTransform>
-										</FontIcon>
+										<Border.Child>
+											<FontIcon
+												x:Name="Arrow"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												FontSize="{ThemeResource FlipViewButtonFontSize}"
+												Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
+												Glyph="&#xEDD9;"
+												MirroredWhenRightToLeft="True"
+												RenderTransformOrigin="0.5, 0.5"
+												UseLayoutRounding="False">
+												<FontIcon.RenderTransform>
+													<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
+												</FontIcon.RenderTransform>
+											</FontIcon>
+										</Border.Child>
 										<VisualStateManager.VisualStateGroups>
 											<VisualStateGroup x:Name="CommonStates">
 												<VisualState x:Name="Normal" />
@@ -253,21 +260,23 @@
 										BorderBrush="{ThemeResource FlipViewNextPreviousButtonBorderBrush}"
 										BorderThickness="{ThemeResource FlipViewButtonBorderThemeThickness}"
 										CornerRadius="{TemplateBinding CornerRadius}">
-										<FontIcon
-											x:Name="Arrow"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											FontFamily="{ThemeResource SymbolThemeFontFamily}"
-											FontSize="{ThemeResource FlipViewButtonFontSize}"
-											Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
-											Glyph="&#xEDDA;"
-											MirroredWhenRightToLeft="True"
-											RenderTransformOrigin="0.5, 0.5"
-											UseLayoutRounding="False">
-											<FontIcon.RenderTransform>
-												<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
-											</FontIcon.RenderTransform>
-										</FontIcon>
+										<Border.Child>
+											<FontIcon
+												x:Name="Arrow"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												FontSize="{ThemeResource FlipViewButtonFontSize}"
+												Foreground="{ThemeResource FlipViewNextPreviousArrowForeground}"
+												Glyph="&#xEDDA;"
+												MirroredWhenRightToLeft="True"
+												RenderTransformOrigin="0.5, 0.5"
+												UseLayoutRounding="False">
+												<FontIcon.RenderTransform>
+													<ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
+												</FontIcon.RenderTransform>
+											</FontIcon>
+										</Border.Child>
 										<VisualStateManager.VisualStateGroups>
 											<VisualStateGroup x:Name="CommonStates">
 												<VisualState x:Name="Normal" />
@@ -316,71 +325,73 @@
 									</Border>
 								</ControlTemplate>
 							</Grid.Resources>
-							<ScrollViewer
-								x:Name="ScrollingHost"
-								Padding="{TemplateBinding Padding}"
-								AutomationProperties.AccessibilityView="Raw"
-								BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
-								HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-								HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-								HorizontalSnapPointsType="MandatorySingle"
-								IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-								IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-								IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
-								IsTabStop="False"
-								IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-								IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}"
-								TabNavigation="{TemplateBinding TabNavigation}"
-								VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-								VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-								VerticalSnapPointsType="MandatorySingle"
-								ZoomMode="Disabled">
-								<ItemsPresenter />
-							</ScrollViewer>
-							<Button
-								x:Name="PreviousButtonHorizontal"
-								Width="{StaticResource ArrowScrollViewerButtonWidth}"
-								Height="{StaticResource ArrowScrollViewerButtonHeight}"
-								Margin="8"
-								HorizontalAlignment="Left"
-								VerticalAlignment="Center"
-								CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
-								IsTabStop="False"
-								Template="{StaticResource HorizontalPreviousTemplate}"
-								UseSystemFocusVisuals="False" />
-							<Button
-								x:Name="NextButtonHorizontal"
-								Width="{StaticResource ArrowScrollViewerButtonWidth}"
-								Height="{StaticResource ArrowScrollViewerButtonHeight}"
-								Margin="8"
-								HorizontalAlignment="Right"
-								VerticalAlignment="Center"
-								CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
-								IsTabStop="False"
-								Template="{StaticResource HorizontalNextTemplate}"
-								UseSystemFocusVisuals="False" />
-							<Button
-								x:Name="PreviousButtonVertical"
-								Width="{StaticResource ArrowScrollViewerButtonWidth}"
-								Height="{StaticResource ArrowScrollViewerButtonHeight}"
-								Margin="8"
-								HorizontalAlignment="Center"
-								VerticalAlignment="Top"
-								CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
-								IsTabStop="False"
-								Template="{StaticResource VerticalPreviousTemplate}"
-								UseSystemFocusVisuals="False" />
-							<Button
-								x:Name="NextButtonVertical"
-								Width="{StaticResource ArrowScrollViewerButtonWidth}"
-								Height="{StaticResource ArrowScrollViewerButtonHeight}"
-								Margin="8"
-								HorizontalAlignment="Center"
-								VerticalAlignment="Bottom"
-								CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
-								IsTabStop="False"
-								Template="{StaticResource VerticalNextTemplate}"
-								UseSystemFocusVisuals="False" />
+							<Grid.Children>
+								<ScrollViewer
+									x:Name="ScrollingHost"
+									Padding="{TemplateBinding Padding}"
+									AutomationProperties.AccessibilityView="Raw"
+									BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
+									HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+									HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+									HorizontalSnapPointsType="MandatorySingle"
+									IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+									IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+									IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
+									IsTabStop="False"
+									IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+									IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}"
+									TabNavigation="{TemplateBinding TabNavigation}"
+									VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+									VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+									VerticalSnapPointsType="MandatorySingle"
+									ZoomMode="Disabled">
+									<ItemsPresenter />
+								</ScrollViewer>
+								<Button
+									x:Name="PreviousButtonHorizontal"
+									Width="{StaticResource ArrowScrollViewerButtonWidth}"
+									Height="{StaticResource ArrowScrollViewerButtonHeight}"
+									Margin="8"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Center"
+									CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
+									IsTabStop="False"
+									Template="{StaticResource HorizontalPreviousTemplate}"
+									UseSystemFocusVisuals="False" />
+								<Button
+									x:Name="NextButtonHorizontal"
+									Width="{StaticResource ArrowScrollViewerButtonWidth}"
+									Height="{StaticResource ArrowScrollViewerButtonHeight}"
+									Margin="8"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Center"
+									CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
+									IsTabStop="False"
+									Template="{StaticResource HorizontalNextTemplate}"
+									UseSystemFocusVisuals="False" />
+								<Button
+									x:Name="PreviousButtonVertical"
+									Width="{StaticResource ArrowScrollViewerButtonWidth}"
+									Height="{StaticResource ArrowScrollViewerButtonHeight}"
+									Margin="8"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Top"
+									CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
+									IsTabStop="False"
+									Template="{StaticResource VerticalPreviousTemplate}"
+									UseSystemFocusVisuals="False" />
+								<Button
+									x:Name="NextButtonVertical"
+									Width="{StaticResource ArrowScrollViewerButtonWidth}"
+									Height="{StaticResource ArrowScrollViewerButtonHeight}"
+									Margin="8"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Bottom"
+									CornerRadius="{StaticResource ArrowScrollViewerButtonCornerRadius}"
+									IsTabStop="False"
+									Template="{StaticResource VerticalNextTemplate}"
+									UseSystemFocusVisuals="False" />
+							</Grid.Children>
 						</Grid>
 					</ControlTemplate>
 				</Setter.Value>
@@ -429,193 +440,192 @@
 			</controls:ConstrainedBox>
 		</DataTemplate>
 	</UserControl.Resources>
-
-	<Grid
-		x:Name="PART_ViewerRoot"
-		ui:UIElementExtensions.ClipToBounds="True"
-		Background="Transparent">
-		<Rectangle Fill="{ThemeResource AcrylicInAppFillColorThinBrush}">
-			<animations:Implicit.ShowAnimations>
-				<animations:OpacityAnimation
-					From="0"
-					To="1"
-					Duration="0:0:0.3" />
-			</animations:Implicit.ShowAnimations>
-			<animations:Implicit.HideAnimations>
-				<animations:OpacityAnimation
-					From="1"
-					To="0"
-					Duration="0:0:0.2" />
-			</animations:Implicit.HideAnimations>
-		</Rectangle>
-		<Grid Margin="32">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-			<Button
-				x:Name="PART_CloseButton"
-				Margin="0,24,0,12"
-				HorizontalAlignment="Right"
-				ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5"
-				Style="{StaticResource SubtleIconButtonStyle}">
+	<UserControl.Content>
+		<Grid x:Name="ViewerGrid">
+			<Rectangle Fill="{ThemeResource AcrylicInAppFillColorThinBrush}">
+				<animations:Implicit.ShowAnimations>
+					<animations:OpacityAnimation
+						From="0"
+						To="1"
+						Duration="0:0:0.3" />
+				</animations:Implicit.ShowAnimations>
+				<animations:Implicit.HideAnimations>
+					<animations:OpacityAnimation
+						From="1"
+						To="0"
+						Duration="0:0:0.2" />
+				</animations:Implicit.HideAnimations>
+			</Rectangle>
+			<Grid x:Name="BackgroundContainer" Margin="32">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Button
+					x:Name="CloseButton"
+					Margin="0,24,0,12"
+					HorizontalAlignment="Right"
+					ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5"
+					Style="{StaticResource SubtleIconButtonStyle}">
+					<TextBlock
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						AutomationProperties.AccessibilityView="Raw"
+						FontFamily="Segoe MDL2 Assets"
+						FontSize="16"
+						FontWeight="Normal"
+						IsTextScaleFactorEnabled="False"
+						LineStackingStrategy="BaselineToBaseline"
+						OpticalMarginAlignment="TrimSideBearings"
+						Text="&#xE711;"
+						TextLineBounds="Tight"
+						TextTrimming="Clip" />
+					<animations:Implicit.ShowAnimations>
+						<animations:OpacityAnimation
+							From="0"
+							To="1"
+							Duration="0:0:0.4" />
+						<animations:TranslationAnimation
+							From="0,-24,0"
+							To="0"
+							Duration="0:0:0.4" />
+						<animations:RotationInDegreesAnimation
+							From="-180"
+							To="0"
+							Duration="0:0:0.4" />
+					</animations:Implicit.ShowAnimations>
+					<animations:Implicit.HideAnimations>
+						<animations:OpacityAnimation
+							From="1"
+							To="0"
+							Duration="0:0:0.2" />
+						<animations:TranslationAnimation
+							From="0"
+							To="0,-8,0"
+							Duration="0:0:0.2" />
+						<animations:RotationInDegreesAnimation
+							From="0"
+							To="-35"
+							Duration="0:0:0.2" />
+					</animations:Implicit.HideAnimations>
+				</Button>
+				<FlipView
+					x:Name="ItemsFlipView"
+					Grid.Row="1"
+					Margin="0,24,0,0"
+					Background="#00FFFFFF"
+					ItemTemplateSelector="{StaticResource FlipViewDataTemplateSelector}"
+					Style="{StaticResource CircleArrowScrollViewerButtonFlipViewStyle}">
+					<FlipView.Resources>
+						<Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
+							<Setter Property="ui:Effects.Shadow" Value="{StaticResource HorizontalArrowScrollViewerButtonShadow}" />
+							<Setter Property="animations:Implicit.ShowAnimations">
+								<Setter.Value>
+									<animations:ImplicitAnimationSet>
+										<animations:OpacityAnimation
+											From="0"
+											To="1"
+											Duration="0:0:0.4" />
+									</animations:ImplicitAnimationSet>
+								</Setter.Value>
+							</Setter>
+							<Setter Property="animations:Implicit.HideAnimations">
+								<Setter.Value>
+									<animations:ImplicitAnimationSet>
+										<animations:OpacityAnimation To="0" Duration="0:0:0.4" />
+									</animations:ImplicitAnimationSet>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</FlipView.Resources>
+					<animations:Implicit.ShowAnimations>
+						<animations:OpacityAnimation
+							From="0"
+							To="1"
+							Duration="0:0:0.3" />
+					</animations:Implicit.ShowAnimations>
+					<animations:Implicit.HideAnimations>
+						<animations:OpacityAnimation
+							From="1"
+							To="0"
+							Duration="0:0:0.2" />
+					</animations:Implicit.HideAnimations>
+				</FlipView>
 				<TextBlock
-					FontFamily="Segoe MDL2 Assets"
+					x:Name="CaptionTextBlock"
+					Grid.Row="2"
+					Margin="0,12"
+					HorizontalAlignment="Center"
 					FontSize="16"
-					FontWeight="Normal"
-					IsTextScaleFactorEnabled="False"
-					LineStackingStrategy="BaselineToBaseline"
-					OpticalMarginAlignment="TrimSideBearings"
-					Text="&#xE711;"
-					TextLineBounds="Tight"
-					TextTrimming="Clip" />
-				<animations:Implicit.ShowAnimations>
-					<animations:OpacityAnimation
-						From="0"
-						To="1"
-						Duration="0:0:0.4" />
-					<animations:TranslationAnimation
-						From="0,-24,0"
-						To="0"
-						Duration="0:0:0.4" />
-					<animations:RotationInDegreesAnimation
-						From="-180"
-						To="0"
-						Duration="0:0:0.4" />
-				</animations:Implicit.ShowAnimations>
-				<animations:Implicit.HideAnimations>
-					<animations:OpacityAnimation
-						From="1"
-						To="0"
-						Duration="0:0:0.2" />
-					<animations:TranslationAnimation
-						From="0"
-						To="0,-8,0"
-						Duration="0:0:0.2" />
-					<animations:RotationInDegreesAnimation
-						From="0"
-						To="-35"
-						Duration="0:0:0.2" />
-				</animations:Implicit.HideAnimations>
-			</Button>
-			<FlipView
-				x:Name="PART_FlipView"
-				Grid.Row="1"
-				Margin="0,24,0,0"
-				ui:UIElementExtensions.ClipToBounds="True"
-				Background="#00FFFFFF"
-				ItemTemplateSelector="{StaticResource FlipViewDataTemplateSelector}"
-				Style="{StaticResource CircleArrowScrollViewerButtonFlipViewStyle}"
-				TabNavigation="Cycle">
-				<FlipView.Resources>
-					<Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
-						<Setter Property="ui:Effects.Shadow" Value="{StaticResource HorizontalArrowScrollViewerButtonShadow}" />
-						<Setter Property="animations:Implicit.ShowAnimations">
-							<Setter.Value>
-								<animations:ImplicitAnimationSet>
-									<animations:OpacityAnimation
-										From="0"
-										To="1"
-										Duration="0:0:0.4" />
-								</animations:ImplicitAnimationSet>
-							</Setter.Value>
-						</Setter>
-						<Setter Property="animations:Implicit.HideAnimations">
-							<Setter.Value>
-								<animations:ImplicitAnimationSet>
-									<animations:OpacityAnimation To="0" Duration="0:0:0.4" />
-								</animations:ImplicitAnimationSet>
-							</Setter.Value>
-						</Setter>
-					</Style>
-				</FlipView.Resources>
-				<animations:Implicit.ShowAnimations>
-					<animations:OpacityAnimation
-						From="0"
-						To="1"
-						Duration="0:0:0.3" />
-				</animations:Implicit.ShowAnimations>
-				<animations:Implicit.HideAnimations>
-					<animations:OpacityAnimation
-						From="1"
-						To="0"
-						Duration="0:0:0.2" />
-				</animations:Implicit.HideAnimations>
-			</FlipView>
-			<TextBlock
-				x:Name="PART_CaptionTextBlock"
-				Grid.Row="2"
-				Margin="0,12"
-				HorizontalAlignment="Center"
-				FontSize="16"
-				FontWeight="SemiBold"
-				HorizontalTextAlignment="Center"
-				TextWrapping="Wrap">
-				<animations:Implicit.ShowAnimations>
-					<animations:OpacityAnimation
-						Delay="0:0:0.2"
-						From="0"
-						To="1"
-						Duration="0:0:0.3" />
-					<animations:TranslationAnimation
-						Delay="0:0:0.2"
-						From="0"
-						To="0,12,0"
-						Duration="0:0:0.3" />
-				</animations:Implicit.ShowAnimations>
-				<animations:Implicit.HideAnimations>
-					<animations:OpacityAnimation
-						From="1"
-						To="0"
-						Duration="0:0:0.15" />
-					<animations:TranslationAnimation
-						From="0,12,0"
-						To="0"
-						Duration="0:0:0.15" />
-				</animations:Implicit.HideAnimations>
-			</TextBlock>
-			<Grid
-				x:Name="PART_IndexTextBlock"
-				Grid.Row="3"
-				MinWidth="80"
-				HorizontalAlignment="Center"
-				Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-				CornerRadius="16">
-				<animations:Implicit.ShowAnimations>
-					<animations:OpacityAnimation
-						Delay="0:0:0.25"
-						From="0"
-						To="1"
-						Duration="0:0:0.3" />
-					<animations:TranslationAnimation
-						Delay="0:0:0.25"
-						From="0"
-						To="0,12,0"
-						Duration="0:0:0.3" />
-				</animations:Implicit.ShowAnimations>
-				<animations:Implicit.HideAnimations>
-					<animations:OpacityAnimation
-						From="1"
-						To="0"
-						Duration="0:0:0.15" />
-					<animations:TranslationAnimation
-						From="0,12,0"
-						To="0"
-						Duration="0:0:0.15" />
-				</animations:Implicit.HideAnimations>
-				<TextBlock
-					Margin="16,10"
-					TextAlignment="Center"
-					TextLineBounds="Tight">
-					<TextBlock.Inlines>
-						<Run FontWeight="SemiBold" />
-						<Run Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="/" />
-						<Run Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-					</TextBlock.Inlines>
+					FontWeight="SemiBold"
+					HorizontalTextAlignment="Center"
+					TextWrapping="Wrap">
+					<animations:Implicit.ShowAnimations>
+						<animations:OpacityAnimation
+							Delay="0:0:0.2"
+							From="0"
+							To="1"
+							Duration="0:0:0.3" />
+						<animations:TranslationAnimation
+							Delay="0:0:0.2"
+							From="0"
+							To="0,12,0"
+							Duration="0:0:0.3" />
+					</animations:Implicit.ShowAnimations>
+					<animations:Implicit.HideAnimations>
+						<animations:OpacityAnimation
+							From="1"
+							To="0"
+							Duration="0:0:0.15" />
+						<animations:TranslationAnimation
+							From="0,12,0"
+							To="0"
+							Duration="0:0:0.15" />
+					</animations:Implicit.HideAnimations>
 				</TextBlock>
+				<Grid
+					x:Name="IndexTextBlock"
+					Grid.Row="3"
+					MinWidth="80"
+					HorizontalAlignment="Center"
+					Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+					CornerRadius="16">
+					<animations:Implicit.ShowAnimations>
+						<animations:OpacityAnimation
+							Delay="0:0:0.25"
+							From="0"
+							To="1"
+							Duration="0:0:0.3" />
+						<animations:TranslationAnimation
+							Delay="0:0:0.25"
+							From="0"
+							To="0,12,0"
+							Duration="0:0:0.3" />
+					</animations:Implicit.ShowAnimations>
+					<animations:Implicit.HideAnimations>
+						<animations:OpacityAnimation
+							From="1"
+							To="0"
+							Duration="0:0:0.15" />
+						<animations:TranslationAnimation
+							From="0,12,0"
+							To="0"
+							Duration="0:0:0.15" />
+					</animations:Implicit.HideAnimations>
+					<TextBlock
+						Margin="16,10"
+						TextAlignment="Center"
+						TextLineBounds="Tight">
+						<TextBlock.Inlines>
+							<Run FontWeight="SemiBold" />
+							<Run Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="/" />
+							<Run Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+						</TextBlock.Inlines>
+					</TextBlock>
+				</Grid>
 			</Grid>
 		</Grid>
-	</Grid>
+	</UserControl.Content>
 </UserControl>
