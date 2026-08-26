@@ -18,13 +18,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.3.260402-preview2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.3.260402-preview2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.3.260402-preview2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
     <XAMLCombineItems Include="Themes\Styles\**\*.xaml">
       <TargetFile>Themes\Generic.xaml</TargetFile>
       <Visible>True</Visible>
     </XAMLCombineItems>
-    <XAMLCombineItems Include="Controls\Ported\**\*.xaml" Exclude="Controls\Ported\Sidebar\SidebarView.xaml">
+    <XAMLCombineItems Include="Controls\Ported\**\*.xaml" Exclude="Controls\Ported\Sidebar\SidebarView.xaml;Controls\Ported\StoreCarousel2\ScreenshotsViewer.xaml;Controls\Ported\StoreCarousel2\PreviewViewer.xaml;Controls\Ported\StoreCarousel2\PreviewViewerScreenshotItem.xaml;Controls\Ported\StoreCarousel2\PreviewViewerVideoItem.xaml">
       <TargetFile>Themes\Generic.xaml</TargetFile>
       <Visible>True</Visible>
     </XAMLCombineItems>

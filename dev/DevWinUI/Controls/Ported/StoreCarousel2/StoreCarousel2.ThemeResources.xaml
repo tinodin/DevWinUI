@@ -1,0 +1,690 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+	xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+	xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+	xmlns:local="using:DevWinUI"
+	xmlns:media="using:CommunityToolkit.WinUI.Media"
+	xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
+	xmlns:ui="using:CommunityToolkit.WinUI">
+
+	<ResourceDictionary.ThemeDictionaries>
+		<ResourceDictionary x:Key="Default">
+			<AcrylicBrush
+				x:Key="AcrylicInAppFillColorThinBrush"
+				FallbackColor="#A3545454"
+				TintColor="#FF545454"
+				TintLuminosityOpacity="0.64"
+				TintOpacity="0" />
+			<StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="AcrylicInAppFillColorThinBrush" />
+			<x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.4</x:Double>
+			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
+			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
+			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+		</ResourceDictionary>
+
+		<ResourceDictionary x:Key="HighContrast">
+			<StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+			<x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0</x:Double>
+			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">2</Thickness>
+			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+		</ResourceDictionary>
+
+		<ResourceDictionary x:Key="Light">
+			<AcrylicBrush
+				x:Key="AcrylicInAppFillColorThinBrush"
+				FallbackColor="#99D3D3D3"
+				TintColor="#FFD3D3D3"
+				TintLuminosityOpacity="0.44"
+				TintOpacity="0" />
+			<StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+			<StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="AcrylicInAppFillColorThinBrush" />
+			<x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.1</x:Double>
+			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
+			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
+			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+		</ResourceDictionary>
+	</ResourceDictionary.ThemeDictionaries>
+
+	<!--  StoreGlyphPlay (WinStore.Resources\Themes\Icons.xaml)  -->
+	<x:String x:Key="StoreGlyphPlay">&#xE768;</x:String>
+
+	<!--  InverseVisibilityConverter (used by ScreenshotTileContentTemplate)  -->
+	<local:BoolToVisibilityConverter
+		x:Key="InverseVisibilityConverter"
+		FalseValue="Visible"
+		TrueValue="Collapsed" />
+
+	<!--  DefaultBackgroundTransition (Resources\ButtonResourceDictionary.xaml)  -->
+	<BrushTransition x:Key="DefaultBackgroundTransition" Duration="0:0:0.083" />
+
+	<!--  PlayButton (Resources\ButtonResourceDictionary.xaml)  -->
+	<StaticResource x:Key="PlayButtonForeground" ResourceKey="TextFillColorPrimaryBrush" />
+	<StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="TextFillColorTertiaryBrush" />
+	<StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="TextFillColorSecondaryBrush" />
+	<StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
+	<StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="PlayButtonBackground" ResourceKey="ControlOnImageFillColorDefaultBrush" />
+	<StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
+	<StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
+	<StaticResource x:Key="PlayButtonBackgroundDisabled" ResourceKey="ControlOnImageFillColorDefaultBrush" />
+
+	<!--  VideoPlayButtonStyle (Resources\ButtonResourceDictionary.xaml)  -->
+	<Style x:Key="VideoPlayButtonStyle" TargetType="Button">
+		<Setter Property="Background" Value="{ThemeResource PlayButtonBackground}" />
+		<Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
+		<Setter Property="BorderBrush" Value="{ThemeResource PlayButtonBorderBrush}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="CornerRadius" Value="100" />
+		<Setter Property="Foreground" Value="{ThemeResource PlayButtonForeground}" />
+		<Setter Property="FocusVisualMargin" Value="-3" />
+		<Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+		<Setter Property="FontWeight" Value="Normal" />
+		<Setter Property="FontSize" Value="40" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="Padding" Value="12" />
+		<Setter Property="UseSystemFocusVisuals" Value="True" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<ContentPresenter
+						x:Name="ContentPresenter"
+						Padding="{TemplateBinding Padding}"
+						HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+						VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+						AutomationProperties.AccessibilityView="Raw"
+						Background="{TemplateBinding Background}"
+						BackgroundSizing="{TemplateBinding BackgroundSizing}"
+						BackgroundTransition="{StaticResource DefaultBackgroundTransition}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						Content="{TemplateBinding Content}"
+						ContentTemplate="{TemplateBinding ContentTemplate}"
+						ContentTransitions="{TemplateBinding ContentTransitions}"
+						CornerRadius="{TemplateBinding CornerRadius}">
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="PointerOver">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBackgroundHover}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBorderBrushHover}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonForegroundHover}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBackgroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBorderBrushPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonForegroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBackgroundDisabled}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonBorderBrushDisabled}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PlayButtonForegroundDisabled}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</ContentPresenter>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  HorizontalArrowScrollViewerButtonShadow (Resources\ButtonResourceDictionary.xaml)  -->
+	<media:AttachedCardShadow
+		x:Key="HorizontalArrowScrollViewerButtonShadow"
+		BlurRadius="12"
+		CornerRadius="14"
+		Opacity="{ThemeResource HorizontalArrowScrollViewerButtonShadowOpacity}" />
+
+	<!--  ArrowScrollViewer (Resources\ButtonResourceDictionary.xaml)  -->
+	<x:Double x:Key="ArrowScrollViewerButtonWidth">28</x:Double>
+	<x:Double x:Key="ArrowScrollViewerButtonHeight">28</x:Double>
+	<CornerRadius x:Key="ArrowScrollViewerButtonCornerRadius">14</CornerRadius>
+	<x:Double x:Key="ArrowScrollViewerButtonFontSize">8</x:Double>
+	<x:Double x:Key="ArrowScrollViewerButtonFontSizePointerOver">9</x:Double>
+	<x:Double x:Key="ArrowScrollViewerButtonFontSizePressed">7</x:Double>
+	<Thickness x:Key="ArrowScrollViewerButtonHitTestExpansion">-12</Thickness>
+	<Thickness x:Key="ArrowScrollViewerButtonBorderThemeThickness">0</Thickness>
+	<x:Double x:Key="ArrowScrollViewerButtonDisabledOpacity">1</x:Double>
+	<x:String x:Key="ArrowScrollViewerButtonDisabledVisiblity">Collapsed</x:String>
+	<StaticResource x:Key="ArrowScrollViewerButtonBackground" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerButtonBackgroundPointerOver" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerButtonBackgroundPressed" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPointerOver" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerArrowForeground" ResourceKey="ControlStrongFillColorDefaultBrush" />
+	<StaticResource x:Key="ArrowScrollViewerArrowForegroundPointerOver" ResourceKey="TextFillColorSecondaryBrush" />
+	<StaticResource x:Key="ArrowScrollViewerArrowForegroundPressed" ResourceKey="TextFillColorSecondaryBrush" />
+	<animations:ImplicitAnimationSet x:Key="ArrowScrollViewerButtonImplicitAnimations" />
+
+	<!--  HorizontalArrowScrollViewerButtonStyle (Resources\ButtonResourceDictionary.xaml)  -->
+	<Style x:Key="HorizontalArrowScrollViewerButtonStyle" TargetType="Button">
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="UseSystemFocusVisuals" Value="False" />
+		<Setter Property="Width" Value="{ThemeResource ArrowScrollViewerButtonWidth}" />
+		<Setter Property="Height" Value="{ThemeResource ArrowScrollViewerButtonHeight}" />
+		<Setter Property="Margin" Value="8" />
+		<Setter Property="CornerRadius" Value="{ThemeResource ArrowScrollViewerButtonCornerRadius}" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
+
+	<!--  LeftArrowScrollViewerButtonStyle (Resources\ButtonResourceDictionary.xaml)  -->
+	<Style
+		x:Key="LeftArrowScrollViewerButtonStyle"
+		BasedOn="{StaticResource HorizontalArrowScrollViewerButtonStyle}"
+		TargetType="Button">
+		<Setter Property="HorizontalAlignment" Value="Left" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Grid
+						x:Name="Root"
+						Width="{ThemeResource ArrowScrollViewerButtonWidth}"
+						Height="{ThemeResource ArrowScrollViewerButtonHeight}"
+						ui:Effects.Shadow="{ThemeResource HorizontalArrowScrollViewerButtonShadow}"
+						ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5"
+						CornerRadius="{ThemeResource ArrowScrollViewerButtonCornerRadius}">
+						<animations:Implicit.ShowAnimations>
+							<animations:OpacityAnimation
+								From="0"
+								To="1"
+								Duration="0:0:0.3" />
+							<animations:TranslationAnimation
+								From="-8,0,0"
+								To="0,0,0"
+								Duration="0:0:0.3" />
+						</animations:Implicit.ShowAnimations>
+						<Rectangle Margin="{StaticResource ArrowScrollViewerButtonHitTestExpansion}" Fill="#00FFFFFF" />
+						<Border
+							x:Name="Backplate"
+							animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}"
+							Background="{ThemeResource ArrowScrollViewerButtonBackground}"
+							BorderBrush="{ThemeResource ArrowScrollViewerButtonBorderBrush}"
+							BorderThickness="{ThemeResource ArrowScrollViewerButtonBorderThemeThickness}"
+							CornerRadius="{TemplateBinding CornerRadius}" />
+						<FontIcon
+							x:Name="Arrow"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}"
+							FontFamily="{ThemeResource SymbolThemeFontFamily}"
+							FontSize="{StaticResource ArrowScrollViewerButtonFontSize}"
+							Foreground="{ThemeResource ArrowScrollViewerArrowForeground}"
+							Glyph="&#xEDD9;"
+							MirroredWhenRightToLeft="True"
+							UseLayoutRounding="False" />
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="PointerOver">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePressed}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Visibility">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledVisiblity}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Opacity">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Opacity">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  RightArrowScrollViewerButtonStyle (Resources\ButtonResourceDictionary.xaml)  -->
+	<Style
+		x:Key="RightArrowScrollViewerButtonStyle"
+		BasedOn="{StaticResource HorizontalArrowScrollViewerButtonStyle}"
+		TargetType="Button">
+		<Setter Property="HorizontalAlignment" Value="Right" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Grid
+						x:Name="Root"
+						Width="{ThemeResource ArrowScrollViewerButtonWidth}"
+						Height="{ThemeResource ArrowScrollViewerButtonHeight}"
+						ui:Effects.Shadow="{ThemeResource HorizontalArrowScrollViewerButtonShadow}"
+						ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5"
+						CornerRadius="{ThemeResource ArrowScrollViewerButtonCornerRadius}">
+						<animations:Implicit.ShowAnimations>
+							<animations:OpacityAnimation
+								From="0"
+								To="1"
+								Duration="0:0:0.3" />
+							<animations:TranslationAnimation
+								From="8,0,0"
+								To="0,0,0"
+								Duration="0:0:0.3" />
+						</animations:Implicit.ShowAnimations>
+						<Rectangle Margin="{StaticResource ArrowScrollViewerButtonHitTestExpansion}" Fill="#00FFFFFF" />
+						<Border
+							x:Name="Backplate"
+							animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}"
+							Background="{ThemeResource ArrowScrollViewerButtonBackground}"
+							BorderBrush="{ThemeResource ArrowScrollViewerButtonBorderBrush}"
+							BorderThickness="{ThemeResource ArrowScrollViewerButtonBorderThemeThickness}"
+							CornerRadius="{TemplateBinding CornerRadius}" />
+						<FontIcon
+							x:Name="Arrow"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}"
+							FontFamily="{ThemeResource SymbolThemeFontFamily}"
+							FontSize="{StaticResource ArrowScrollViewerButtonFontSize}"
+							Foreground="{ThemeResource ArrowScrollViewerArrowForeground}"
+							Glyph="&#xEDDA;"
+							MirroredWhenRightToLeft="True"
+							UseLayoutRounding="False" />
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="PointerOver">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePointerOver}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPressed}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePressed}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Visibility">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledVisiblity}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Opacity">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Opacity">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  DefaultTileImageStyle (UX\Controls\TileImage.xaml)  -->
+	<Style x:Key="DefaultTileImageStyle" TargetType="local:TileImage">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:TileImage">
+					<Grid x:Name="PART_RootGrid" Background="{TemplateBinding Background}">
+						<Rectangle
+							x:Name="PART_Backplate"
+							Fill="{TemplateBinding Background}"
+							IsHitTestVisible="False"
+							Opacity="0" />
+						<Image
+							x:Name="PART_MainImage"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Stretch="{TemplateBinding Stretch}" />
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="BackplateStates">
+								<VisualState x:Name="DefaultBackplateVisualState">
+									<VisualState.Setters>
+										<Setter Target="PART_Backplate.Opacity" Value="0" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="ColoredBackplateVisualState">
+									<VisualState.Setters>
+										<Setter Target="PART_Backplate.Opacity" Value="1" />
+									</VisualState.Setters>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style BasedOn="{StaticResource DefaultTileImageStyle}" TargetType="local:TileImage" />
+
+	<!--  ScreenshotTileContentTemplate (UX\Controls\Tiles\TileDataTemplates.xaml)  -->
+	<DataTemplate x:Key="ScreenshotTileContentTemplate">
+		<Grid x:Name="TileImageRootGrid">
+			<controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
+				<controls:ConstrainedBox.Visibility>
+					<Binding
+						Converter="{StaticResource InverseVisibilityConverter}"
+						ElementName="TileImageControl"
+						Path="ImageProcessed" />
+				</controls:ConstrainedBox.Visibility>
+				<local:Shimmer />
+			</controls:ConstrainedBox>
+			<local:TileImage
+				x:Name="TileImageControl"
+				ImageItem="{Binding}"
+				RequestedImageHeight="316"
+				ShowBackgroundColor="False">
+				<interactivity:Interaction.Behaviors>
+					<local:ViewDisplayedBehavior />
+				</interactivity:Interaction.Behaviors>
+			</local:TileImage>
+		</Grid>
+	</DataTemplate>
+
+	<StaticResource x:Key="ImageOpacityOverlayBackgroundBrush" ResourceKey="ScreenshotsCarouselImageOpacityOverlayBrush" />
+	<StaticResource x:Key="WhiteTextForegroundBrush" ResourceKey="ScreenshotsCarouselWhiteTextForegroundBrush" />
+	<StaticResource x:Key="HighContrastBackgroundBrush" ResourceKey="ScreenshotsCarouselHighContrastBackgroundBrush" />
+
+	<Style x:Key="ImageContentControlStyle" TargetType="ContentControl">
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ContentControl">
+					<Grid>
+						<Rectangle Fill="{TemplateBinding Background}" IsHitTestVisible="False" />
+						<ContentPresenter
+							Margin="{TemplateBinding Padding}"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							ContentTransitions="{TemplateBinding ContentTransitions}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="ScreenshotMosaicTileButtonStyle" TargetType="Button">
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="Background" Value="#00FFFFFF" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+		<Setter Property="Padding" Value="2" />
+		<Setter Property="UseSystemFocusVisuals" Value="False" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Grid Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+						<ContentPresenter
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  AgeRestrictedDataTemplate (UX\\Controls\\Tiles\\TileDataTemplates.xaml)  -->
+	<DataTemplate x:Key="AgeRestrictedDataTemplate">
+		<controls:ConstrainedBox AspectRatio="16:9">
+			<Grid>
+				<local:Shimmer x:Name="Shimmer">
+					<local:Shimmer.Visibility>
+						<Binding
+							Converter="{StaticResource InverseVisibilityConverter}"
+							ElementName="TileImageControl"
+							Path="ImageProcessed" />
+					</local:Shimmer.Visibility>
+				</local:Shimmer>
+				<local:TileImage
+					x:Name="TileImageControl"
+					ImageItem="{Binding}"
+					RequestedImageHeight="316"
+					ShowBackgroundColor="False">
+					<interactivity:Interaction.Behaviors>
+						<local:ViewDisplayedBehavior />
+					</interactivity:Interaction.Behaviors>
+				</local:TileImage>
+				<Border Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
+				<StackPanel Margin="8,0" VerticalAlignment="Center">
+					<TextBlock Style="{StaticResource SubtitleTextBlockStyle}" TextAlignment="Center" />
+					<TextBlock
+						MaxWidth="400"
+						Style="{StaticResource BodyTextBlockStyle}"
+						TextAlignment="Center"
+						TextWrapping="WrapWholeWords" />
+					<Button MinWidth="160" Margin="0,12,0,0" HorizontalAlignment="Center" />
+				</StackPanel>
+			</Grid>
+		</controls:ConstrainedBox>
+	</DataTemplate>
+
+
+	<!--
+		StaticListViewStyle (Resources\DefaultResourceDictionary.xaml).
+		The Store wraps the ItemsPresenter in a StaticListItemsPresenterWrapper
+		(keeps containers alive for recycling); WinUI 3 has no such control, so
+		the wrapper is omitted and a plain ItemsPresenter is used.
+	-->
+	<Style x:Key="StaticListViewStyle" TargetType="local:NoPointerWheelListView">
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="IsItemClickEnabled" Value="True" />
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="SelectionMode" Value="Single" />
+		<Setter Property="ShowsScrollingPlaceholders" Value="False" />
+		<Setter Property="TabNavigation" Value="Once" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="ItemContainerTransitions">
+			<Setter.Value>
+				<TransitionCollection />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ListView">
+					<Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}">
+						<ScrollViewer
+							x:Name="ScrollViewer"
+							AutomationProperties.AccessibilityView="Raw"
+							BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
+							HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+							HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+							IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+							IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+							IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
+							IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+							IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}"
+							TabNavigation="{TemplateBinding TabNavigation}"
+							VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+							VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+							ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
+							<Border Background="#00FFFFFF">
+								<ItemsPresenter
+									Padding="{TemplateBinding Padding}"
+									Footer="{TemplateBinding Footer}"
+									FooterTemplate="{TemplateBinding FooterTemplate}"
+									FooterTransitions="{TemplateBinding FooterTransitions}"
+									Header="{TemplateBinding Header}"
+									HeaderTemplate="{TemplateBinding HeaderTemplate}"
+									HeaderTransitions="{TemplateBinding HeaderTransitions}" />
+							</Border>
+						</ScrollViewer>
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  CardCornerRadius (Resources\CardResourceDictionary.xaml)  -->
+	<CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
+
+	<!--  DefaultListViewBaseItemContainerStyle (App.xaml)  -->
+	<Style x:Key="DefaultListViewBaseItemContainerStyle" TargetType="primitives:SelectorItem">
+		<Setter Property="Margin" Value="0" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="Background" Value="#00FFFFFF" />
+		<Setter Property="TabNavigation" Value="Local" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="UseSystemFocusVisuals" Value="True" />
+	</Style>
+
+	<!--  ScreenshotListViewBaseItemContainerStyle (App.xaml)  -->
+	<Style
+		x:Key="ScreenshotListViewBaseItemContainerStyle"
+		BasedOn="{StaticResource DefaultListViewBaseItemContainerStyle}"
+		TargetType="ListViewItem">
+		<Setter Property="BorderBrush" Value="#00FFFFFF" />
+		<Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+		<Setter Property="Margin" Value="4,0" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ListViewItem">
+					<Grid x:Name="ContentContainer" CornerRadius="{TemplateBinding CornerRadius}">
+						<ContentPresenter
+							x:Name="ContentPresenter"
+							Margin="{TemplateBinding Padding}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							ContentTransitions="{TemplateBinding ContentTransitions}"
+							Control.IsTemplateFocusTarget="True"
+							CornerRadius="{TemplateBinding CornerRadius}" />
+						<Border
+							x:Name="BackgroundBorder"
+							Background="{TemplateBinding Background}"
+							BackgroundTransition="{StaticResource DefaultBackgroundTransition}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{ThemeResource ItemHighContrastPointerOverBorderThickness}"
+							IsHitTestVisible="False" />
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="PointerOver">
+									<VisualState.Setters>
+										<Setter Target="BackgroundBorder.Background" Value="#33F6F6F6" />
+										<Setter Target="BackgroundBorder.BorderBrush" Value="{ThemeResource ItemHighContrastPointerOverBorderBrush}" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<VisualState.Setters>
+										<Setter Target="BackgroundBorder.Background" Value="#66F6F6F6" />
+										<Setter Target="BackgroundBorder.BorderBrush" Value="{ThemeResource ItemHighContrastPressedBorderBrush}" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="Disabled">
+									<VisualState.Setters>
+										<Setter Target="ContentPresenter.Opacity" Value="{ThemeResource ListViewItemDisabledThemeOpacity}" />
+									</VisualState.Setters>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  DefaultScreenshotContainerStyle (App.xaml)  -->
+	<Style
+		x:Key="DefaultScreenshotContainerStyle"
+		BasedOn="{StaticResource ScreenshotListViewBaseItemContainerStyle}"
+		TargetType="ListViewItem">
+		<Setter Property="Margin" Value="12,0" />
+	</Style>
+
+</ResourceDictionary>
