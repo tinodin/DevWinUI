@@ -3,13 +3,18 @@
 /// <summary>
 /// An artwork image control with load/error backplate states. Ported from the
 /// Microsoft Store product-page screenshots carousel (<c>WinStore.UX.Controls.TileImage</c>).
+/// Faithful to <c>tools/StoreRE/reconstructed/TileImage.cs</c>: 7 DPs only
+/// (FooterTemplate, ImageItem, ImageProcessed, RequestedImageHeight/Width,
+/// ShowBackgroundColor, Stretch) - no Source DP. Images are loaded via
+/// <see cref="IImageItem.ImageUri"/>.
 /// </summary>
-[TemplatePart(Name = "PART_RootGrid", Type = typeof(Grid))]
-[TemplatePart(Name = "PART_MainImage", Type = typeof(Image))]
+[TemplatePart(Name = "RootGrid", Type = typeof(Grid))]
+[TemplatePart(Name = "MainImage", Type = typeof(Image))]
 public partial class TileImage : Control
 {
     private Grid _rootGrid;
     private Image _image;
+    private ImageSource _currentSource;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TileImage"/> class.
@@ -30,16 +35,25 @@ public partial class TileImage : Control
             _image.ImageFailed -= OnImageFailed;
         }
 
-        _rootGrid = GetTemplateChild("PART_RootGrid") as Grid;
-        _image = GetTemplateChild("PART_MainImage") as Image;
+        _rootGrid = GetTemplateChild("RootGrid") as Grid;
+        _image = GetTemplateChild("MainImage") as Image;
 
         if (_image != null)
         {
             _image.ImageOpened += OnImageOpened;
             _image.ImageFailed += OnImageFailed;
+            if (_currentSource != null)
+            {
+                _image.Source = _currentSource;
+                _image.Stretch = Stretch;
+            }
         }
 
-        ApplySource();
+        // Re-apply current ImageItem to ensure correct DecodePixel sizing and backplate state
+        if (ImageItem != null)
+            ApplyImageItem(ImageItem);
+        else
+            UpdateVisualState();
     }
 
     internal void UpdateImageSize()
@@ -59,21 +73,18 @@ public partial class TileImage : Control
                 DecodePixelHeight = RequestedImageHeight > 0 ? RequestedImageHeight : 0,
                 DecodePixelWidth = RequestedImageWidth > 0 ? RequestedImageWidth : 0
             };
-            Source = bmp;
+            _currentSource = bmp;
+            if (_image != null)
+            {
+                _image.Source = _currentSource;
+                _image.Stretch = Stretch;
+            }
         }
         else
         {
-            Source = null;
-        }
-        ApplySource();
-    }
-
-    private void ApplySource()
-    {
-        if (_image != null)
-        {
-            _image.Source = Source;
-            _image.Stretch = Stretch;
+            _currentSource = null;
+            if (_image != null)
+                _image.Source = null;
         }
 
         UpdateImageSize();
@@ -83,13 +94,25 @@ public partial class TileImage : Control
             _rootGrid.Opacity = 0;
         }
 
-        ImageProcessed = Source == null && ImageItem == null;
+        ImageProcessed = _currentSource == null && item == null;
         InvalidateMeasure();
 
-        if ((Source == null && ImageItem == null) || !ShowBackgroundColor)
+        if ((_currentSource == null && item == null) || !ShowBackgroundColor)
         {
             GoToColoredBackplate();
         }
+    }
+
+    private void UpdateVisualState()
+    {
+        if (_rootGrid != null)
+            _rootGrid.Opacity = 0;
+
+        ImageProcessed = _currentSource == null && ImageItem == null;
+        InvalidateMeasure();
+
+        if ((_currentSource == null && ImageItem == null) || !ShowBackgroundColor)
+            GoToColoredBackplate();
     }
 
     private void OnImageOpened(object sender, RoutedEventArgs e)
@@ -97,7 +120,7 @@ public partial class TileImage : Control
         ImageProcessed = true;
         InvalidateMeasure();
 
-        if (_rootGrid != null && Source != null)
+        if (_rootGrid != null && _currentSource != null)
         {
             var fadeIn = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimation
             {

@@ -1,13 +1,7 @@
-using Microsoft.Xaml.Interactivity;
-using Microsoft.UI.Xaml.Media;
+﻿using Microsoft.Xaml.Interactivity;
 
 namespace DevWinUI;
 
-/// <summary>
-/// Host behavior that shows/hides left/right scroll buttons based on scrollability.
-/// Ported from <c>WinStore.UX.Behaviors.ScrollButtonsHostBehavior</c> used by
-/// <c>ScreenshotsViewer.xaml</c>.
-/// </summary>
 public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 {
     public static readonly DependencyProperty LeftScrollButtonProperty =

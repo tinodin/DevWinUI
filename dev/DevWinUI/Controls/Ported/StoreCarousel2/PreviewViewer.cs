@@ -166,14 +166,14 @@ public sealed partial class PreviewViewer : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _viewerRoot = FindName("PART_ViewerRoot") as Grid;
-        _closeButton = FindName("PART_CloseButton") as Button;
-        _flipView = FindName("PART_FlipView") as FlipView;
+        _viewerRoot = FindName("ViewerGrid") as Grid;
+        _closeButton = FindName("CloseButton") as Button;
+        _flipView = FindName("ItemsFlipView") as FlipView;
         var suppressInitialSelection = ViewModel?.CurrentItem != null;
         if (suppressInitialSelection && _viewerRoot != null)
             _viewerRoot.Opacity = 0;
-        _captionTextBlock = FindName("PART_CaptionTextBlock") as TextBlock;
-        var indexGrid = FindName("PART_IndexTextBlock") as Grid;
+        _captionTextBlock = FindName("CaptionTextBlock") as TextBlock;
+        var indexGrid = FindName("IndexTextBlock") as Grid;
         _counterTextBlock = indexGrid != null ? FindDescendant<TextBlock>(indexGrid) : null;
         _templateSelector = FindResource("FlipViewDataTemplateSelector") as ScreenshotDataTemplateSelector;
         ApplyAgeRestriction(AgeRestricted);

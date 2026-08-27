@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public sealed partial class ScreenshotsViewer : UserControl
 {
@@ -16,10 +14,6 @@ public sealed partial class ScreenshotsViewer : UserControl
         Loaded += OnLoaded;
     }
 
-    /// <summary>
-    /// Wires the <see cref="ScreenshotTileList"/> item-click handling, mirroring the
-    /// Store's <c>ScreenshotsViewer.OnApplyTemplate</c> (GetTemplateChild("ScreenshotTileList")).
-    /// </summary>
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -37,25 +31,119 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (ScreenshotTemplateSelector != null)
         {
             ScreenshotTemplateSelector.AgeRestricted = ageRestricted;
-            // The Store changes the selector state without tearing down the
-            // ItemsSource. Replacing it with null creates a short input-dead
-            // window during rapid popup open/close cycles.
         }
     }
 
     private void AttachTileList()
     {
-        if (ScreenshotTileList == null)
-        {
-            return;
-        }
+        if (ScreenshotTileList == null) return;
 
         ScreenshotTileList.ItemClick -= OnTileListClick;
         ScreenshotTileList.ItemClick += OnTileListClick;
+        ScreenshotTileList.ContainerContentChanging -= OnContainerContentChanging;
+        ScreenshotTileList.ContainerContentChanging += OnContainerContentChanging;
+        ScreenshotTileList.Loaded -= OnTileListLoaded;
+        ScreenshotTileList.Loaded += OnTileListLoaded;
         if (PreviewViewModel != null)
             ScreenshotTileList.ItemsSource = PreviewViewModel.Items;
         ApplyAgeRestriction(AgeRestricted);
         ScreenshotTileList.SelectedIndex = SelectedIndex;
+        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ForceUpdateVideoThumbnails);
+    }
+
+    private void OnTileListLoaded(object sender, RoutedEventArgs e) => ForceUpdateVideoThumbnails();
+
+    private void ForceUpdateVideoThumbnails()
+    {
+        if (ScreenshotTileList == null) return;
+        for (int i = 0; i < ScreenshotTileList.Items.Count; i++)
+        {
+            if (ScreenshotTileList.Items[i] is not VideoPlayerSource videoItem || videoItem.ImageUri == null) continue;
+            var container = ScreenshotTileList.ContainerFromIndex(i) as FrameworkElement;
+            if (container == null) continue;
+            DependencyObject searchRoot = container;
+            if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
+                searchRoot = lviRoot;
+            var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
+            if (image == null) continue;
+            if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
+                continue;
+            try
+            {
+                image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
+            }
+            catch { }
+            var behaviors = Microsoft.Xaml.Interactivity.Interaction.GetBehaviors(image);
+            foreach (var b in behaviors)
+            {
+                if (b is ViewDisplayedBehavior vdb && vdb.ViewDisplayedAction == null)
+                {
+                    var capturedImage = image;
+                    var capturedUri = videoItem.ImageUri;
+                    vdb.ViewDisplayedAction = () =>
+                    {
+                        if (capturedImage.Source != null) return;
+                        try { capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+                    };
+                    break;
+                }
+            }
+        }
+    }
+
+    private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+    {
+        if (args.InRecycleQueue) return;
+        if (args.Item is not VideoPlayerSource videoItem || videoItem.ImageUri == null) return;
+
+        if (args.Phase == 0)
+        {
+            args.RegisterUpdateCallback(OnContainerContentChanging);
+            return;
+        }
+
+        var container = args.ItemContainer as FrameworkElement;
+        if (container == null)
+        {
+            if (args.Phase < 3) args.RegisterUpdateCallback(OnContainerContentChanging);
+            return;
+        }
+
+        DependencyObject searchRoot = container;
+        if (args.ItemContainer is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
+            searchRoot = lviRoot;
+
+        var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
+        if (image == null)
+        {
+            if (args.Phase < 3) args.RegisterUpdateCallback(OnContainerContentChanging);
+            return;
+        }
+
+        var behaviors = Microsoft.Xaml.Interactivity.Interaction.GetBehaviors(image);
+        ViewDisplayedBehavior targetVdb = null;
+        foreach (var b in behaviors)
+            if (b is ViewDisplayedBehavior vdb) { targetVdb = vdb; break; }
+
+        bool needsLoad = true;
+        if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
+            needsLoad = false;
+
+        if (needsLoad)
+        {
+            try { image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+        }
+
+        if (targetVdb != null && targetVdb.ViewDisplayedAction == null)
+        {
+            var capturedImage = image;
+            var capturedUri = videoItem.ImageUri;
+            targetVdb.ViewDisplayedAction = () =>
+            {
+                if (capturedImage.Source != null) return;
+                try { capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+            };
+        }
     }
 
     private void OnTileListClick(object sender, ItemClickEventArgs e)
@@ -77,9 +165,7 @@ public sealed partial class ScreenshotsViewer : UserControl
     private void UpdateEmptyState()
     {
         var isEmpty = ScreenshotTileList == null || ScreenshotTileList.Items.Count == 0;
-        if (isEmpty)
-        {
-        }
+        if (isEmpty) { }
     }
 
     public void BringItemFlushToEdge(int index)

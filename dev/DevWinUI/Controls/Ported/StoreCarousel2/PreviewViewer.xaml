@@ -404,38 +404,51 @@
 					<interactivity:Interaction.Behaviors>
 						<local:ViewDisplayedBehavior />
 					</interactivity:Interaction.Behaviors>
-					<Button
-						x:Name="ScreenshotsAgeGatingButton"
-						AutomationProperties.AutomationId="ScreenshotsAgeGatingButton"
-						IsTabStop="False"
-						Style="{StaticResource ScreenshotMosaicTileButtonStyle}">
-						<Button.Content>
-							<Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-								<local:TileImage
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Stretch"
-									ImageItem="{Binding}"
-									ShowBackgroundColor="False" />
-								<Rectangle Fill="{ThemeResource ImageOpacityOverlayBackgroundBrush}" />
-								<StackPanel
-									Padding="12"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Center"
-									Background="{ThemeResource HighContrastBackgroundBrush}">
-									<TextBlock
-										AutomationProperties.AutomationId="ScreenshotsAgeGatingMessage"
-										Foreground="{ThemeResource WhiteTextForegroundBrush}"
-										TextAlignment="Center" />
-									<TextBlock
-										Margin="0,8,0,0"
-										AutomationProperties.AutomationId="ScreenshotsSignInMessage"
-										FontWeight="SemiBold"
-										Foreground="{ThemeResource WhiteTextForegroundBrush}"
-										TextAlignment="Center" />
-								</StackPanel>
-							</Grid>
-						</Button.Content>
-					</Button>
+					<ContentControl.Content>
+						<local:ResponsiveTileButton
+							AutomationProperties.AutomationId="ScreenshotsAgeGatingButton"
+							IsTabStop="False"
+							Style="{StaticResource ScreenshotMosaicTileButtonStyle}">
+							<local:ResponsiveTileButton.Content>
+								<Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+									<local:TileImage
+										HorizontalAlignment="Stretch"
+										VerticalAlignment="Stretch"
+										ImageItem="{Binding}"
+										ShowBackgroundColor="False" />
+									<Rectangle Fill="{ThemeResource ImageOpacityOverlayBackgroundBrush}">
+									<Rectangle.Opacity>
+										<Binding Path="PointerElementOpacity" FallbackValue="0">
+											<Binding.RelativeSource>
+												<RelativeSource Mode="TemplatedParent" />
+											</Binding.RelativeSource>
+										</Binding>
+									</Rectangle.Opacity>
+								</Rectangle>
+									<StackPanel
+										Padding="12"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Background="{ThemeResource HighContrastBackgroundBrush}">
+										<TextBlock
+											AutomationProperties.AccessibilityView="Raw"
+											AutomationProperties.AutomationId="ScreenshotsAgeGatingMessage"
+											Foreground="{ThemeResource WhiteTextForegroundBrush}"
+											Style="{StaticResource BodyTextBlockStyle}"
+											TextAlignment="Center" />
+										<TextBlock
+											Margin="0,8,0,0"
+											AutomationProperties.AccessibilityView="Raw"
+											AutomationProperties.AutomationId="ScreenshotsSignInMessage"
+											FontWeight="SemiBold"
+											Foreground="{ThemeResource WhiteTextForegroundBrush}"
+											Style="{StaticResource BodyTextBlockStyle}"
+											TextAlignment="Center" />
+									</StackPanel>
+								</Grid>
+							</local:ResponsiveTileButton.Content>
+						</local:ResponsiveTileButton>
+					</ContentControl.Content>
 				</ContentControl>
 			</controls:ConstrainedBox>
 		</DataTemplate>

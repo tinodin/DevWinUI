@@ -9,7 +9,7 @@ namespace DevWinUI;
 /// Ported from the Microsoft Store PDP screenshots carousel
 /// (<c>WinStore.UX.Controls.PDP.ScreenshotsViewer</c> + <c>PreviewViewer</c>).
 /// </summary>
-[TemplatePart(Name = "ScreenshotsViewerPart", Type = typeof(ScreenshotsViewer))]
+[TemplatePart(Name = "ScreenshotsControl", Type = typeof(ScreenshotsViewer))]
 public partial class StoreCarousel2 : Control
 {
     private ScreenshotsViewer _card;
@@ -37,7 +37,7 @@ public partial class StoreCarousel2 : Control
 
         DetachCard();
 
-        _card = GetTemplateChild("ScreenshotsViewerPart") as ScreenshotsViewer;
+        _card = GetTemplateChild("ScreenshotsControl") as ScreenshotsViewer;
         if (_card != null)
         {
             _card.ScreenshotClicked += OnScreenshotClicked;

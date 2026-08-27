@@ -163,7 +163,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:StoreCarousel2">
                     <local:ScreenshotsViewer
-                        x:Name="ScreenshotsViewerPart"
+                        x:Name="ScreenshotsControl"
                         Height="316"
                         Margin="0,24"
                         AgeRestricted="{TemplateBinding AgeRestricted}"

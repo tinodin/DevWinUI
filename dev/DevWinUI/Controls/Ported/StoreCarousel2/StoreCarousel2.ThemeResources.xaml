@@ -24,6 +24,14 @@
 			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
 			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
 			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+			<!--  ResponsiveTileButton (WinStore.Resources\Themes\Dark.xaml)  -->
+			<Color x:Key="ImagePlaceholderColor">#FF3B3B3B</Color>
+			<SolidColorBrush x:Key="ItemPressedBackgroundBrush" Color="#33FFFFFF" />
+			<SolidColorBrush x:Key="ItemPointerOverBackgroundBrush" Color="#19FFFFFF" />
+			<SolidColorBrush x:Key="QuickLinkMosaicItemBackgroundBrush" Color="{StaticResource ImagePlaceholderColor}" />
+			<SolidColorBrush x:Key="FocusRectOuterBorderBrush" Color="{StaticResource SystemBaseHighColor}" />
+			<SolidColorBrush x:Key="FocusRectInnerBorderBrush" Color="{StaticResource SystemAltMediumColor}" />
+			<SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
 		</ResourceDictionary>
 
 		<ResourceDictionary x:Key="HighContrast">
@@ -34,6 +42,13 @@
 			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
 			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">2</Thickness>
 			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+			<!--  ResponsiveTileButton (WinStore.Resources\Themes\HighContrast.xaml)  -->
+			<SolidColorBrush x:Key="ItemPressedBackgroundBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+			<SolidColorBrush x:Key="ItemPointerOverBackgroundBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+			<SolidColorBrush x:Key="QuickLinkMosaicItemBackgroundBrush" Color="{ThemeResource SystemColorWindowColor}" />
+			<SolidColorBrush x:Key="FocusRectOuterBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+			<SolidColorBrush x:Key="FocusRectInnerBorderBrush" Color="{ThemeResource SystemColorWindowColor}" />
+			<SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
 		</ResourceDictionary>
 
 		<ResourceDictionary x:Key="Light">
@@ -50,6 +65,14 @@
 			<SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
 			<Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
 			<SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+			<!--  ResponsiveTileButton (WinStore.Resources\Themes\Light.xaml)  -->
+			<Color x:Key="ImagePlaceholderColor">#FFE4E4E4</Color>
+			<SolidColorBrush x:Key="ItemPressedBackgroundBrush" Color="#33000000" />
+			<SolidColorBrush x:Key="ItemPointerOverBackgroundBrush" Color="#19000000" />
+			<SolidColorBrush x:Key="QuickLinkMosaicItemBackgroundBrush" Color="{StaticResource ImagePlaceholderColor}" />
+			<SolidColorBrush x:Key="FocusRectOuterBorderBrush" Color="{StaticResource SystemBaseHighColor}" />
+			<SolidColorBrush x:Key="FocusRectInnerBorderBrush" Color="{StaticResource SystemAltMediumColor}" />
+			<SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 
@@ -411,14 +434,14 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:TileImage">
-					<Grid x:Name="PART_RootGrid" Background="{TemplateBinding Background}">
+					<Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
 						<Rectangle
-							x:Name="PART_Backplate"
+							x:Name="BackgroundElement"
 							Fill="{TemplateBinding Background}"
 							IsHitTestVisible="False"
 							Opacity="0" />
 						<Image
-							x:Name="PART_MainImage"
+							x:Name="MainImage"
 							HorizontalAlignment="Center"
 							VerticalAlignment="Center"
 							Stretch="{TemplateBinding Stretch}" />
@@ -426,12 +449,12 @@
 							<VisualStateGroup x:Name="BackplateStates">
 								<VisualState x:Name="DefaultBackplateVisualState">
 									<VisualState.Setters>
-										<Setter Target="PART_Backplate.Opacity" Value="0" />
+										<Setter Target="BackgroundElement.Opacity" Value="0" />
 									</VisualState.Setters>
 								</VisualState>
 								<VisualState x:Name="ColoredBackplateVisualState">
 									<VisualState.Setters>
-										<Setter Target="PART_Backplate.Opacity" Value="1" />
+										<Setter Target="BackgroundElement.Opacity" Value="1" />
 									</VisualState.Setters>
 								</VisualState>
 							</VisualStateGroup>
@@ -490,23 +513,62 @@
 		</Setter>
 	</Style>
 
-	<Style x:Key="ScreenshotMosaicTileButtonStyle" TargetType="Button">
+	<!--  ScreenshotMosaicTileButtonStyle (UX\\Controls\\Tiles\\TileDataTemplates.xaml)  -->
+	<Style x:Key="ScreenshotMosaicTileButtonStyle" TargetType="local:ResponsiveTileButton">
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MinWidth" Value="0" />
 		<Setter Property="Background" Value="#00FFFFFF" />
-		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="Foreground" Value="{ThemeResource DefaultTextForegroundThemeBrush}" />
+		<Setter Property="FontWeight" Value="Normal" />
 		<Setter Property="VerticalAlignment" Value="Stretch" />
-		<Setter Property="Padding" Value="2" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
 		<Setter Property="UseSystemFocusVisuals" Value="False" />
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="Button">
-					<Grid Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+				<ControlTemplate TargetType="local:ResponsiveTileButton">
+					<Grid x:Name="_rootGrid" Padding="2" Background="{TemplateBinding Background}">
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="PointerOver">
+									<VisualState.Setters>
+										<Setter Target="_rootGrid.Background" Value="{ThemeResource ItemPointerOverBackgroundBrush}" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<VisualState.Setters>
+										<Setter Target="_rootGrid.Background" Value="{ThemeResource ItemPressedBackgroundBrush}" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="Disabled" />
+							</VisualStateGroup>
+							<VisualStateGroup x:Name="FocusStates">
+								<VisualState x:Name="Focused">
+									<VisualState.Setters>
+										<Setter Target="_focusRect.Opacity" Value="1" />
+									</VisualState.Setters>
+								</VisualState>
+								<VisualState x:Name="Unfocused" />
+								<VisualState x:Name="PointerFocused" />
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
 						<ContentPresenter
+							x:Name="_contentPresenter"
+							AutomationProperties.AccessibilityView="Raw"
+							Background="{ThemeResource QuickLinkMosaicItemBackgroundBrush}"
 							Content="{TemplateBinding Content}"
 							ContentTemplate="{TemplateBinding ContentTemplate}"
-							HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-							VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+							Foreground="{TemplateBinding Foreground}" />
+						<Border
+							x:Name="_focusRect"
+							Margin="-2"
+							BorderBrush="{ThemeResource FocusRectOuterBorderBrush}"
+							BorderThickness="2"
+							Opacity="0">
+							<Border.Child>
+								<Border BorderBrush="{ThemeResource FocusRectInnerBorderBrush}" BorderThickness="1" />
+							</Border.Child>
+						</Border>
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

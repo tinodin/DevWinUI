@@ -25,17 +25,6 @@ public partial class TileImage
         ((TileImage)d).ApplyImageItem(e.NewValue as IImageItem);
     }
 
-    public ImageSource Source
-    {
-        get => (ImageSource)GetValue(SourceProperty);
-        set => SetValue(SourceProperty, value);
-    }
-
-    public static readonly DependencyProperty SourceProperty =
-        DependencyProperty.Register(nameof(Source), typeof(ImageSource), typeof(TileImage), new PropertyMetadata(null, OnSourceChanged));
-
-    private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TileImage)d).ApplySource();
-
     public Stretch Stretch
     {
         get => (Stretch)GetValue(StretchProperty);
