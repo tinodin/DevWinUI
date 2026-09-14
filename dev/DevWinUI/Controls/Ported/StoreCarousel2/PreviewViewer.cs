@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
@@ -133,21 +133,21 @@ public sealed partial class PreviewViewer : UserControl
             }
         }
 
-        // 3. "CurrentIndex" -> Run[0].Text [ASM 0x18225A366]
+        // 3. "CurrentIndex" -> Run text [ASM 0x18225A366]; getter 0x1823F0480 = SelectedIndex+1
         if (updateAll || string.Equals(prop, "CurrentIndex", StringComparison.Ordinal))
         {
             if (_currentIndexRun != null)
             {
-                _currentIndexRun.Text = vm.CurrentIndex ?? (vm.SelectedIndex >= 0 ? (vm.SelectedIndex + 1).ToString() : "1");
+                _currentIndexRun.Text = vm.CurrentIndex;
             }
         }
 
-        // 4. "TotalIndex" -> Run[2].Text [ASM 0x18225A3E3]
+        // 4. "TotalIndex" -> Run text [ASM 0x18225A3E3]; WinUI 3 inline index [4] (see §D)
         if (updateAll || string.Equals(prop, "TotalIndex", StringComparison.Ordinal))
         {
             if (_totalIndexRun != null)
             {
-                _totalIndexRun.Text = vm.TotalIndex ?? (vm.Items != null ? vm.Items.Count.ToString() : "0");
+                _totalIndexRun.Text = vm.TotalIndex;
             }
         }
     }
@@ -267,26 +267,27 @@ public sealed partial class PreviewViewer : UserControl
         _captionTextBlock = FindName("CaptionTextBlock") as TextBlock;
         var indexGrid = FindName("IndexTextBlock") as Grid;
         _counterTextBlock = indexGrid != null ? FindDescendant<TextBlock>(indexGrid) : null;
-        if (_counterTextBlock != null && _counterTextBlock.Inlines.Count >= 3)
+        if (_counterTextBlock != null && _counterTextBlock.Inlines.Count >= 5)
         {
             _currentIndexRun = _counterTextBlock.Inlines[0] as Run;
-            _totalIndexRun = _counterTextBlock.Inlines[2] as Run;
+            _totalIndexRun = _counterTextBlock.Inlines[4] as Run;
         }
 
         _templateSelector = FindResource("FlipViewDataTemplateSelector") as ScreenshotDataTemplateSelector;
 
-        if (!ReferenceEquals(_flipView, flipView))
+        if (_flipView != null)
         {
-            if (_flipView != null)
-            {
-                _flipView.SelectionChanged -= OnSelectionChanged;
-            }
+            _flipView.SelectionChanged -= OnSelectionChanged;
+        }
 
-            _flipView = flipView;
-            if (_flipView != null)
-            {
-                _flipView.SelectionChanged += OnSelectionChanged;
-            }
+        _flipView = flipView;
+        if (_flipView != null)
+        {
+            // Always re-subscribe. DetachParts removes SelectionChanged on Popup unload;
+            // the FlipView instance is often reused, so ReferenceEquals-only wiring left
+            // navigation without VM updates (caption/index frozen after same-item reopen).
+            // Store keeps FlipView → SelectedIndex (0x1823F0170) → Caption/CurrentIndex PC live.
+            _flipView.SelectionChanged += OnSelectionChanged;
         }
 
         if (_viewerRoot != null)

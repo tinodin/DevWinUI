@@ -49,7 +49,7 @@ public static partial class ListViewExtensions
     /// </summary>
     /// <param name="listViewBase">The list to scroll.</param>
     /// <param name="index">The item index to bring into view.</param>
-    /// <param name="itemPlacement">The target alignment (e.g. <see cref="ScrollItemPlacement.Center"/> for keyboard navigation).</param>
+    /// <param name="itemPlacement">Alignment after scroll. Store <c>UpdateSelectedIndex</c> uses Default; in-strip keyboard uses Center (Toolkit case 3).</param>
     /// <param name="disableAnimation">Whether animation is disabled (true for instant sync, false for smooth scroll).</param>
     /// <param name="scrollIfVisible">Whether to scroll if the item is already visible.</param>
     /// <param name="additionalHorizontalOffset">Optional horizontal offset delta.</param>

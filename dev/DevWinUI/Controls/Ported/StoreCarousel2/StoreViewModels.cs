@@ -41,9 +41,6 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
     private ObservableCollection<object> _items = new();
     private object _currentItem;
     private int _selectedIndex = -1;
-    private string _caption;
-    private string _currentIndex;
-    private string _totalIndex;
 
     public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
@@ -56,6 +53,8 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
             {
                 _items = value;
                 OnPropertyChanged(nameof(Items));
+                // Store TotalIndex is derived from items count (PropertyChanged handler
+                // 0x18225A1B0 reads count via sub_18097B930 on items); notify like SelectedIndex setter.
                 OnPropertyChanged("TotalIndex");
             }
         }
@@ -78,6 +77,10 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
         }
     }
 
+    /// <summary>
+    /// Store setter <c>0x1823F0170</c>: write only when value changes, then raise
+    /// PropertyChanged for SelectedIndex, Caption, CurrentIndex, TotalIndex.
+    /// </summary>
     public int SelectedIndex
     {
         get => _selectedIndex;
@@ -98,14 +101,14 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
         }
     }
 
+    /// <summary>
+    /// Store getter <c>0x1823F03D0</c>: always derived from the item at SelectedIndex
+    /// (no separate cached caption field).
+    /// </summary>
     public string Caption
     {
         get
         {
-            if (!string.IsNullOrEmpty(_caption))
-            {
-                return _caption;
-            }
             if (_currentItem is ScreenshotTileItem screenshot)
             {
                 return screenshot.Title ?? string.Empty;
@@ -116,41 +119,17 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
             }
             return string.Empty;
         }
-        set
-        {
-            if (_caption != value)
-            {
-                _caption = value;
-                OnPropertyChanged("Caption");
-            }
-        }
     }
 
-    public string CurrentIndex
-    {
-        get => _currentIndex ?? (_selectedIndex >= 0 ? (_selectedIndex + 1).ToString() : "1");
-        set
-        {
-            if (_currentIndex != value)
-            {
-                _currentIndex = value;
-                OnPropertyChanged("CurrentIndex");
-            }
-        }
-    }
+    /// <summary>
+    /// Store getter <c>0x1823F0480</c>: <c>ToString(SelectedIndex + 1)</c> via <c>sub_18097B930</c>.
+    /// </summary>
+    public string CurrentIndex => _selectedIndex >= 0 ? (_selectedIndex + 1).ToString() : "1";
 
-    public string TotalIndex
-    {
-        get => _totalIndex ?? (_items != null ? _items.Count.ToString() : "0");
-        set
-        {
-            if (_totalIndex != value)
-            {
-                _totalIndex = value;
-                OnPropertyChanged("TotalIndex");
-            }
-        }
-    }
+    /// <summary>
+    /// Store PropertyChanged path reads items collection count (not a stored string).
+    /// </summary>
+    public string TotalIndex => _items != null ? _items.Count.ToString() : "0";
 
     protected virtual void OnPropertyChanged(string propertyName)
     {

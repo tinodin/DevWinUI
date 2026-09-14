@@ -48,8 +48,9 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotTileList.ContainerContentChanging += OnContainerContentChanging;
         ScreenshotTileList.Loaded -= OnTileListLoaded;
         ScreenshotTileList.Loaded += OnTileListLoaded;
-        ScreenshotTileList.BringIntoViewRequested -= OnTileListBringIntoViewRequested;
-        ScreenshotTileList.BringIntoViewRequested += OnTileListBringIntoViewRequested;
+        // In-strip keyboard Left/Right: SmoothScroll Center (Toolkit case 3 in sub_180080120).
+        // Gated so PreviewViewer Escape restore (OnPreviewViewerClosed has no SmoothScroll [ASM 0x1821B94F0])
+        // does not Center — only when focus moves between tiles already in this list.
         ScreenshotTileList.GettingFocus -= OnTileListGettingFocus;
         ScreenshotTileList.GettingFocus += OnTileListGettingFocus;
         ScreenshotTileList.PreviewKeyDown -= OnTileListPreviewKeyDown;
@@ -61,37 +62,38 @@ public sealed partial class ScreenshotsViewer : UserControl
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ForceUpdateVideoThumbnails);
     }
 
-    private void OnTileListBringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs e)
-    {
-        e.AnimationDesired = true;
-        e.Handled = true;
-        if (e.TargetElement != null && ScreenshotTileList != null)
-        {
-            var item = FindAscendantOrSelf<ListViewItem>(e.TargetElement);
-            if (item != null)
-            {
-                var index = ScreenshotTileList.IndexFromContainer(item);
-                if (index >= 0)
-                {
-                    _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
-                }
-            }
-        }
-    }
-
     private void OnTileListGettingFocus(UIElement sender, GettingFocusEventArgs e)
     {
-        if (e.InputDevice == FocusInputDeviceKind.Keyboard && e.NewFocusedElement is FrameworkElement target && ScreenshotTileList != null)
+        if (e.InputDevice != FocusInputDeviceKind.Keyboard || ScreenshotTileList == null)
         {
-            var item = FindAscendantOrSelf<ListViewItem>(target);
-            if (item != null)
-            {
-                var index = ScreenshotTileList.IndexFromContainer(item);
-                if (index >= 0)
-                {
-                    _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
-                }
-            }
+            return;
+        }
+
+        // Store OnPreviewViewerClosed does not SmoothScroll. Focus restore into the strip from
+        // outside (Escape / popup) must not Center — only in-strip keyboard tile-to-tile moves.
+        if (e.OldFocusedElement is not DependencyObject oldHost ||
+            FindAscendantOrSelf<ListViewItem>(oldHost) is not ListViewItem oldItem ||
+            !IsDescendantOf(ScreenshotTileList, oldItem))
+        {
+            return;
+        }
+
+        if (e.NewFocusedElement is not FrameworkElement target)
+        {
+            return;
+        }
+
+        var item = FindAscendantOrSelf<ListViewItem>(target);
+        if (item == null)
+        {
+            return;
+        }
+
+        var index = ScreenshotTileList.IndexFromContainer(item);
+        if (index >= 0)
+        {
+            // SmoothScroll Center + animated: Toolkit case 3 in sub_180080120 (disableAnimation=false).
+            _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
         }
     }
 
@@ -118,6 +120,7 @@ public sealed partial class ScreenshotsViewer : UserControl
                 if (targetIndex >= 0 && targetIndex < ScreenshotTileList.Items.Count)
                 {
                     e.Handled = true;
+                    // Focus only — Center comes from GettingFocus when OldFocused is in-strip.
                     FocusItem(targetIndex, FocusState.Keyboard);
                 }
             }
@@ -260,31 +263,37 @@ public sealed partial class ScreenshotsViewer : UserControl
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushContainerToEdge(index));
     }
 
+    /// <summary>
+    /// Focus a strip tile. Port helper name — Store has no <c>FocusItem</c> string/method.
+    /// Does not SmoothScroll here; in-strip keyboard Center is handled by <see cref="OnTileListGettingFocus"/>.
+    /// Close/sync scroll uses <see cref="PreviewViewerHelperListViewSource.ScrollToIndex"/>
+    /// → UpdateSelectedIndex (Default, disableAnimation: true) [ASM 0x1821B9980].
+    /// </summary>
     public void FocusItem(int index, FocusState state)
     {
         if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;
 
-        if (state == FocusState.Keyboard)
+        try
         {
-            _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            if (ScreenshotTileList.ContainerFromIndex(index) is Control c)
             {
-                try
-                {
-                    if (ScreenshotTileList.ContainerFromIndex(index) is Control c)
-                    {
-                        c.Focus(state);
-                    }
-                }
-                catch { }
-            });
+                c.Focus(state);
+                return;
+            }
         }
-        else
+        catch { }
+
+        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
         {
-            try { if (ScreenshotTileList.ContainerFromIndex(index) is Control c) { c.Focus(state); return; } } catch { }
-            BringItemFlushToEdge(index);
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { try { if (ScreenshotTileList.ContainerFromIndex(index) is Control d) d.Focus(state); } catch { } });
-        }
+            try
+            {
+                if (ScreenshotTileList.ContainerFromIndex(index) is Control d)
+                {
+                    d.Focus(state);
+                }
+            }
+            catch { }
+        });
     }
 
     private void FlushContainerToEdge(int index)
@@ -336,5 +345,15 @@ public sealed partial class ScreenshotsViewer : UserControl
             element = VisualTreeHelper.GetParent(element);
         }
         return null;
+    }
+
+    private static bool IsDescendantOf(DependencyObject root, DependencyObject node)
+    {
+        while (node != null)
+        {
+            if (node == root) return true;
+            node = VisualTreeHelper.GetParent(node);
+        }
+        return false;
     }
 }
