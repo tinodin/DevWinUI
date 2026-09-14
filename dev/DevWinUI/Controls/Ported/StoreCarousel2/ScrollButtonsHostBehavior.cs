@@ -2,13 +2,21 @@
 
 namespace DevWinUI;
 
+/// <summary>
+/// Hosts Left/Right scroll buttons for a horizontal strip.
+/// Store XAML assigns <c>ScrollCommand</c> on each button; this behavior sets
+/// <c>TargetElement</c> to the strip <see cref="ScrollViewer"/> (<c>0x18150B100</c>)
+/// and toggles button visibility on pointer-over / scrollability.
+/// </summary>
 public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 {
     public static readonly DependencyProperty LeftScrollButtonProperty =
-        DependencyProperty.Register(nameof(LeftScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(LeftScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
+            new PropertyMetadata(null, OnScrollButtonChanged));
 
     public static readonly DependencyProperty RightScrollButtonProperty =
-        DependencyProperty.Register(nameof(RightScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(RightScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
+            new PropertyMetadata(null, OnScrollButtonChanged));
 
     public Button LeftScrollButton
     {
@@ -44,6 +52,15 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         DetachScrollViewer();
     }
 
+    private static void OnScrollButtonChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var behavior = (ScrollButtonsHostBehavior)d;
+        if (behavior._scrollViewer != null)
+        {
+            behavior.WireScrollCommandTargets(behavior._scrollViewer);
+        }
+    }
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         AttachScrollViewer();
@@ -76,7 +93,22 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
             _scrollViewer.ViewChanged += OnViewChanged;
             _scrollViewer.SizeChanged += OnSizeChanged;
             AssociatedObject.SizeChanged += OnSizeChanged;
+            WireScrollCommandTargets(_scrollViewer);
             _ = AssociatedObject.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, UpdateButtons);
+        }
+    }
+
+    private void WireScrollCommandTargets(ScrollViewer scrollViewer)
+    {
+        // Store connect sets ScrollCommand.TargetElement to the strip ScrollViewer.
+        if (LeftScrollButton?.Command is ScrollCommand left)
+        {
+            left.TargetElement = scrollViewer;
+        }
+
+        if (RightScrollButton?.Command is ScrollCommand right)
+        {
+            right.TargetElement = scrollViewer;
         }
     }
 
@@ -105,6 +137,8 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         if (left == null || right == null) return;
         var sv = _scrollViewer ?? FindDescendant<ScrollViewer>(AssociatedObject);
         if (sv == null) return;
+
+        WireScrollCommandTargets(sv);
 
         if (!_isPointerOver)
         {

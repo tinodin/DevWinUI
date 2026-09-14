@@ -24,13 +24,12 @@ public partial class StoreCarousel2
             c._card.PreviewViewModel = vm;
             c._card.AgeRestricted = c.AgeRestricted;
         }
-        if (c._viewer != null)
+
+        // Replace shared preview list items only when host ItemsSource changes (not on each click).
+        if (c._card?.TileList != null)
         {
-            var pvm = new PreviewItemsViewModel();
-            if (e.NewValue is IEnumerable vitems)
-                foreach (var item in vitems) pvm.Items.Add(item);
-            c._viewer.ViewModel = pvm;
-            c._viewer.AgeRestricted = c.AgeRestricted;
+            c.ReplaceViewerViewModelItems();
+            c.EnsureHelper();
         }
     }
 
@@ -59,5 +58,23 @@ public partial class StoreCarousel2
     }
 
     public static readonly DependencyProperty IsViewerEnabledProperty =
-        DependencyProperty.Register(nameof(IsViewerEnabled), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(true));
+        DependencyProperty.Register(nameof(IsViewerEnabled), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(true, OnIsViewerEnabledChanged));
+
+    private static void OnIsViewerEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var c = (StoreCarousel2)d;
+        if (c._card == null)
+        {
+            return;
+        }
+
+        if ((bool)e.NewValue)
+        {
+            c.EnsureHelper();
+        }
+        else
+        {
+            c._card.Helper = null;
+        }
+    }
 }

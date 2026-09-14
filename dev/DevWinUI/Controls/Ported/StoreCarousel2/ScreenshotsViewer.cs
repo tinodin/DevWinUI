@@ -1,4 +1,6 @@
-﻿namespace DevWinUI;
+using Microsoft.UI.Xaml.Input;
+
+namespace DevWinUI;
 
 public sealed partial class ScreenshotsViewer : UserControl
 {
@@ -7,6 +9,8 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     public ListViewBase TileList => ScreenshotTileList;
     public int LastClickedIndex { get; private set; }
+
+    public PreviewViewerHelper Helper { get; set; }
 
     public ScreenshotsViewer()
     {
@@ -44,11 +48,80 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotTileList.ContainerContentChanging += OnContainerContentChanging;
         ScreenshotTileList.Loaded -= OnTileListLoaded;
         ScreenshotTileList.Loaded += OnTileListLoaded;
+        ScreenshotTileList.BringIntoViewRequested -= OnTileListBringIntoViewRequested;
+        ScreenshotTileList.BringIntoViewRequested += OnTileListBringIntoViewRequested;
+        ScreenshotTileList.GettingFocus -= OnTileListGettingFocus;
+        ScreenshotTileList.GettingFocus += OnTileListGettingFocus;
+        ScreenshotTileList.PreviewKeyDown -= OnTileListPreviewKeyDown;
+        ScreenshotTileList.PreviewKeyDown += OnTileListPreviewKeyDown;
         if (PreviewViewModel != null)
             ScreenshotTileList.ItemsSource = PreviewViewModel.Items;
         ApplyAgeRestriction(AgeRestricted);
         ScreenshotTileList.SelectedIndex = SelectedIndex;
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ForceUpdateVideoThumbnails);
+    }
+
+    private void OnTileListBringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs e)
+    {
+        e.AnimationDesired = true;
+        e.Handled = true;
+        if (e.TargetElement != null && ScreenshotTileList != null)
+        {
+            var item = FindAscendantOrSelf<ListViewItem>(e.TargetElement);
+            if (item != null)
+            {
+                var index = ScreenshotTileList.IndexFromContainer(item);
+                if (index >= 0)
+                {
+                    _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
+                }
+            }
+        }
+    }
+
+    private void OnTileListGettingFocus(UIElement sender, GettingFocusEventArgs e)
+    {
+        if (e.InputDevice == FocusInputDeviceKind.Keyboard && e.NewFocusedElement is FrameworkElement target && ScreenshotTileList != null)
+        {
+            var item = FindAscendantOrSelf<ListViewItem>(target);
+            if (item != null)
+            {
+                var index = ScreenshotTileList.IndexFromContainer(item);
+                if (index >= 0)
+                {
+                    _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
+                }
+            }
+        }
+    }
+
+    private void OnTileListPreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != Windows.System.VirtualKey.Left && e.Key != Windows.System.VirtualKey.Right)
+        {
+            return;
+        }
+
+        if (ScreenshotTileList?.XamlRoot == null || ScreenshotTileList.Items.Count == 0)
+        {
+            return;
+        }
+
+        var currentFocused = FocusManager.GetFocusedElement(ScreenshotTileList.XamlRoot) as DependencyObject;
+        var currentItem = FindAscendantOrSelf<ListViewItem>(currentFocused);
+        if (currentItem != null)
+        {
+            var currentIndex = ScreenshotTileList.IndexFromContainer(currentItem);
+            if (currentIndex >= 0)
+            {
+                int targetIndex = e.Key == Windows.System.VirtualKey.Left ? currentIndex - 1 : currentIndex + 1;
+                if (targetIndex >= 0 && targetIndex < ScreenshotTileList.Items.Count)
+                {
+                    e.Handled = true;
+                    FocusItem(targetIndex, FocusState.Keyboard);
+                }
+            }
+        }
     }
 
     private void OnTileListLoaded(object sender, RoutedEventArgs e) => ForceUpdateVideoThumbnails();
@@ -148,11 +221,22 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void OnTileListClick(object sender, ItemClickEventArgs e)
     {
+        // sub_1821817F0 [ASM/Hex-Rays]: raise Clicked, then
+        // SetUpPreviewViewer(helper, ClickedItem, flag: 1).
         var index = ScreenshotTileList.Items.IndexOf(e.ClickedItem);
         if (index < 0) index = 0;
         LastClickedIndex = index;
-        ScreenshotClicked?.Invoke(this, index);
+        ScreenshotClicked?.Invoke(this, e.ClickedItem ?? index);
         Clicked?.Invoke(this, EventArgs.Empty);
+
+        if (Helper != null && e.ClickedItem != null)
+        {
+            Helper.SetUpPreviewViewer(e.ClickedItem, flag: true);
+        }
+        else if (Helper?.ListViewSource != null)
+        {
+            Helper.ListViewSource.ScrollToIndex(index);
+        }
     }
 
     internal void OnPreviewViewModelChanged(PreviewModuleViewModel oldValue, PreviewModuleViewModel newValue)
@@ -179,9 +263,28 @@ public sealed partial class ScreenshotsViewer : UserControl
     public void FocusItem(int index, FocusState state)
     {
         if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;
-        try { if (ScreenshotTileList.ContainerFromIndex(index) is Control c) { c.Focus(state); return; } } catch { }
-        BringItemFlushToEdge(index);
-        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { try { if (ScreenshotTileList.ContainerFromIndex(index) is Control d) d.Focus(state); } catch { } });
+
+        if (state == FocusState.Keyboard)
+        {
+            _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                try
+                {
+                    if (ScreenshotTileList.ContainerFromIndex(index) is Control c)
+                    {
+                        c.Focus(state);
+                    }
+                }
+                catch { }
+            });
+        }
+        else
+        {
+            try { if (ScreenshotTileList.ContainerFromIndex(index) is Control c) { c.Focus(state); return; } } catch { }
+            BringItemFlushToEdge(index);
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { try { if (ScreenshotTileList.ContainerFromIndex(index) is Control d) d.Focus(state); } catch { } });
+        }
     }
 
     private void FlushContainerToEdge(int index)
@@ -221,6 +324,16 @@ public sealed partial class ScreenshotsViewer : UserControl
             if (child is T m) return m;
             var d = FindDescendant<T>(child);
             if (d != null) return d;
+        }
+        return null;
+    }
+
+    private static T FindAscendantOrSelf<T>(DependencyObject element) where T : DependencyObject
+    {
+        while (element != null)
+        {
+            if (element is T match) return match;
+            element = VisualTreeHelper.GetParent(element);
         }
         return null;
     }

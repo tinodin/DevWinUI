@@ -1,27 +1,40 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
+using System.ComponentModel;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Windows.System;
 
 namespace DevWinUI;
 
+/// <summary>
+/// Fullscreen overlay viewer for screenshots and preview videos.
+/// Ported faithfully from Microsoft Store PDP's <c>WinStore.UX.Controls.PDP.PreviewViewer</c>.
+/// </summary>
 public sealed partial class PreviewViewer : UserControl
 {
+    private const string ForwardAnimationKey = "screenshotForwardAnimation";
+    private const string BackAnimationKey = "screenshotBackAnimation";
+
     private readonly Popup _popup;
     private Grid _viewerRoot;
     private Button _closeButton;
     private FlipView _flipView;
     private TextBlock _captionTextBlock;
     private TextBlock _counterTextBlock;
+    private Run _currentIndexRun;
+    private Run _totalIndexRun;
     private ScreenshotDataTemplateSelector _templateSelector;
 
     private int _pendingSelectedIndex;
     private int _selectionRequestVersion;
     private bool _pendingSelectionSet;
     private ConnectedAnimation _pendingAnimation;
-
-    private bool _isLoadedHandled;
 
     public static readonly DependencyProperty AgeRestrictedProperty =
         DependencyProperty.Register(nameof(AgeRestricted), typeof(bool), typeof(PreviewViewer), new PropertyMetadata(false, OnAgeRestrictedChanged));
@@ -53,30 +66,102 @@ public sealed partial class PreviewViewer : UserControl
         if (e.OldValue is PreviewItemsViewModel oldVm)
             oldVm.PropertyChanged -= c.OnViewModelPropertyChanged;
         if (e.NewValue is PreviewItemsViewModel newVm)
+        {
             newVm.PropertyChanged += c.OnViewModelPropertyChanged;
-        c.RefreshItems();
+            // Store 0x18225A0A0 / OnViewModelChanged: ItemsSource bind + full PropertyChanged sync.
+            if (c._flipView != null)
+            {
+                c.BindFlipViewItemsSource(newVm);
+            }
+            else
+            {
+                c.OnViewModelPropertyChanged(newVm, new PropertyChangedEventArgs(string.Empty));
+            }
+        }
     }
-
-    private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => RefreshItems();
 
     private void RefreshItems()
     {
         if (_flipView == null || ViewModel == null) return;
-        _flipView.ItemsSource = ViewModel.Items;
-        ApplySelection();
-        UpdateCaptionAndCounter();
+        if (_flipView.ItemsSource != ViewModel.Items)
+        {
+            BindFlipViewItemsSource(ViewModel);
+        }
+        else
+        {
+            OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
+        }
     }
 
-    // The Store supplies the current item before opening the popup. Apply it while
-    // the FlipView is still hidden so the popup never opens at item zero and then
-    // visibly scrolls to the requested item.
+    // 0x18225A1B0..0x18225A59D [ASM] - exact PropertyChanged handler recovered from Store binary
+    private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var vm = ViewModel;
+        if (vm == null) return;
+
+        string prop = e?.PropertyName;
+        bool updateAll = string.IsNullOrEmpty(prop);
+
+        // 1. "SelectedIndex" -> FlipView.SelectedIndex [ASM 0x18225A216]
+        if (updateAll || string.Equals(prop, "SelectedIndex", StringComparison.Ordinal))
+        {
+            if (_flipView != null && vm.SelectedIndex >= 0 && vm.SelectedIndex < (_flipView.Items?.Count ?? 0))
+            {
+                if (_flipView.SelectedIndex != vm.SelectedIndex)
+                {
+                    _flipView.SelectionChanged -= OnSelectionChanged;
+                    try
+                    {
+                        _flipView.SelectedIndex = vm.SelectedIndex;
+                    }
+                    finally
+                    {
+                        _flipView.SelectionChanged += OnSelectionChanged;
+                    }
+                }
+            }
+        }
+
+        // 2. "Caption" -> CaptionTextBlock.Text [ASM 0x18225A2FC]
+        if (updateAll || string.Equals(prop, "Caption", StringComparison.Ordinal))
+        {
+            if (_captionTextBlock != null)
+            {
+                var caption = vm.Caption;
+                _captionTextBlock.Text = caption ?? string.Empty;
+                _captionTextBlock.Visibility = string.IsNullOrEmpty(caption) ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        // 3. "CurrentIndex" -> Run[0].Text [ASM 0x18225A366]
+        if (updateAll || string.Equals(prop, "CurrentIndex", StringComparison.Ordinal))
+        {
+            if (_currentIndexRun != null)
+            {
+                _currentIndexRun.Text = vm.CurrentIndex ?? (vm.SelectedIndex >= 0 ? (vm.SelectedIndex + 1).ToString() : "1");
+            }
+        }
+
+        // 4. "TotalIndex" -> Run[2].Text [ASM 0x18225A3E3]
+        if (updateAll || string.Equals(prop, "TotalIndex", StringComparison.Ordinal))
+        {
+            if (_totalIndexRun != null)
+            {
+                _totalIndexRun.Text = vm.TotalIndex ?? (vm.Items != null ? vm.Items.Count.ToString() : "0");
+            }
+        }
+    }
+
     private void ApplySelection()
     {
         if (_flipView == null || _flipView.Items == null || _flipView.Items.Count == 0)
             return;
 
+        // Store PropertyChanged path uses ViewModel.SelectedIndex only (0x18225A216).
         var index = -1;
-        if (ViewModel?.CurrentItem != null)
+        if (ViewModel != null && ViewModel.SelectedIndex >= 0)
+            index = Math.Min(ViewModel.SelectedIndex, _flipView.Items.Count - 1);
+        if (index < 0 && ViewModel?.CurrentItem != null)
             index = _flipView.Items.IndexOf(ViewModel.CurrentItem);
         if (index < 0 && _pendingSelectionSet)
             index = Math.Min(_pendingSelectedIndex, _flipView.Items.Count - 1);
@@ -85,20 +170,27 @@ public sealed partial class PreviewViewer : UserControl
 
         try
         {
-            _flipView.SelectedIndex = index;
+            if (_flipView.SelectedIndex != index)
+            {
+                _flipView.SelectionChanged -= OnSelectionChanged;
+                try
+                {
+                    _flipView.SelectedIndex = index;
+                }
+                finally
+                {
+                    _flipView.SelectionChanged += OnSelectionChanged;
+                }
+            }
             _pendingSelectedIndex = index;
             _pendingSelectionSet = false;
         }
         catch (ArgumentException)
         {
-            // WinUI can reject selection while a source is being replaced. The
-            // source/property callback will call ApplySelection again.
             _pendingSelectedIndex = index;
             _pendingSelectionSet = true;
         }
     }
-
-    private void ScheduleCurrentItemSelection() => ApplySelection();
 
     public IEnumerable ItemsSource
     {
@@ -158,45 +250,111 @@ public sealed partial class PreviewViewer : UserControl
     public PreviewViewer()
     {
         InitializeComponent();
+        // Store wires x:Name fields in InitializeComponent (0x18225…); resolve parts here so
+        // ViewModel.ItemsSource can bind before the first OpenOverlayPopup (FlipView already exists).
+        AttachParts();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         _popup = new Popup { IsLightDismissEnabled = false, ShouldConstrainToRootBounds = true };
         _popup.Child = this;
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private void AttachParts()
     {
         _viewerRoot = FindName("ViewerGrid") as Grid;
         _closeButton = FindName("CloseButton") as Button;
-        _flipView = FindName("ItemsFlipView") as FlipView;
-        var suppressInitialSelection = ViewModel?.CurrentItem != null;
-        if (suppressInitialSelection && _viewerRoot != null)
-            _viewerRoot.Opacity = 0;
+        var flipView = FindName("ItemsFlipView") as FlipView;
         _captionTextBlock = FindName("CaptionTextBlock") as TextBlock;
         var indexGrid = FindName("IndexTextBlock") as Grid;
         _counterTextBlock = indexGrid != null ? FindDescendant<TextBlock>(indexGrid) : null;
+        if (_counterTextBlock != null && _counterTextBlock.Inlines.Count >= 3)
+        {
+            _currentIndexRun = _counterTextBlock.Inlines[0] as Run;
+            _totalIndexRun = _counterTextBlock.Inlines[2] as Run;
+        }
+
         _templateSelector = FindResource("FlipViewDataTemplateSelector") as ScreenshotDataTemplateSelector;
+
+        if (!ReferenceEquals(_flipView, flipView))
+        {
+            if (_flipView != null)
+            {
+                _flipView.SelectionChanged -= OnSelectionChanged;
+            }
+
+            _flipView = flipView;
+            if (_flipView != null)
+            {
+                _flipView.SelectionChanged += OnSelectionChanged;
+            }
+        }
+
+        if (_viewerRoot != null)
+        {
+            _viewerRoot.KeyDown -= OnViewerKeyDown;
+            _viewerRoot.KeyDown += OnViewerKeyDown;
+        }
+
+        if (_closeButton != null)
+        {
+            _closeButton.Click -= OnCloseClicked;
+            _closeButton.Click += OnCloseClicked;
+        }
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        AttachParts();
         ApplyAgeRestriction(AgeRestricted);
-        if (_viewerRoot != null) _viewerRoot.KeyDown += OnViewerKeyDown;
-        if (_closeButton != null) _closeButton.Click += OnCloseClicked;
+
+        // Bind ItemsSource once when FlipView is ready (Store OnViewModelChanged 0x18225A0A0 path).
+        if (_flipView != null && ViewModel != null && _flipView.ItemsSource != ViewModel.Items)
+        {
+            BindFlipViewItemsSource(ViewModel);
+        }
+
+        OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
+
+        ApplyOpenFocusAndAnimation();
+        TryStartPendingAnimation();
         if (_flipView != null)
         {
-            _flipView.SelectionChanged += OnSelectionChanged;
-            if (ViewModel != null) _flipView.ItemsSource = ViewModel.Items;
-            else if (ItemsSource != null) _flipView.ItemsSource = ViewModel?.Items;
-            ApplySelection();
+            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
         }
-        UpdateCaptionAndCounter();
-        if (suppressInitialSelection && _viewerRoot != null)
-            _viewerRoot.Opacity = 1;
-        TryStartPendingAnimation();
-        if (_flipView != null) _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
+    }
+
+    /// <summary>
+    /// Matches reconstructed OnViewModelChanged: set ItemsSource then run full PropertyChanged sync
+    /// so FlipView.SelectedIndex follows the list VM without a later ItemsSource rebind on click.
+    /// </summary>
+    private void BindFlipViewItemsSource(PreviewItemsViewModel vm)
+    {
+        if (_flipView == null || vm == null)
+        {
+            return;
+        }
+
+        // Detach SelectionChanged while assigning ItemsSource so the default index 0 does not
+        // write back into the list VM (Store binds ItemsSource once before click SelectedIndex).
+        _flipView.SelectionChanged -= OnSelectionChanged;
+        try
+        {
+            _flipView.ItemsSource = vm.Items;
+            OnViewModelPropertyChanged(vm, new PropertyChangedEventArgs(string.Empty));
+        }
+        finally
+        {
+            _flipView.SelectionChanged += OnSelectionChanged;
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         DetachParts();
     }
+
+    public bool WasKeyboardFocusActive { get; private set; }
+    private bool _isKeyboardNavigationActive;
 
     public event EventHandler Closed;
     public bool IsOpen => _popup != null && _popup.IsOpen;
@@ -215,8 +373,24 @@ public sealed partial class PreviewViewer : UserControl
         TryStartPendingAnimation();
     }
 
+    /// <summary>
+    /// Opens the overlay popup (matching MS Store's <c>OpenOverlayPopup 0x182172020</c>).
+    /// </summary>
+    private bool _openFocusPending;
+    private bool _forwardAnimationPending;
+
+    public void OpenOverlayPopup()
+    {
+        Show();
+    }
+
     public void Show()
     {
+        _isKeyboardNavigationActive = false;
+        WasKeyboardFocusActive = false;
+        _openFocusPending = true;
+        _forwardAnimationPending = true;
+
         if (XamlRoot != null)
         {
             _popup.XamlRoot = XamlRoot;
@@ -225,44 +399,67 @@ public sealed partial class PreviewViewer : UserControl
             XamlRoot.Changed -= OnXamlRootChanged;
             XamlRoot.Changed += OnXamlRootChanged;
         }
+
+        // Store OpenOverlayPopup does not rebind ItemsSource; only show + Focus FlipView.
+        // SelectedIndex was already written by OpenPreviewViewer via 0x1823F0170.
         if (_flipView != null && ViewModel != null && _flipView.ItemsSource != ViewModel.Items)
-            _flipView.ItemsSource = ViewModel.Items;
-        ApplySelection();
-        UpdateCaptionAndCounter();
+        {
+            BindFlipViewItemsSource(ViewModel);
+        }
+        else
+        {
+            OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
+        }
+
         _popup.IsOpen = true;
-        if (_closeButton != null) _closeButton.Focus(FocusState.Programmatic);
-        if (_flipView != null) _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
+
+        // sub_180D8FDF0 from OpenOverlayPopup 0x182172020:
+        // Focus(ItemsFlipView, FocusState.Programmatic) — clears strip keyboard focus visual.
+        ApplyOpenFocusAndAnimation();
+    }
+
+    private void ApplyOpenFocusAndAnimation()
+    {
+        if (_flipView == null)
+        {
+            return;
+        }
+
+        ApplySelection();
+        OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
+
+        if (_openFocusPending)
+        {
+            _openFocusPending = false;
+            FocusFlipViewProgrammatic();
+        }
+
+        if (_forwardAnimationPending)
+        {
+            _forwardAnimationPending = false;
+            TryStartForwardConnectedAnimation();
+        }
+    }
+
+    /// <summary>
+    /// Closes the overlay popup (matching MS Store's <c>Close 0x182172170</c>).
+    /// </summary>
+    public void Close()
+    {
+        Hide();
     }
 
     public void Hide()
     {
         if (!_popup.IsOpen) return;
         _pendingAnimation = null;
-        UIElement currentFlipElement = null;
-        try
-        {
-            if (_flipView != null && _flipView.SelectedIndex >= 0 && _flipView.Items != null && _flipView.SelectedIndex < _flipView.Items.Count)
-            {
-                var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement;
-                if (container != null)
-                    currentFlipElement = FindDescendant<Image>(container) ?? FindDescendant<TileImage>(container) ?? container;
-                currentFlipElement ??= _flipView;
-            }
-            else
-            {
-                currentFlipElement = _flipView;
-            }
-        }
-        catch { currentFlipElement = _flipView; }
-        if (currentFlipElement != null)
-        {
-            try
-            {
-                var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("screenshotBackAnimation", currentFlipElement);
-                if (backAnim != null) backAnim.Configuration = new DirectConnectedAnimationConfiguration();
-            }
-            catch { }
-        }
+
+        var focused = FocusManager.GetFocusedElement(XamlRoot) as DependencyObject;
+        WasKeyboardFocusActive = _isKeyboardNavigationActive
+            || (focused is Control ctrl && ctrl.FocusState == FocusState.Keyboard);
+
+        PrepareBackAnimation();
+
         if (_flipView != null && _flipView.Items != null)
         {
             for (var i = 0; i < _flipView.Items.Count; i++)
@@ -274,9 +471,113 @@ public sealed partial class PreviewViewer : UserControl
                 }
             }
         }
+
         _popup.IsOpen = false;
         if (XamlRoot != null) XamlRoot.Changed -= OnXamlRootChanged;
         Closed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Prepares backward connected animation from FlipView container.
+    /// Recovered from <c>0x1821722D0</c>.
+    /// </summary>
+    public void PrepareBackAnimation()
+    {
+        if (_flipView == null || _flipView.SelectedIndex < 0 || _flipView.Items == null || _flipView.SelectedIndex >= _flipView.Items.Count)
+            return;
+
+        var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement;
+        if (container == null) return;
+
+        UIElement target = FindDescendant<Image>(container)
+                        ?? FindDescendant<TileImage>(container)
+                        ?? (UIElement)container;
+
+        try
+        {
+            var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, target);
+            if (backAnim != null)
+            {
+                backAnim.Configuration = new DirectConnectedAnimationConfiguration(); // 0x18042de20 [ASM]
+            }
+        }
+        catch { }
+    }
+
+    /// <summary>
+    /// Starts forward connected animation, preferring MediaPlayerElement if video duration > 0.
+    /// Recovered from <c>0x18220B920</c> (which awaits 15ms <c>sub_180A5CA00</c> for FlipView layout realization).
+    /// </summary>
+    public async void TryStartForwardConnectedAnimation()
+    {
+        if (_flipView == null)
+        {
+            _forwardAnimationPending = true;
+            return;
+        }
+
+        var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation(ForwardAnimationKey);
+        if (animation == null)
+        {
+            FocusFlipViewProgrammatic();
+            return;
+        }
+
+        animation.Configuration = new DirectConnectedAnimationConfiguration();
+
+        // Faithful reconstruction of 0x18220B920 awaiting sub_180A5CA00 (15ms layout pass await)
+        FrameworkElement container = null;
+        for (int attempt = 0; attempt < 6; attempt++)
+        {
+            await System.Threading.Tasks.Task.Delay(15);
+            int idx = _flipView != null && _flipView.SelectedIndex >= 0 ? _flipView.SelectedIndex : SelectedIndex;
+            container = SafeContainerFromIndex(idx) as FrameworkElement;
+            if (container != null && container.ActualWidth > 0 && container.ActualHeight > 0)
+            {
+                break;
+            }
+        }
+
+        if (container != null)
+        {
+            UIElement target = container;
+            var player = FindDescendant<MediaPlayerElement>(container);
+            var duration = player != null && player.MediaPlayer != null
+                ? player.MediaPlayer.NaturalDuration.TotalSeconds
+                : 0;
+
+            if (player != null && duration > 0)
+            {
+                target = player; // [ASM 0x18220BD93] ucomisd ja -> TryStart(player)
+            }
+            else
+            {
+                target = FindDescendant<Image>(container) ?? FindDescendant<TileImage>(container) ?? container;
+            }
+
+            try
+            {
+                animation.TryStart(target);
+            }
+            catch { }
+        }
+        else
+        {
+            // Do not Cancel on first-open races; leave animation for a later Loaded retry.
+            _forwardAnimationPending = true;
+        }
+
+        // [ASM 0x18220BAFB] Focus(FocusState.Programmatic) on FlipView
+        FocusFlipViewProgrammatic();
+        if (_flipView != null)
+        {
+            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
+        }
+    }
+
+    private void FocusFlipViewProgrammatic()
+    {
+        _flipView?.Focus(FocusState.Programmatic); // [ASM] edx=3
     }
 
     private DependencyObject SafeContainerFromIndex(int index)
@@ -287,20 +588,24 @@ public sealed partial class PreviewViewer : UserControl
 
     private void TryStartPendingAnimation()
     {
-        if (_flipView == null || _pendingAnimation == null) return;
+        if (_pendingAnimation == null) return;
         var animation = _pendingAnimation;
+        _pendingAnimation = null;
         void TryStart()
         {
-            if (_pendingAnimation != null && _pendingAnimation != animation) return;
-            _pendingAnimation = null;
             UIElement target = null;
             if (SafeContainerFromIndex(SelectedIndex) is FrameworkElement container)
                 target = FindDescendant<Image>(container) ?? FindDescendant<TileImage>(container) ?? container;
             target ??= _flipView;
-            try { animation.Configuration = new DirectConnectedAnimationConfiguration(); _ = animation.TryStart(target); } catch { }
+            try
+            {
+                animation.Configuration = new DirectConnectedAnimationConfiguration();
+                _ = animation.TryStart(target);
+            }
+            catch { }
         }
         if (SafeContainerFromIndex(SelectedIndex) != null) TryStart();
-        else _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
+        else if (_flipView != null) _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
     }
 
     private void ApplyAgeRestriction(bool ageRestricted)
@@ -322,26 +627,29 @@ public sealed partial class PreviewViewer : UserControl
 
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) { Width = sender.Size.Width; Height = sender.Size.Height; }
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Hide();
-    private void OnViewerKeyDown(object sender, KeyRoutedEventArgs e) { if (e.Key == VirtualKey.Escape) { e.Handled = true; Hide(); } }
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) { UpdateCaptionAndCounter(); StopOtherVideos(); PlayCurrentVideo(); }
-
-    private void UpdateCaptionAndCounter()
+    private void OnViewerKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (_flipView == null) return;
-        string title = null;
-        var item = _flipView.SelectedItem;
-        if (item is ScreenshotTileItem s) title = s.Title;
-        else if (item is VideoPlayerSource v) title = v.Title;
-        else if (item is IImageItem i) title = (i as ScreenshotTileItem)?.Title;
-        if (_captionTextBlock != null) { _captionTextBlock.Text = title ?? string.Empty; _captionTextBlock.Visibility = string.IsNullOrEmpty(title) ? Visibility.Collapsed : Visibility.Visible; }
-        if (_counterTextBlock != null && _flipView.Items != null)
+        _isKeyboardNavigationActive = true;
+        if (e.Key == VirtualKey.Escape)
         {
-            if (_counterTextBlock.Inlines.Count >= 3)
+            e.Handled = true;
+            Hide();
+        }
+    }
+
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_flipView != null && ViewModel != null)
+        {
+            int idx = _flipView.SelectedIndex;
+            if (idx >= 0 && idx != ViewModel.SelectedIndex)
             {
-                if (_counterTextBlock.Inlines[0] is Run indexRun) indexRun.Text = (_flipView.SelectedIndex + 1).ToString();
-                if (_counterTextBlock.Inlines[2] is Run totalRun) totalRun.Text = _flipView.Items.Count.ToString();
+                ViewModel.SelectedIndex = idx;
             }
         }
+
+        StopOtherVideos();
+        PlayCurrentVideo();
     }
 
     private void PlayCurrentVideo()

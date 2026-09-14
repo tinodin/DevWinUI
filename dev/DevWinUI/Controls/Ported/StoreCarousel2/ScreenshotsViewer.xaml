@@ -125,13 +125,23 @@
 					AutomationProperties.AccessibilityView="Raw"
 					AutomationProperties.AutomationId="LeftScrollButton"
 					Style="{StaticResource LeftArrowScrollViewerButtonStyle}"
-					Visibility="Collapsed" />
+					Visibility="Collapsed">
+					<!-- Store ScreenshotsViewer.xaml: Button.Command = ScrollCommand ScrollDirection="Left" -->
+					<Button.Command>
+						<local:ScrollCommand ScrollDirection="Left" />
+					</Button.Command>
+				</Button>
 				<Button
 					x:Name="RightScrollButton"
 					AutomationProperties.AccessibilityView="Raw"
 					AutomationProperties.AutomationId="RightScrollButton"
 					Style="{StaticResource RightArrowScrollViewerButtonStyle}"
-					Visibility="Collapsed" />
+					Visibility="Collapsed">
+					<!-- Store ScreenshotsViewer.xaml: Button.Command = ScrollCommand ScrollDirection="Right" -->
+					<Button.Command>
+						<local:ScrollCommand ScrollDirection="Right" />
+					</Button.Command>
+				</Button>
 			</Grid.Children>
 		</Grid>
 	</UserControl.Content>
