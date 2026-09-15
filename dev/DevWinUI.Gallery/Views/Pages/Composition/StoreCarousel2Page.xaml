@@ -1,15 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Page x:Class="DevWinUIGallery.Views.StoreCarousel2Page" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dev="using:DevWinUI" xmlns:local="using:DevWinUIGallery" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+<Page
+    x:Class="DevWinUIGallery.Views.StoreCarousel2Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dev="using:DevWinUI"
+    xmlns:local="using:DevWinUIGallery"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
 
     <ScrollViewer>
-        <StackPanel Margin="10" dev:PanelAttach.ChildrenTransitions="Default" Spacing="10">
+        <StackPanel
+            Margin="10,0,0,500"
+            dev:PanelAttach.ChildrenTransitions="Default"
+            Spacing="10">
             <local:ControlExample DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2">
                 <local:ControlExample.Xaml>
                     &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
                 </local:ControlExample.Xaml>
                 <dev:StoreCarousel2 ItemsSource="{x:Bind Media}" />
             </local:ControlExample>
-            <local:ControlExample DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2 inside a Card">
+            <local:ControlExample
+                Width="880"
+                DocPage="controls/storeCarousel2"
+                HeaderText="Store Carousel 2 inside a Card">
                 <local:ControlExample.Xaml>
                     <x:String>
                         &lt;dev:Card Title="Screenshots" Padding="0"&gt;

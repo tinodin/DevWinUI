@@ -481,7 +481,7 @@
 					Margin="0,24,0,12"
 					HorizontalAlignment="Right"
 					ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5"
-					Style="{StaticResource SubtleIconButtonStyle}">
+					Style="{ThemeResource SubtleIconButtonStyle}">
 					<TextBlock
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
