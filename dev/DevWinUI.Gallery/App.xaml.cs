@@ -1,4 +1,6 @@
-﻿namespace DevWinUIGallery;
+﻿using Microsoft.UI.Windowing;
+
+namespace DevWinUIGallery;
 
 public partial class App : Application
 {
@@ -56,6 +58,10 @@ public partial class App : Application
         MainWindow.AppWindow.SetTaskbarIcon("Assets/AppIcon.ico");
 
         MainWindow.Activate();
+        if (MainWindow.AppWindow.Presenter is OverlappedPresenter overlappedPresenter)
+        {
+            overlappedPresenter.Maximize();
+        }
 
         if (Settings.UseDeveloperMode)
         {

@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<local:OverlayPopupBase
 	x:Class="DevWinUI.PreviewViewer"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,7 +12,7 @@
 	TabNavigation="Cycle"
 	mc:Ignorable="d">
 
-	<UserControl.Resources>
+	<local:OverlayPopupBase.Resources>
 		<DataTemplate x:Key="FlipViewScreenshotTemplate">
 			<local:PreviewViewerScreenshotItem TileItem="{Binding}">
 				<interactivity:Interaction.Behaviors>
@@ -452,8 +452,8 @@
 				</ContentControl>
 			</controls:ConstrainedBox>
 		</DataTemplate>
-	</UserControl.Resources>
-	<UserControl.Content>
+	</local:OverlayPopupBase.Resources>
+	<local:OverlayPopupBase.Content>
 		<Grid x:Name="ViewerGrid">
 			<Rectangle Fill="{ThemeResource AcrylicInAppFillColorThinBrush}">
 				<animations:Implicit.ShowAnimations>
@@ -640,5 +640,5 @@
 				</Grid>
 			</Grid>
 		</Grid>
-	</UserControl.Content>
-</UserControl>
+	</local:OverlayPopupBase.Content>
+</local:OverlayPopupBase>

@@ -15,13 +15,23 @@ namespace DevWinUI;
 /// <summary>
 /// Fullscreen overlay viewer for screenshots and preview videos.
 /// Ported faithfully from Microsoft Store PDP's <c>WinStore.UX.Controls.PDP.PreviewViewer</c>.
+/// Store hosting contract (byte-verified): the viewer is created once per ScreenshotsViewer
+/// data-wire (<c>sub_182181650</c>, single <c>RoActivateInstance</c> site), XAML-loaded once
+/// (<c>sub_182172890</c>, guarded init), and reused across opens; open/close only
+/// register/unregister it with the overlay manager — the instance is never unloaded.
+/// The WinUI 3 <see cref="Popup"/> below is the projection of the Store app-level overlay
+/// host: it provides fullscreen placement, but unlike the previous port it is never closed
+/// (<c>IsOpen</c> stays <c>true</c> after first show) so the tree keeps receiving live
+/// theme updates exactly like the Store instance. Show/hide goes through
+/// <see cref="PreviewOverlayManager"/> (close = <c>RemoveOverlayPopup 0x180D91CA0</c>).
 /// </summary>
-public sealed partial class PreviewViewer : UserControl
+public sealed partial class PreviewViewer : OverlayPopupBase
 {
     private const string ForwardAnimationKey = "screenshotForwardAnimation";
     private const string BackAnimationKey = "screenshotBackAnimation";
 
     private readonly Popup _popup;
+    private bool _isOpen;
     private Grid _viewerRoot;
     private Button _closeButton;
     private FlipView _flipView;
@@ -305,6 +315,10 @@ public sealed partial class PreviewViewer : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        // Initial load only (Store InitializeComponent-time equivalents): wire parts and bind
+        // the shared list once. Open-time work (focus, forward animation, video play) runs
+        // explicitly in OpenOverlayPopup — the viewer now stays loaded while closed, so Loaded
+        // no longer coincides with opening.
         AttachParts();
         ApplyAgeRestriction(AgeRestricted);
 
@@ -315,13 +329,6 @@ public sealed partial class PreviewViewer : UserControl
         }
 
         OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
-
-        ApplyOpenFocusAndAnimation();
-        TryStartPendingAnimation();
-        if (_flipView != null)
-        {
-            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
-        }
     }
 
     /// <summary>
@@ -358,7 +365,19 @@ public sealed partial class PreviewViewer : UserControl
     private bool _isKeyboardNavigationActive;
 
     public event EventHandler Closed;
-    public bool IsOpen => _popup != null && _popup.IsOpen;
+
+    /// <summary>
+    /// Whether this viewer is the currently shown overlay (Store manager-registration state).
+    /// Backed by the open/remove transitions, not by <see cref="Popup.IsOpen"/>: the host
+    /// popup stays open after first show so the tree is never unloaded (Store lifetime).
+    /// </summary>
+    public bool IsOpen => _isOpen;
+
+    /// <summary>
+    /// The overlay host manager (Store app-global overlay service, per-instance projection).
+    /// Each viewer owns a private manager instance, mirroring the single-viewer Store lifetime.
+    /// </summary>
+    public PreviewOverlayManager OverlayManager { get; set; } = new PreviewOverlayManager();
     public FlipView PreviewFlipView => _flipView;
 
     private void DetachParts()
@@ -376,8 +395,11 @@ public sealed partial class PreviewViewer : UserControl
 
     /// <summary>
     /// Opens the overlay popup (matching MS Store's <c>OpenOverlayPopup 0x182172020</c>).
+    /// Verbatim order: overlay-manager show (close-current, register, host show via
+    /// <c>sub_180D8FDF0</c>) → <c>Focus(ItemsFlipView, Programmatic)</c> (end of
+    /// <c>sub_180D8FDF0</c>, <c>mov edx, 3</c> at <c>0x180D90006</c>) → FlipView
+    /// selection sync (<c>sub_1823F0CA0</c>) → forward connected animation.
     /// </summary>
-    private bool _openFocusPending;
     private bool _forwardAnimationPending;
 
     public void OpenOverlayPopup()
@@ -389,7 +411,6 @@ public sealed partial class PreviewViewer : UserControl
     {
         _isKeyboardNavigationActive = false;
         WasKeyboardFocusActive = false;
-        _openFocusPending = true;
         _forwardAnimationPending = true;
 
         if (XamlRoot != null)
@@ -412,38 +433,32 @@ public sealed partial class PreviewViewer : UserControl
             OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
         }
 
+        OverlayManager.ShowOverlay(this);
         _popup.IsOpen = true;
+        _isOpen = true;
 
         // sub_180D8FDF0 from OpenOverlayPopup 0x182172020:
         // Focus(ItemsFlipView, FocusState.Programmatic) — clears strip keyboard focus visual.
-        ApplyOpenFocusAndAnimation();
-    }
-
-    private void ApplyOpenFocusAndAnimation()
-    {
-        if (_flipView == null)
-        {
-            return;
-        }
+        FocusFlipViewProgrammatic();
 
         ApplySelection();
         OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
-
-        if (_openFocusPending)
+        TryStartForwardConnectedAnimation();
+        TryStartPendingAnimation();
+        if (_flipView != null)
         {
-            _openFocusPending = false;
-            FocusFlipViewProgrammatic();
-        }
-
-        if (_forwardAnimationPending)
-        {
-            _forwardAnimationPending = false;
-            TryStartForwardConnectedAnimation();
+            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => PlayCurrentVideo());
         }
     }
 
     /// <summary>
     /// Closes the overlay popup (matching MS Store's <c>Close 0x182172170</c>).
+    /// Verbatim order: <c>RemoveOverlayPopup (0x180D91CA0)</c> (early-out when not
+    /// removed) → <c>PrepareBackAnimation (0x1821722D0)</c> → closed callbacks.
+    /// The keyboard-focus probe stays before removal: it must read the focused element
+    /// while the tree is intact (WinUI 3 adaptation; Store has no equivalent probe).
+    /// The host popup is intentionally left open so the instance is never unloaded and
+    /// keeps receiving live theme updates (Store lifetime: single instance, reused).
     /// </summary>
     public void Close()
     {
@@ -452,12 +467,17 @@ public sealed partial class PreviewViewer : UserControl
 
     public void Hide()
     {
-        if (!_popup.IsOpen) return;
+        if (!IsOpen) return;
         _pendingAnimation = null;
 
         var focused = FocusManager.GetFocusedElement(XamlRoot) as DependencyObject;
         WasKeyboardFocusActive = _isKeyboardNavigationActive
             || (focused is Control ctrl && ctrl.FocusState == FocusState.Keyboard);
+
+        if (!RemoveOverlayPopup())
+        {
+            return;
+        }
 
         PrepareBackAnimation();
 
@@ -473,9 +493,31 @@ public sealed partial class PreviewViewer : UserControl
             }
         }
 
-        _popup.IsOpen = false;
-        if (XamlRoot != null) XamlRoot.Changed -= OnXamlRootChanged;
         Closed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Unregisters the viewer from the overlay manager (Store <c>RemoveOverlayPopup</c>).
+    /// Returns the verified removed bool (<c>false</c> when there is no manager or the
+    /// manager refuses removal). Telemetry (<c>0x180E71EE0</c>) and the
+    /// <c>[+0x180]</c> closed delegate have no verifiable port projection and are omitted.
+    /// </summary>
+    private bool RemoveOverlayPopup()
+    {
+        var manager = OverlayManager;
+        if (manager == null)
+        {
+            return false;
+        }
+
+        if (!manager.HideOverlay(this))
+        {
+            return false;
+        }
+
+        _isOpen = false;
+        if (XamlRoot != null) XamlRoot.Changed -= OnXamlRootChanged;
+        return true;
     }
 
     /// <summary>
