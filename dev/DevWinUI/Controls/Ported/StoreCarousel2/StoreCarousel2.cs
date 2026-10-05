@@ -75,6 +75,10 @@ public partial class StoreCarousel2 : Control
             _viewer.Closed += OnViewerClosed;
         }
 
+        // The overlay lives in a standalone popup, so it inherits no theme: mirror this control's
+        // ActualTheme onto it (DevWinUI sets RequestedTheme on window.Content only).
+        _viewer.SetThemeSource(this);
+
         _listViewSource ??= new PreviewViewerHelperListViewSource(_card.TileList);
         _listViewSource.InnerListView = _card.TileList;
 
