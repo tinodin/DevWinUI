@@ -258,6 +258,16 @@ public sealed partial class ScreenshotsViewer : UserControl
     public void BringItemFlushToEdge(int index)
     {
         if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;
+        // Store never tests "is this the item already open" — the flush-to-edge is not a click-time
+        // call at all. It is a side effect of the PreviewViewer selection changing: the
+        // ListViewSource SelectedIndex setter (sub_1828AA360) calls ScrollToIndex (sub_1821B9980),
+        // which runs UpdateSelectedIndex (sub_180080120). Re-selecting the item that is already
+        // current does not change the index, so the setter does not run and the strip does not
+        // move — reopening a partly-hidden item leaves it where it is. Same guard here, because
+        // this method is a direct entry point rather than the change notification.
+        if (Helper?.Popup?.List != null && Helper.Popup.List.SelectedIndex == index) return;
+        // The other half of the Store gate is inside sub_180080120 case 0 (lines 410-414): the
+        // scroll block is skipped entirely when the container is already inside the viewport.
         if (IsItemFullyVisible(index)) return;
         ScreenshotTileList.ScrollIntoView(ScreenshotTileList.Items[index], ScrollIntoViewAlignment.Leading);
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushContainerToEdge(index));

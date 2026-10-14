@@ -77,7 +77,11 @@ public class PreviewViewerHelper
 
         if (_listViewSource != null)
         {
+            System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 5 SetUpPreviewViewer -> PrepareForwardConnectedAnimation (offset BEFORE = {_listViewSource.DebugStripOffset()})");
+            _listViewSource.ListViewSourceDebugHook = () =>
+                System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 5c offset AFTER PrepareConnectedAnimation (same frame) = {_listViewSource.DebugStripOffset()}");
             _listViewSource.PrepareForwardConnectedAnimation(dataItem);
+            System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 5d offset after return = {_listViewSource.DebugStripOffset()}");
         }
 
         popup.List.CurrentItem = dataItem;
@@ -102,6 +106,8 @@ public class PreviewViewerHelper
         {
             return;
         }
+
+        System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 3 OnPopupPreviewSelectionChanged fired, popup.SelectedIndex={popup.List.SelectedIndex}");
 
         object selected = popup.List.SelectedItem ?? popup.List.CurrentItem;
         int index = selected != null ? popup.Items.IndexOf(selected) : -1;
