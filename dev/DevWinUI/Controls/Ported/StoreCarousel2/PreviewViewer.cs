@@ -129,6 +129,69 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         // open builds the tree with the selection already applied. Theme is mirrored explicitly
         // via SetThemeSource, since a standalone popup inherits nothing.
         _popup = new Popup { IsLightDismissEnabled = false, ShouldConstrainToRootBounds = true };
+
+        // WinUI 3 adaptation (no Store counterpart): FlipView must be told to re-prepare its
+        // containers against the current viewport, so this runs after every layout pass.
+        _flipView.LayoutUpdated += OnFlipViewLayoutUpdated;
+    }
+
+    private ScrollViewer _scrollingHost;
+    private bool _syncingContainerSize;
+
+    private void OnFlipViewLayoutUpdated(object sender, object args)
+    {
+        if (_isOpen)
+        {
+            SyncContainerSizeToViewport();
+        }
+    }
+
+    /// <summary>
+    /// WinUI 3 adaptation, no Store counterpart. Store runs the UWP <c>FlipView</c>, whose
+    /// containers come out exactly as wide as the scrolling host; WinUI 3's leaves them 1 DIP
+    /// narrower in both axes (measured: host 1497.14x892.571, containers 1496x892), while the
+    /// <c>ScrollingHost</c> markup is byte-identical to Store. With a 1 DIP shortfall the last
+    /// item's mandatory snap point (3 x containerWidth) lands past the maximum scrollable offset
+    /// (4 x containerWidth - viewportWidth), so a touch pan onto the last item resists and snaps
+    /// back. Restating each container at the host's actual size makes the pitch equal the viewport,
+    /// which is the geometry Store produces.
+    /// </summary>
+    private void SyncContainerSizeToViewport()
+    {
+        if (_flipView == null || _syncingContainerSize)
+        {
+            return;
+        }
+
+        _scrollingHost ??= FindDescendant<ScrollViewer>(_flipView);
+        if (_scrollingHost == null || _scrollingHost.ActualWidth <= 0 || _scrollingHost.ActualHeight <= 0)
+        {
+            return;
+        }
+
+        double width = _scrollingHost.ActualWidth;
+        double height = _scrollingHost.ActualHeight;
+
+        _syncingContainerSize = true;
+        try
+        {
+            foreach (var container in SnapshotRealizedContainers())
+            {
+                if (Math.Abs(container.Width - width) > 0.01)
+                {
+                    container.Width = width;
+                }
+
+                if (Math.Abs(container.Height - height) > 0.01)
+                {
+                    container.Height = height;
+                }
+            }
+        }
+        finally
+        {
+            _syncingContainerSize = false;
+        }
     }
 
     private bool _isOpen;
