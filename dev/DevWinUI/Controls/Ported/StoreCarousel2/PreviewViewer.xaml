@@ -9,6 +9,7 @@
 	xmlns:local="using:DevWinUI"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ui="using:CommunityToolkit.WinUI"
+	ui:UIElementExtensions.ClipToBounds="True"
 	TabNavigation="Cycle"
 	mc:Ignorable="d">
 
