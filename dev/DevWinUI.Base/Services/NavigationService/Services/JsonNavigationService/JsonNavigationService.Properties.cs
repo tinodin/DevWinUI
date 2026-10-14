@@ -26,6 +26,9 @@ public partial class JsonNavigationService
     private ResourceContext _resourceContext;
     public string JsonFilePath;
 
+    private readonly Dictionary<string, (NavigationViewItem Item, NavigationViewItem? Parent)> _itemMap = new();
+    private bool _suppressSelectionNavigation;
+    private string? _pendingSelectionId;
     private object? _lastParameterUsed;
     public event NavigatedEventHandler? FrameNavigated;
 

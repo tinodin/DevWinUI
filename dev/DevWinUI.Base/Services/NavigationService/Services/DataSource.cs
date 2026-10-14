@@ -19,6 +19,7 @@ public sealed partial class DataSource
     private PathType _pathType;
 
     private static readonly object _lock = new();
+    public bool UseTaskForDeserialization { get; set; }
 
     #region Singleton
 
@@ -60,39 +61,71 @@ public sealed partial class DataSource
     {
         await _instance.GetControlInfoDataAsync();
         // Simple linear search is acceptable for small data sets
-        var matches = _instance.Groups.Where((group) => group.UniqueId.Equals(uniqueId));
-        if (matches.Count() == 1) return matches.First();
-        return null;
+        DataGroup match = null;
+        foreach (var group in _instance.Groups)
+        {
+            if (group.UniqueId.Equals(uniqueId))
+            {
+                if (match != null) return null;
+                match = group;
+            }
+        }
+        return match;
     }
 
     public static async Task<DataItem> GetItemAsync(string uniqueId)
     {
         await _instance.GetControlInfoDataAsync();
-        var matches = _instance.Groups.SelectMany(group => group.Items).Where((item) => item.UniqueId.Equals(uniqueId));
-        if (matches.Count() > 0) return matches.First();
+        foreach (var group in _instance.Groups)
+        {
+            foreach (var item in group.Items)
+            {
+                if (item.UniqueId.Equals(uniqueId)) return item;
+            }
+        }
         return null;
     }
 
     public static async Task<DataGroup> GetGroupFromItemAsync(string uniqueId)
     {
         await _instance.GetControlInfoDataAsync();
-        var matches = _instance.Groups.Where((group) => group.Items.FirstOrDefault(item => item.UniqueId.Equals(uniqueId)) != null);
-        if (matches.Count() == 1) return matches.First();
-        return null;
+        DataGroup match = null;
+        foreach (var group in _instance.Groups)
+        {
+            foreach (var item in group.Items)
+            {
+                if (item.UniqueId.Equals(uniqueId))
+                {
+                    if (match != null) return null;
+                    match = group;
+                    break;
+                }
+            }
+        }
+        return match;
     }
 
     private async Task GetControlInfoDataAsync()
     {
         lock (_lock)
         {
-            if (this.Groups.Count() != 0)
+            if (this.Groups.Count != 0)
             {
                 return;
             }
         }
 
         var jsonText = await LoadText(_jsonFilePath, _pathType);
-        var controlInfoDataGroup = JsonSerializer.Deserialize(jsonText, typeof(Root), RootContext.Default) as Root;
+
+        Root? controlInfoDataGroup = null;
+        if (UseTaskForDeserialization)
+        {
+            controlInfoDataGroup = await Task.Run(() => JsonSerializer.Deserialize(jsonText, typeof(Root), RootContext.Default) as Root);
+        }
+        else
+        {
+            controlInfoDataGroup = JsonSerializer.Deserialize(jsonText, typeof(Root), RootContext.Default) as Root;
+        }
 
         lock (_lock)
         {

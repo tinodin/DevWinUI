@@ -144,7 +144,7 @@ public partial class Shortcut : BaseShortcut
     {
         if (shortcut != null && contentDialog != null)
         {
-            contentDialog.Title = ContentDialogTitle;
+            contentDialog.Title = GetContentDialogTitle();
             contentDialog.PrimaryButtonText = PrimaryButtonText;
             contentDialog.SecondaryButtonText = SecondaryButtonText;
             contentDialog.CloseButtonText = CloseButtonText;
@@ -162,6 +162,11 @@ public partial class Shortcut : BaseShortcut
         }
     }
     
+    private string GetContentDialogTitle()
+    {
+        return string.IsNullOrEmpty(ContentDialogTitle) ? null : ContentDialogTitle;
+    }
+
     public Shortcut()
     {
         DefaultStyleKey = typeof(Shortcut);
@@ -216,7 +221,7 @@ public partial class Shortcut : BaseShortcut
         contentDialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
-            Title = ContentDialogTitle,
+            Title = GetContentDialogTitle(),
             Content = shortcut,
             PrimaryButtonText = PrimaryButtonText,
             SecondaryButtonText = SecondaryButtonText,
@@ -238,8 +243,6 @@ public partial class Shortcut : BaseShortcut
         contentDialog.SecondaryButtonClick += OnResetContentDialog;
         contentDialog.CloseButtonClick -= OnCancelContentDialog;
         contentDialog.CloseButtonClick += OnCancelContentDialog;
-        contentDialog.SizeChanged -= OnContentDialogSizeChanged;
-        contentDialog.SizeChanged += OnContentDialogSizeChanged;
         await contentDialog.ShowAsyncQueue();
     }
 
@@ -252,11 +255,6 @@ public partial class Shortcut : BaseShortcut
             UpdatePreviewKeys();
             _windowsKeyPressed = false;
         }
-    }
-
-    private void OnContentDialogSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        shortcut?.SetMinWidth(e.NewSize.Width);
     }
 
     private IconElement CreateDefaultIcon()
@@ -302,7 +300,6 @@ public partial class Shortcut : BaseShortcut
 
     private void OnClosingContentDialog(ContentDialog sender, ContentDialogClosingEventArgs args)
     {
-        contentDialog?.SizeChanged -= OnContentDialogSizeChanged;
         args.Cancel = !canCloseDialog;
         canCloseDialog = false;
         ClosingContentDialog?.Invoke(this, args);

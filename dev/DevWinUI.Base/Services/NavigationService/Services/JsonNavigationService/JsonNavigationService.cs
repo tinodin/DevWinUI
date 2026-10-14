@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
 
 namespace DevWinUI;
 
@@ -57,11 +58,27 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
         }
         else
         {
-            if (_navigationView.SelectedItem is NavigationViewItem currentItem && currentItem.Tag is string currentTag && !string.IsNullOrEmpty(currentTag) && e.Parameter is BaseDataInfo dataInfo)
+            var selectionId = (e.Parameter as BaseDataInfo)?.UniqueId;
+            if (string.IsNullOrEmpty(selectionId))
             {
-                if (e.NavigationMode == NavigationMode.Back || !currentTag.Equals(dataInfo.UniqueId))
+                selectionId = _pendingSelectionId;
+            }
+
+            if (!string.IsNullOrEmpty(selectionId) && _itemMap.ContainsKey(selectionId))
+            {
+                // Frame already navigated (e.g. back/forward), so selection must not navigate again
+                _lastParameterUsed = e.Parameter;
+                if (_navigationView.SelectedItem is not NavigationViewItem currentItem || !selectionId.Equals(currentItem.Tag as string))
                 {
-                    EnsureNavigationSelection(dataInfo.UniqueId);
+                    _suppressSelectionNavigation = true;
+                    try
+                    {
+                        EnsureNavigationSelection(selectionId);
+                    }
+                    finally
+                    {
+                        _suppressSelectionNavigation = false;
+                    }
                 }
             }
         }
@@ -76,6 +93,7 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
             _navigationView.SelectionChanged -= OnNavigationViewSelectionChanged;
         }
 
+        _itemMap.Clear();
         _pageKeyToTypeMap?.Clear();
         _pageKeyToTypeMap = null;
         FrameNavigated -= OnNavigated;
@@ -89,11 +107,16 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
 
         InternalLocalizationHelper.InitializeInternalLocalization(_resourceManager, _resourceContext);
 
-        ConfigureJsonBase(JsonFilePath, _pathType, _orderItems);
+        ConfigureJsonBase(JsonFilePath, DataSource.Instance.UseTaskForDeserialization, _pathType, _orderItems);
     }
 
     private void OnNavigationViewSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
+        if (_suppressSelectionNavigation)
+        {
+            return;
+        }
+
         if (args.IsSettingsSelected)
         {
             string pageTitle = string.Empty;
@@ -102,7 +125,7 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
             {
                 pageTitle = item.Content.ToString();
             }
-            NavigateTo(SettingsPageKey, pageTitle);
+            DeferNavigation(sender, SettingsItem, () => NavigateTo(SettingsPageKey, pageTitle));
         }
         else
         {
@@ -112,8 +135,25 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
                                 ? SectionPageKey
                                 : dataInfo.UniqueId;
 
-                NavigateTo(targetKey, dataInfo);
+                DeferNavigation(sender, selectedItem, () => NavigateTo(targetKey, dataInfo));
             }
+        }
+    }
+
+    // Lets NavigationView draw the selection indicator before the page is created
+    private void DeferNavigation(NavigationView sender, object? selected, Action navigate)
+    {
+        var queue = sender.DispatcherQueue;
+        if (queue == null || !queue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        {
+            // Skip if the selection changed (back, another click) while waiting
+            if (ReferenceEquals(_navigationView, sender) && ReferenceEquals(sender.SelectedItem, selected))
+            {
+                navigate();
+            }
+        }))
+        {
+            navigate();
         }
     }
 
@@ -139,7 +179,7 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
     {
         if (args.ChosenSuggestion != null && args.ChosenSuggestion is DataItem infoDataItem)
         {
-            var hasChangedSelection = EnsureItemIsVisibleInNavigation(infoDataItem.Title);
+            var hasChangedSelection = SelectItemById(infoDataItem.UniqueId);
 
             // In case the menu selection has changed, it means that it has triggered
             // the selection changed event, that will navigate to the page already
@@ -156,39 +196,41 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
         {
             var suggestions = new List<DataItem>();
 
-            var querySplit = sender.Text.Split(" ");
+            var querySplit = sender.Text.Split(' ');
             foreach (var group in DataSource.Instance.Groups)
             {
-                var matchingItems = group.Items.Where(
-                    item =>
-                    {
-                        // Idea: check for every word entered (separated by space) if it is in the name, 
-                        // e.g. for query "split button" the only result should "SplitButton" since its the only query to contain "split" and "button"
-                        // If any of the sub tokens is not in the string, we ignore the item. So the search gets more precise with more words
-                        bool flag = item.IncludedInBuild;
-                        foreach (string queryToken in querySplit)
-                        {
-                            // Check if token is not in string
-                            if (item.Title.IndexOf(queryToken, StringComparison.CurrentCultureIgnoreCase) < 0)
-                            {
-                                // Token is not in string, so we ignore this item.
-                                flag = false;
-                            }
-                        }
-                        return flag;
-                    });
-                foreach (var item in matchingItems)
+                foreach (var item in group.Items)
                 {
-                    if (string.IsNullOrEmpty(item.ImagePath))
+                    // Every word entered (separated by space) must be in the title,
+                    // e.g. "split button" only matches titles containing both "split" and "button"
+                    if (!item.IncludedInBuild || item.Title == null)
                     {
-                        item.ImagePath = _autoSuggestBoxNotFoundImagePath;
+                        continue;
                     }
-                    suggestions.Add(item);
+
+                    bool match = true;
+                    foreach (string queryToken in querySplit)
+                    {
+                        if (item.Title.IndexOf(queryToken, StringComparison.OrdinalIgnoreCase) < 0)
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+
+                    if (match)
+                    {
+                        if (string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            item.ImagePath = _autoSuggestBoxNotFoundImagePath;
+                        }
+                        suggestions.Add(item);
+                    }
                 }
             }
             if (suggestions.Count > 0)
             {
-                _autoSuggestBox.ItemsSource = suggestions.OrderByDescending(i => i.Title.StartsWith(sender.Text, StringComparison.CurrentCultureIgnoreCase)).ThenBy(i => i.Title).ToList();
+                _autoSuggestBox.ItemsSource = suggestions.OrderByDescending(i => i.Title.StartsWith(sender.Text, StringComparison.OrdinalIgnoreCase)).ThenBy(i => i.Title, StringComparer.CurrentCulture).ToList();
             }
             else
             {
@@ -209,61 +251,60 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
     }
     public void EnsureNavigationSelection(string id)
     {
-        foreach (object rawGroup in this.AllMenuItems)
+        if (string.IsNullOrEmpty(id) || _navigationView == null || !_itemMap.TryGetValue(id, out var entry))
         {
-            if (rawGroup is NavigationViewItem group)
-            {
-                if ((string)group.Tag == id)
-                {
-                    group.IsSelected = true;
-                    _navigationView.SelectedItem = group;
+            return;
+        }
 
-                    if (group.MenuItems.Count > 0)
-                    {
-                        group.IsExpanded = true;
-                    }
-                    return;
-                }
+        var (item, parent) = entry;
+        if (parent != null)
+        {
+            parent.IsExpanded = true;
+        }
+        else if (item.MenuItems.Count > 0)
+        {
+            item.IsExpanded = true;
+        }
 
-                if (group.MenuItems.Count > 0)
-                {
-                    foreach (object rawItem in group.MenuItems)
-                    {
-                        EnsureNavigationSelectionBase(rawItem, id, group);
-                    }
-                }
-            }
+        if (!ReferenceEquals(_navigationView.SelectedItem, item))
+        {
+            _navigationView.SelectedItem = item;
         }
     }
 
-    private bool EnsureNavigationSelectionBase(object rawItem, string id, NavigationViewItem parentGroup)
+    // Returns true when the selection changed (so SelectionChanged will navigate)
+    private bool SelectItemById(string id)
     {
-        if (rawItem is NavigationViewItem item)
+        if (string.IsNullOrEmpty(id) || _navigationView == null || !_itemMap.TryGetValue(id, out var entry))
         {
-            if ((string)item.Tag == id)
-            {
-                _navigationView.SelectedItem = item;
-                item.IsSelected = true;
-
-                if (parentGroup.MenuItems.Count > 0)
-                {
-                    parentGroup.IsExpanded = true;
-                }
-                return true;
-            }
-
-            if (item.MenuItems.Count > 0)
-            {
-                foreach (var rawInnerItem in item.MenuItems)
-                {
-                    if (EnsureNavigationSelectionBase(rawInnerItem, id, parentGroup))
-                    {
-                        return true;
-                    }
-                }
-            }
+            return false;
         }
-        return false;
+
+        var (item, parent) = entry;
+        if (ReferenceEquals(_navigationView.SelectedItem, item))
+        {
+            return false;
+        }
+
+        if (parent != null && _navigationView.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
+        {
+            // In Top mode the child is not visible, so select the parent without navigating to it
+            _suppressSelectionNavigation = true;
+            try
+            {
+                _navigationView.SelectedItem = parent;
+            }
+            finally
+            {
+                _suppressSelectionNavigation = false;
+            }
+            parent.StartBringIntoView();
+            return false;
+        }
+
+        EnsureNavigationSelection(id);
+        item.StartBringIntoView();
+        return true;
     }
 
     public bool EnsureItemIsVisibleInNavigation(string name)
@@ -313,8 +354,6 @@ public partial class JsonNavigationService : PageServiceEx, IJsonNavigationServi
                                 {
                                     item.IsExpanded = true;
                                 }
-                                // Ensure parent is expanded so we actually show the selection indicator
-                                _navigationView.UpdateLayout();
                                 // Set selected item
                                 _navigationView.SelectedItem = child;
                                 child.StartBringIntoView();

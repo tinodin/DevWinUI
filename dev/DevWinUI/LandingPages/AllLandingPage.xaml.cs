@@ -1,4 +1,6 @@
-﻿namespace DevWinUI;
+﻿using Microsoft.UI.Dispatching;
+
+namespace DevWinUI;
 public sealed partial class AllLandingPage : ItemsPageBase
 {
     internal static AllLandingPage Instance { get; private set; }
@@ -14,33 +16,43 @@ public sealed partial class AllLandingPage : ItemsPageBase
     {
         if (CanExecuteInternalCommand)
         {
-            GetData();
-            OrderBy(i => i.Title);
+            // Let the page and navigation icons render first; the empty state is shown meanwhile
+            DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => GetData(i => i.Title));
         }
     }
 
     public void GetData()
     {
-        var allItems = DataSource.Instance.Groups
+        Items = GetAllItems().ToList();
+    }
+
+    /// <summary>
+    /// Loads and orders the items in one step, so Items is only set once.
+    /// </summary>
+    public void GetData(Func<DataItem, object> orderBy, bool descending = false)
+    {
+        var items = GetAllItems();
+        if (orderBy != null)
+        {
+            items = descending ? items.OrderByDescending(orderBy) : items.OrderBy(orderBy);
+        }
+
+        Items = items.ToList();
+    }
+
+    private static IEnumerable<DataItem> GetAllItems()
+    {
+        return DataSource.Instance.Groups
             .Where(group => !group.HideGroup && !group.IsSpecialSection)
             .SelectMany(group => group.Items)
-            .Where(item => !item.HideItem)
-            .ToList();
-
-        Items = allItems;
+            .Where(item => !item.HideItem);
     }
 
     public async Task GetDataAsync(string jsonFilePath, PathType pathType = PathType.Relative)
     {
         await DataSource.Instance.GetGroupsAsync(jsonFilePath, pathType);
 
-        var allItems = DataSource.Instance.Groups
-            .Where(group => !group.HideGroup && !group.IsSpecialSection)
-            .SelectMany(group => group.Items)
-            .Where(item => !item.HideItem)
-            .ToList();
-
-        Items = allItems;
+        Items = GetAllItems().ToList();
     }
 
     public void OrderBy(Func<DataItem, object> orderby = null)
