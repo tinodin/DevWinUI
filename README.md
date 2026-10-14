@@ -148,6 +148,18 @@ dotnet add package DevWinUI.Shader
 
 ## 🕰️ History
 
+### WelcomeHero
+![WelcomeHero](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/WelcomeHero.gif)
+
+### ModernWindowCaptionButtonToolTip
+![ModernWindowCaptionButtonToolTip](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ModernWindowCaptionButtonToolTip.gif)
+
+### RadioButton Style
+![RadioButton Style](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/RadioButtonStyle.gif)
+
+### SelectorBar Style
+![SelectorBar Style](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SelectorBarStyle.gif)
+
 ### BruteForce
 ![BruteForce](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BruteForce.gif)
 
@@ -573,9 +585,6 @@ dotnet add package DevWinUI.Shader
 
 ### Shimmer
 ![Shimmer](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Shimmer.gif)
-
-### SelectorBar Style
-![SelectorBar Style](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/TokenViewSelectorBarStyle.gif)
 
 ### LayeredFontIcons
 ![LayeredFontIcons](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/LayeredFontIcons.png)

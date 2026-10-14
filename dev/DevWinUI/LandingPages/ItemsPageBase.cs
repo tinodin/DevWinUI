@@ -16,7 +16,24 @@ public abstract partial class ItemsPageBase : Page, INotifyPropertyChanged
     public IEnumerable<DataItem> Items
     {
         get => _items;
-        set => SetProperty(ref _items, value);
+        set
+        {
+            if (SetProperty(ref _items, value))
+            {
+                IsEmpty = value == null || !value.Any();
+            }
+        }
+    }
+
+    private bool _isEmpty = true;
+
+    /// <summary>
+    /// True while there are no items to show; drives the empty state.
+    /// </summary>
+    public bool IsEmpty
+    {
+        get => _isEmpty;
+        private set => SetProperty(ref _isEmpty, value);
     }
 
     protected ItemsPageBase()
@@ -34,7 +51,7 @@ public abstract partial class ItemsPageBase : Page, INotifyPropertyChanged
 
     protected void OnItemGridViewContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
-        if (sender.ContainerFromItem(sender.Items.LastOrDefault()) is GridViewItem container)
+        if (args.ItemIndex == sender.Items.Count - 1 && args.ItemContainer is GridViewItem container)
         {
             container.XYFocusDown = container;
         }
