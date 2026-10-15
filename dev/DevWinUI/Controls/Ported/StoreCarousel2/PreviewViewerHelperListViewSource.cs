@@ -73,16 +73,8 @@ public class PreviewViewerHelperListViewSource
     /// Prepares forward connected animation from the strip tile descendant.
     /// Recovered from <c>0x18209EDA0</c> (which calls <c>ListViewBase.PrepareConnectedAnimation</c> <c>0x1804FD330</c>).
     /// </summary>
-    public double DebugStripOffset()
-    {
-        if (_innerListView == null) return -1;
-        var sv = FindDescendant<ScrollViewer>(_innerListView);
-        return sv == null ? -2 : sv.HorizontalOffset;
-    }
-
     public void PrepareForwardConnectedAnimation(object dataItem)
     {
-        System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 5a PrepareForwardConnectedAnimation ENTER offset={DebugStripOffset()}");
         if (!GetAnimationSourceElementName(dataItem, out string name))
         {
             return;
@@ -157,12 +149,7 @@ public class PreviewViewerHelperListViewSource
             source.Opacity = 0;
             _hiddenSourceElement = source;
         }
-
-        System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 5b PrepareForwardConnectedAnimation EXIT offset={DebugStripOffset()}");
-        if (ListViewSourceDebugHook != null) ListViewSourceDebugHook();
     }
-
-    public Action ListViewSourceDebugHook;
 
     /// <summary>
     /// Smoothly updates selection and scrolls the strip item into view with edge alignment.
@@ -186,7 +173,6 @@ public class PreviewViewerHelperListViewSource
         }
 
         // Recovered from sub_1821B9980 invoking sub_182D8EA00 (SmoothScrollIntoViewWithIndexAsync) with itemPlacement=Default, disableAnimation=true
-        System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 4 ListViewSource.UpdateSelectedIndex -> SmoothScroll DEFAULT idx={index}");
         _ = _innerListView.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Default, disableAnimation: true);
     }
 

@@ -258,9 +258,7 @@ public partial class StoreCarousel2 : Control
 
                 if (_listViewSource != null && item != null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 0b StartBackwardConnectedAnimation offsetBefore={_listViewSource.DebugStripOffset()}");
                     await _listViewSource.StartBackwardConnectedAnimationAsync(item);
-                    System.Diagnostics.Debug.WriteLine($"[SCROLLDBG] 0c after backward anim offset={_listViewSource.DebugStripOffset()}");
                 }
                 else
                 {
