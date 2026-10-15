@@ -573,8 +573,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     /// <c>Focus(ItemsFlipView, Programmatic)</c> (end of <c>sub_180D8FDF0</c>,
     /// <c>mov edx, 3</c> at <c>0x180D90006</c>) → forward connected animation.
     /// </summary>
-    private bool _forwardAnimationPending;
-
     public void OpenOverlayPopup()
     {
         Show();
@@ -584,7 +582,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         _isKeyboardNavigationActive = false;
         WasKeyboardFocusActive = false;
-        _forwardAnimationPending = true;
 
         if (XamlRoot != null)
         {
@@ -807,7 +804,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         if (_flipView == null)
         {
-            _forwardAnimationPending = true;
             return;
         }
 
@@ -855,11 +851,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
                 animation.TryStart(target);
             }
             catch { }
-        }
-        else
-        {
-            // Do not Cancel on first-open races; leave animation for a later Loaded retry.
-            _forwardAnimationPending = true;
         }
 
         // [ASM 0x18220BAFB] Focus(FocusState.Programmatic) on FlipView

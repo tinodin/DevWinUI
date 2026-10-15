@@ -224,6 +224,39 @@ public partial class StoreCarousel2 : Control
         }
     }
 
+    /// <summary>
+    /// Opens the preview viewer at the specified item index. Mirrors the MS Store
+    /// <c>ShowAllIconButton</c> click path in <c>ScreenshotsResponsive</c>, which
+    /// opens <see cref="PreviewViewer"/> at item 1 (index 0).
+    /// </summary>
+    public void OpenPreview(int index = 0)
+    {
+        if (!IsViewerEnabled || _card == null)
+        {
+            return;
+        }
+
+        EnsureHelper();
+
+        if (_viewer != null)
+        {
+            _viewer.XamlRoot = XamlRoot;
+        }
+
+        if (_helper == null || _viewerVm == null || _viewerVm.Items.Count == 0)
+        {
+            return;
+        }
+
+        if (index < 0 || index >= _viewerVm.Items.Count)
+        {
+            index = 0;
+        }
+
+        var dataItem = _viewerVm.Items[index];
+        _helper.SetUpPreviewViewer(dataItem, flag: true);
+    }
+
     private void OnViewerClosed(object sender, EventArgs e)
     {
         if (_viewer == null || _card == null)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Page x:Class="DevWinUIGallery.Views.StoreCarousel2Page" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dev="using:DevWinUI" xmlns:local="using:DevWinUIGallery" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
     <ScrollViewer>
@@ -13,12 +13,18 @@
                 <local:ControlExample.Xaml>
                     <x:String>
                         &lt;dev:Card Title="Screenshots" Padding="0"&gt;
-                        &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
+                            &lt;dev:Card.TitleContent&gt;
+                                &lt;Button Style="{StaticResource ModuleRightChevronButtonStyle}" /&gt;
+                            &lt;/dev:Card.TitleContent&gt;
+                            &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
                         &lt;/dev:Card&gt;
                     </x:String>
                 </local:ControlExample.Xaml>
                 <dev:Card Title="Screenshots" Padding="0">
-                    <dev:StoreCarousel2 ItemsSource="{x:Bind Media}" />
+                    <dev:Card.TitleContent>
+                        <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" Style="{StaticResource ModuleRightChevronButtonStyle}" ToolTipService.ToolTip="See all" AutomationProperties.Name="See all" Click="ShowAllIconButton_Click" />
+                    </dev:Card.TitleContent>
+                    <dev:StoreCarousel2 x:Name="CardCarousel" ItemsSource="{x:Bind Media}" />
                 </dev:Card>
             </local:ControlExample>
 

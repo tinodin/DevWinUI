@@ -13,88 +13,11 @@
     <Thickness x:Key="ModuleHeaderInnerPadding">24,0,16,0</Thickness>
     <x:Double x:Key="ModuleHeaderDropDownSize">18</x:Double>
     <x:Double x:Key="ModuleHeaderFontSize">16</x:Double>
-    <x:Double x:Key="ExpanderChevronButtonSize">32</x:Double>
-    <StaticResource x:Key="ExpanderChevronBackground" ResourceKey="ControlFillColorTransparentBrush" />
-    <StaticResource x:Key="ExpanderChevronBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
-    <Thickness x:Key="ExpanderChevronBorderThickness">1</Thickness>
-    <StaticResource x:Key="ExpanderChevronForeground" ResourceKey="TextFillColorSecondaryBrush" />
-    <StaticResource x:Key="ExpanderChevronPointerOverBackground" ResourceKey="ControlFillColorSecondaryBrush" />
-    <StaticResource x:Key="ExpanderChevronBorderPointerOverBrush" ResourceKey="ControlElevationBorderBrush" />
-    <StaticResource x:Key="ExpanderChevronPointerOverForeground" ResourceKey="TextFillColorSecondaryBrush" />
-    <StaticResource x:Key="ExpanderChevronPressedBackground" ResourceKey="ControlFillColorTertiaryBrush" />
-    <StaticResource x:Key="ExpanderChevronBorderPressedBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
-    <StaticResource x:Key="ExpanderChevronPressedForeground" ResourceKey="TextFillColorSecondaryBrush" />
-    <x:String x:Key="StoreGlyphChevronRight">&#xE76C;</x:String>
-    <x:String x:Key="StoreGlyphChevronDown">&#xE70D;</x:String>
     <Style x:Key="PdpModuleStackPanelStyle" TargetType="StackPanel">
         <Setter Property="CornerRadius" Value="{ThemeResource OverlayCornerRadius}" />
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-    </Style>
-    <!--  ModuleRightChevronButtonStyle (ButtonResourceDictionary.xaml)  -->
-    <Style x:Key="ModuleRightChevronButtonStyle" TargetType="Button">
-        <Setter Property="Width" Value="{ThemeResource ExpanderChevronButtonSize}" />
-        <Setter Property="Height" Value="{ThemeResource ExpanderChevronButtonSize}" />
-        <Setter Property="Background" Value="{ThemeResource ExpanderChevronBackground}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource ExpanderChevronBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{ThemeResource ExpanderChevronBorderThickness}" />
-        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        x:Name="ExpandCollapseChevronBorder"
-                        Width="{ThemeResource ExpanderChevronButtonSize}"
-                        Height="{ThemeResource ExpanderChevronButtonSize}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
-                        <FontIcon
-                            x:Name="ExpandCollapseChevron"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                            FontSize="{ThemeResource ModuleHeaderDropDownSize}"
-                            Foreground="{ThemeResource ExpanderChevronForeground}"
-                            Glyph="&#xE76C;"
-                            MirroredWhenRightToLeft="True" />
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="PointerOver">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevronBorder" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronPointerOverBackground}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevronBorder" Storyboard.TargetProperty="BorderBrush">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronBorderPointerOverBrush}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevron" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronPointerOverForeground}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Pressed">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevronBorder" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronPressedBackground}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevronBorder" Storyboard.TargetProperty="BorderBrush">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronBorderPressedBrush}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandCollapseChevron" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ExpanderChevronPressedForeground}" />
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <Style x:Key="DefaultStoreCarousel2Style" TargetType="local:StoreCarousel2">

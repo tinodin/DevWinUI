@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace DevWinUIGallery.Views;
 
@@ -15,5 +15,10 @@ public sealed partial class StoreCarousel2Page : Page
     public StoreCarousel2Page()
     {
         InitializeComponent();
+    }
+
+    private void ShowAllIconButton_Click(object sender, RoutedEventArgs e)
+    {
+        CardCarousel.OpenPreview(0);
     }
 }
