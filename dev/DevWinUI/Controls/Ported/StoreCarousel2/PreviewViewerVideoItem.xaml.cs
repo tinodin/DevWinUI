@@ -39,6 +39,15 @@ public sealed partial class PreviewViewerVideoItem : UserControl
         try
         {
             element.SetMediaPlayer(VideoPlayerSource.MediaPlayer);
+
+            // The video item is a bare MediaPlayerElement, so nothing is rendered until the
+            // media has decoded enough to produce its first frame - which over the network
+            // takes well over a second, leaving the viewer blank on open.
+            // Show the item's own preview image (the same ImageSource the in-page
+            // ScreenshotsViewer tile renders, already decoded by the carousel) as the
+            // element's poster. MediaPlayerPresenter drops the poster by itself as soon as
+            // the media produces a frame, so the video takes over with no extra work.
+            element.PosterSource = VideoPlayerSource.ImageSource;
         }
         catch { }
     }
@@ -62,6 +71,7 @@ public sealed partial class PreviewViewerVideoItem : UserControl
             var element = VideoPlayerItemElement;
             if (element != null)
             {
+                element.PosterSource = null;
                 element.SetMediaPlayer(null);
             }
         }
