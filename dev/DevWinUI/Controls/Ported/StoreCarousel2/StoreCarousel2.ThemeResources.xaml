@@ -834,16 +834,18 @@
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                             VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
                             ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
-                            <Border Background="#00FFFFFF">
-                                <ItemsPresenter
-                                    Padding="{TemplateBinding Padding}"
-                                    Footer="{TemplateBinding Footer}"
-                                    FooterTemplate="{TemplateBinding FooterTemplate}"
-                                    FooterTransitions="{TemplateBinding FooterTransitions}"
-                                    Header="{TemplateBinding Header}"
-                                    HeaderTemplate="{TemplateBinding HeaderTemplate}"
-                                    HeaderTransitions="{TemplateBinding HeaderTransitions}" />
-                            </Border>
+                            <local:StaticListItemsPresenterWrapper>
+                                <Border Background="#00FFFFFF">
+                                    <ItemsPresenter
+                                        Padding="{TemplateBinding Padding}"
+                                        Footer="{TemplateBinding Footer}"
+                                        FooterTemplate="{TemplateBinding FooterTemplate}"
+                                        FooterTransitions="{TemplateBinding FooterTransitions}"
+                                        Header="{TemplateBinding Header}"
+                                        HeaderTemplate="{TemplateBinding HeaderTemplate}"
+                                        HeaderTransitions="{TemplateBinding HeaderTransitions}" />
+                                </Border>
+                            </local:StaticListItemsPresenterWrapper>
                         </ScrollViewer>
                     </Border>
                 </ControlTemplate>

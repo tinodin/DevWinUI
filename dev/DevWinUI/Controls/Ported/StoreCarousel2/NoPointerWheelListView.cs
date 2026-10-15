@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Input;
+using Windows.System;
 
 namespace DevWinUI;
 
@@ -50,34 +51,73 @@ public partial class NoPointerWheelListView : ListView
     }
 
     private ScrollViewer _scrollViewer;
+    private readonly PointerEventHandler _pointerWheelHandler;
 
     public NoPointerWheelListView()
     {
+        _pointerWheelHandler = OnScrollViewerPointerWheelChanged;
         Unloaded += OnUnloaded;
     }
 
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
+
+        if (_scrollViewer != null)
+        {
+            _scrollViewer.RemoveHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler);
+            _scrollViewer = null;
+        }
+
         _scrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
         if (_scrollViewer != null)
         {
+            _scrollViewer.IsDeferredScrollingEnabled = false;
+            _scrollViewer.IsHorizontalRailEnabled = true;
+            _scrollViewer.IsVerticalRailEnabled = true;
+            _scrollViewer.VerticalScrollMode = ScrollMode.Disabled;
             _scrollViewer.HorizontalScrollMode = HorizontalScrollMode;
+            _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+
             if (ScrollViewerMargin != default)
                 _scrollViewer.Margin = ScrollViewerMargin;
             if (ScrollViewerPadding != default)
                 _scrollViewer.Padding = ScrollViewerPadding;
+
+            if (HorizontalScrollMode == ScrollMode.Enabled)
+            {
+                _scrollViewer.AddHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler, true);
+            }
         }
     }
 
-    protected override void OnPointerWheelChanged(PointerRoutedEventArgs e)
+    private void OnScrollViewerPointerWheelChanged(object sender, PointerRoutedEventArgs e)
     {
-        e.Handled = true;
-        base.OnPointerWheelChanged(e);
+        if (_scrollViewer != null && !e.GetCurrentPoint(_scrollViewer).Properties.IsHorizontalMouseWheel)
+        {
+            e.Handled = false;
+        }
+    }
+
+    protected override void OnKeyDown(KeyRoutedEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (RemoveSelectedItemOnUpDownNavigation && (e.Key == VirtualKey.Up || e.Key == VirtualKey.Down))
+        {
+            SelectedItem = null;
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
+        if (_scrollViewer != null)
+        {
+            _scrollViewer.RemoveHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler);
+            _scrollViewer = null;
+        }
+
         if (DisposeOnUnloaded)
             ItemsSource = null;
     }
