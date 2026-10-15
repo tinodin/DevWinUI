@@ -6,14 +6,6 @@ using Microsoft.UI.Xaml.Media.Animation;
 
 namespace DevWinUI;
 
-/// <summary>
-/// The product-page screenshots carousel panel. Hosts <see cref="ScreenshotsViewer"/>
-/// directly (mirroring Store's ScreenshotsResponsive -> ScreenshotsViewer)
-/// and coordinates with <see cref="PreviewViewerHelper"/>, <see cref="PreviewViewerHelperListViewSource"/>,
-/// and the fullscreen <see cref="PreviewViewer"/> with connected animations.
-/// Ported from the Microsoft Store PDP screenshots carousel
-/// (<c>WinStore.UX.Controls.PDP.ScreenshotsViewer</c> + <c>PreviewViewer</c>).
-/// </summary>
 [TemplatePart(Name = "ScreenshotsControl", Type = typeof(ScreenshotsViewer))]
 public partial class StoreCarousel2 : Control
 {
@@ -25,21 +17,13 @@ public partial class StoreCarousel2 : Control
     private PreviewListFacade _popupList;
     private int _viewerTransitionVersion;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StoreCarousel2"/> class.
-    /// </summary>
     public StoreCarousel2()
     {
         DefaultStyleKey = typeof(StoreCarousel2);
     }
 
-    /// <summary>
-    /// Occurs when a screenshot or video tile is clicked. The built-in viewer still opens unless
-    /// <see cref="IsViewerEnabled"/> is <see langword="false"/>.
-    /// </summary>
     public event EventHandler ScreenshotClicked;
 
-    /// <inheritdoc/>
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -75,15 +59,11 @@ public partial class StoreCarousel2 : Control
             _viewer.Closed += OnViewerClosed;
         }
 
-        // The overlay lives in a standalone popup, so it inherits no theme: mirror this control's
-        // ActualTheme onto it (DevWinUI sets RequestedTheme on window.Content only).
         _viewer.SetThemeSource(this);
 
         _listViewSource ??= new PreviewViewerHelperListViewSource(_card.TileList);
         _listViewSource.InnerListView = _card.TileList;
 
-        // Store keeps one preview list for the lifetime of the helper. OpenPreviewViewer
-        // (0x18209E820) only writes SelectedIndex (0x1823F0170) — it does not rebuild items.
         EnsureViewerViewModel();
 
         if (_helper == null)
@@ -117,7 +97,6 @@ public partial class StoreCarousel2 : Control
             _helper.Popup.Items = _viewerVm.Items;
         }
 
-        // IndexOf (0x1823F0A40) searches list VM items at [list+0x20], not ListView.ItemCollection.
         _popupList.Items = null;
         _popupList.BindToViewModel(_viewerVm);
 
@@ -130,9 +109,6 @@ public partial class StoreCarousel2 : Control
         _card.Helper = IsViewerEnabled ? _helper : null;
     }
 
-    /// <summary>
-    /// Creates/fills the shared preview list once. Matching Store: items are not cleared on each click.
-    /// </summary>
     private void EnsureViewerViewModel()
     {
         if (_viewerVm == null)
@@ -142,8 +118,6 @@ public partial class StoreCarousel2 : Control
             return;
         }
 
-        // Keep existing instance; only repopulate when empty (initial) — ItemsSource changes
-        // go through OnItemsSourceChanged → ReplaceViewerViewModelItems.
         if (_viewerVm.Items.Count == 0)
         {
             FillViewerViewModelItems();
@@ -185,7 +159,7 @@ public partial class StoreCarousel2 : Control
         }
         else if (_viewer != null)
         {
-            // Same VM instance: FlipView already bound to Items; no ItemsSource rebind on click path.
+
             _viewer.ViewModel = _viewerVm;
         }
     }
@@ -202,9 +176,7 @@ public partial class StoreCarousel2 : Control
 
     private void OnScreenshotClicked(object sender, object e)
     {
-        // Event order in ScreenshotsViewer.OnTileListClick:
-        //   1) ScreenshotClicked (this handler) — EnsureHelper so Helper is non-null
-        //   2) Helper.SetUpPreviewViewer(ClickedItem, flag: true)  [ASM sub_1821817F0]
+
         ScreenshotClicked?.Invoke(this, EventArgs.Empty);
 
         if (!IsViewerEnabled)
@@ -224,11 +196,6 @@ public partial class StoreCarousel2 : Control
         }
     }
 
-    /// <summary>
-    /// Opens the preview viewer at the specified item index. Mirrors the MS Store
-    /// <c>ShowAllIconButton</c> click path in <c>ScreenshotsResponsive</c>, which
-    /// opens <see cref="PreviewViewer"/> at item 1 (index 0).
-    /// </summary>
     public void OpenPreview(int index = 0)
     {
         if (!IsViewerEnabled || _card == null)
@@ -270,12 +237,6 @@ public partial class StoreCarousel2 : Control
 
         _listViewSource?.RestoreSourceVisibility();
 
-        // Programmatic, never Keyboard. Every Focus call in the Store's ItemClick -> open ->
-        // close chain passes 3 (0x180D90006, 0x18220BAFB); no edx=2 Focus site exists on this
-        // path. The framework resolves Programmatic against the last input device, so a keyboard
-        // close still yields the Keyboard focus rect, while the next pointer press resolves to
-        // Pointer again and drops it — which is how the Store's tile loses its rect when the
-        // user clicks anywhere. A literal Keyboard state would pin the rect until focus moves.
         if (finalIndex >= 0)
         {
             _card.FocusItem(finalIndex, FocusState.Programmatic);

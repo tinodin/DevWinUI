@@ -4,17 +4,13 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevWinUI;
 
-/// <summary>
-/// Coordinates fullscreen preview popup opening, instant strip follow sync, and connected
-/// animations. Ported faithfully from Microsoft Store PDP's <c>PreviewViewerHelper</c>.
-/// </summary>
 public class PreviewViewerHelper
 {
-    private PreviewViewer _previewViewer;                      // [0x20]
-    private PreviewPopupHost _popup;                           // [0x28]
-    private Action<object, string> _warningAction;             // [0x30]
-    private PreviewViewerHelperListViewSource _listViewSource; // [0x38]
-    private int _mode;                                         // [0x40]
+    private PreviewViewer _previewViewer;
+    private PreviewPopupHost _popup;
+    private Action<object, string> _warningAction;
+    private PreviewViewerHelperListViewSource _listViewSource;
+    private int _mode;
 
     public PreviewViewer PreviewViewer
     {
@@ -57,10 +53,6 @@ public class PreviewViewerHelper
         set => _warningAction = value;
     }
 
-    /// <summary>
-    /// Opens the preview viewer for the specified item and initiates forward connected animation.
-    /// Recovered from <c>0x18209E190</c>.
-    /// </summary>
     public void SetUpPreviewViewer(object dataItem, bool flag = false)
     {
         var popup = _popup;
@@ -86,10 +78,6 @@ public class PreviewViewerHelper
         OpenPreviewViewer(index, dataItem);
     }
 
-    /// <summary>
-    /// Instant strip synchronization: responds to <c>PropertyChanged</c> for "SelectedIndex"
-    /// and smoothly scrolls the underlying strip to match. Recovered from <c>0x18209E5D0</c>.
-    /// </summary>
     public void OnPopupPreviewSelectionChanged(object sender, PropertyChangedEventArgs e)
     {
         var popup = _popup;
@@ -128,12 +116,6 @@ public class PreviewViewerHelper
         }
     }
 
-    /// <summary>
-    /// Opens the overlay preview viewer and sets the selection index.
-    /// Recovered from <c>0x18209E820</c> (Hex-Rays):
-    /// clamp index → <c>popup.List.SelectedIndex = index</c> (<c>0x1823F0170</c>) →
-    /// <c>OpenOverlayPopup</c> (<c>0x182172020</c>). Does not rebind items or set FlipView directly.
-    /// </summary>
     public void OpenPreviewViewer(int index, object dataItem)
     {
         if (index < 0)
@@ -147,20 +129,17 @@ public class PreviewViewerHelper
             return;
         }
 
-        // [ASM] count from list items collection at [list+0x20] (same collection IndexOf searched).
         int count = popup.List.GetItemCount();
         if (count <= 0)
         {
             return;
         }
 
-        // [ASM] cmovle ebx, 0 when count <= index
         if (count <= index)
         {
             index = 0;
         }
 
-        // 0x1823F0170 only — PreviewViewer FlipView updates via PropertyChanged (0x18225A1B0).
         popup.List.SelectedIndex = index;
 
         if (_previewViewer == null)
@@ -168,13 +147,9 @@ public class PreviewViewerHelper
             return;
         }
 
-        // 0x182172020 -> sub_180D8FDF0 Focus(FlipView, Programmatic)
         _previewViewer.OpenOverlayPopup();
     }
 
-    /// <summary>
-    /// Validates data item compatibility. Recovered from <c>0x18209E3E0</c>.
-    /// </summary>
     public bool IsValidDataItem(object dataItem, bool flag)
     {
         if (dataItem == null)
@@ -200,9 +175,6 @@ public class PreviewViewerHelper
         return true;
     }
 
-    /// <summary>
-    /// Extracts item key identifier string. Recovered from <c>0x18209E510</c>.
-    /// </summary>
     public string GetItemKey(object dataItem)
     {
         if (dataItem == null)
@@ -298,9 +270,6 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     public ItemCollection Items { get; set; }
 
-    /// <summary>
-    /// Faithful to <c>0x1823F0A40</c>: search preview list VM items (<c>[list+0x20]</c>); return −1 when not found.
-    /// </summary>
     public int IndexOf(object item)
     {
         if (item == null)
@@ -308,7 +277,6 @@ public class PreviewListFacade : INotifyPropertyChanged
             return -1;
         }
 
-        // Prefer bound list VM items — same collection FlipView binds to (Store IndexOf target).
         if (_boundViewModel?.Items != null)
         {
             return _boundViewModel.Items.IndexOf(item);
@@ -322,9 +290,6 @@ public class PreviewListFacade : INotifyPropertyChanged
         return -1;
     }
 
-    /// <summary>
-    /// Item count from the list VM collection used by <c>OpenPreviewViewer</c> clamp (<c>[list+0x20]+count</c>).
-    /// </summary>
     public int GetItemCount()
     {
         if (_boundViewModel?.Items != null)
@@ -340,10 +305,6 @@ public class PreviewListFacade : INotifyPropertyChanged
         return 0;
     }
 
-    /// <summary>
-    /// Binds this facade to the same <see cref="PreviewItemsViewModel"/> instance used by
-    /// <see cref="PreviewViewer"/> so SelectedIndex PropertyChanged reaches FlipView (Store contract).
-    /// </summary>
     public void BindToViewModel(PreviewItemsViewModel viewModel)
     {
         if (_boundViewModel != null)

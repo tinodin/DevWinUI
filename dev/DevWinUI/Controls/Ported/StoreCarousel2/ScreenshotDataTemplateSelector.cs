@@ -7,8 +7,6 @@ public partial class ScreenshotDataTemplateSelector : DataTemplateSelector
     public DataTemplate VideoItemDataTemplate { get; set; }
     public DataTemplate VideoPlayerTemplate { get; set; }
 
-    // Store selects this template from item data; StoreCarousel2 also supports a
-    // whole-module override through its AgeRestricted dependency property.
     public bool AgeRestricted { get; set; }
 
     protected override DataTemplate SelectTemplateCore(object item)

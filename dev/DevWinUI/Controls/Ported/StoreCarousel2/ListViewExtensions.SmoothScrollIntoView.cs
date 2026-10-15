@@ -1,13 +1,3 @@
-// ================================================================================
-// RECONSTRUCTED from Microsoft Store (NativeAOT C#) WinStore.App.dll
-// Addresses:
-//   sub_180080120: <SmoothScrollIntoViewWithIndexAsync>d__22.MoveNext()
-//   sub_18007FC00: <ChangeViewAsync>d__24.MoveNext()
-//   sub_182D8EA00: Async state machine invocation wrapper for SmoothScrollIntoViewWithIndexAsync
-//   sub_182D8E7F0: Async state machine invocation wrapper for ChangeViewAsync
-// Frozen string table literal:
-//   0x1833e5134: ",<ChangeViewAsync>d__24R<SmoothScrollIntoViewWithIndexAsync>d__22"
-// ================================================================================
 
 using System;
 using System.Threading.Tasks;
@@ -19,14 +9,6 @@ using Windows.Foundation;
 
 namespace DevWinUI;
 
-/// <summary>
-/// Sets the item placement after scrolling.
-/// Decompiled from MS Store <c>sub_180080120</c> switch table (lines 417-464):
-/// Case 0 = Default (flush edge alignment),
-/// Case 1 = Left, Case 2 = Top,
-/// Case 3 = Center ((listViewWidth - itemWidth) * 0.5),
-/// Case 4 = Right, Case 5 = Bottom.
-/// </summary>
 public enum ScrollItemPlacement
 {
     Default = 0,
@@ -37,23 +19,9 @@ public enum ScrollItemPlacement
     Bottom = 5
 }
 
-/// <summary>
-/// Smooth scroll extension methods for <see cref="ListViewBase"/> and <see cref="ScrollViewer"/>.
-/// Implements the exact algorithm recovered from Microsoft Store binary (<c>sub_180080120</c>).
-/// </summary>
 public static partial class ListViewExtensions
 {
-    /// <summary>
-    /// Smoothly scrolls the list to bring the specified item index into view.
-    /// Recovered from <c>sub_180080120</c> (<c>&lt;SmoothScrollIntoViewWithIndexAsync&gt;d__22</c>).
-    /// </summary>
-    /// <param name="listViewBase">The list to scroll.</param>
-    /// <param name="index">The item index to bring into view.</param>
-    /// <param name="itemPlacement">Alignment after scroll. Store <c>UpdateSelectedIndex</c> uses Default; in-strip keyboard uses Center (Toolkit case 3).</param>
-    /// <param name="disableAnimation">Whether animation is disabled (true for instant sync, false for smooth scroll).</param>
-    /// <param name="scrollIfVisible">Whether to scroll if the item is already visible.</param>
-    /// <param name="additionalHorizontalOffset">Optional horizontal offset delta.</param>
-    /// <param name="additionalVerticalOffset">Optional vertical offset delta.</param>
+
     public static async Task SmoothScrollIntoViewWithIndexAsync(
         this ListViewBase listViewBase,
         int index,
@@ -91,7 +59,6 @@ public static partial class ListViewExtensions
         double previousXOffset = scrollViewer.HorizontalOffset;
         double previousYOffset = scrollViewer.VerticalOffset;
 
-        // If selectorItem is null, realization is needed via ScrollIntoView
         if (selectorItem == null)
         {
             isVirtualizing = true;
@@ -137,7 +104,6 @@ public static partial class ListViewExtensions
             return;
         }
 
-        // Restore original scroll offset if we had to realize a virtualized item
         if (isVirtualizing)
         {
             await scrollViewer.ChangeViewCoreAsync(previousXOffset, previousYOffset, zoomFactor: null, disableAnimation: true);
@@ -159,7 +125,6 @@ public static partial class ListViewExtensions
         double finalXPosition;
         double finalYPosition;
 
-        // If the item is already in view and scrollIfVisible is false, do not scroll
         if (!scrollIfVisible
             && (previousXOffset <= maxXPosition && previousXOffset >= minXPosition)
             && (previousYOffset <= maxYPosition && previousYOffset >= minYPosition))
@@ -172,7 +137,7 @@ public static partial class ListViewExtensions
             switch (itemPlacement)
             {
                 case ScrollItemPlacement.Default:
-                    // Minimal edge fit matching sub_180080120 lines 420-432
+
                     if (previousXOffset <= maxXPosition && previousXOffset >= minXPosition)
                     {
                         finalXPosition = previousXOffset + additionalHorizontalOffset;
@@ -211,8 +176,7 @@ public static partial class ListViewExtensions
                     break;
 
                 case ScrollItemPlacement.Center:
-                    // Exact calculation matching sub_180080120 lines 448-449:
-                    // finalXPosition = position.X - (listViewWidth - itemWidth) * 0.5 + additionalHorizontalOffset
+
                     double centreX = (listViewWidth - itemWidth) * 0.5;
                     double centreY = (listViewHeight - itemHeight) * 0.5;
                     finalXPosition = maxXPosition - centreX + additionalHorizontalOffset;
@@ -236,7 +200,6 @@ public static partial class ListViewExtensions
             }
         }
 
-        // Clamp to scrollable limits
         if (finalXPosition < 0) finalXPosition = 0;
         if (finalXPosition > scrollViewer.ScrollableWidth) finalXPosition = scrollViewer.ScrollableWidth;
         if (finalYPosition < 0) finalYPosition = 0;
@@ -245,10 +208,6 @@ public static partial class ListViewExtensions
         await scrollViewer.ChangeViewCoreAsync(finalXPosition, finalYPosition, zoomFactor: null, disableAnimation);
     }
 
-    /// <summary>
-    /// Changes the view of <see cref="ScrollViewer"/> asynchronously with animation support.
-    /// Recovered from <c>sub_18007FC00</c> (<c>&lt;ChangeViewAsync&gt;d__24</c>).
-    /// </summary>
     internal static async Task ChangeViewCoreAsync(
         this ScrollViewer scrollViewer,
         double? horizontalOffset,

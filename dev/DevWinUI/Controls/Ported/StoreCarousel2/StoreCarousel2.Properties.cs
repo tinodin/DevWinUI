@@ -25,7 +25,6 @@ public partial class StoreCarousel2
             c._card.AgeRestricted = c.AgeRestricted;
         }
 
-        // Replace shared preview list items only when host ItemsSource changes (not on each click).
         if (c._card?.TileList != null)
         {
             c.ReplaceViewerViewModelItems();

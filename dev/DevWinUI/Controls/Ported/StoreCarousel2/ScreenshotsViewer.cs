@@ -48,9 +48,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotTileList.ContainerContentChanging += OnContainerContentChanging;
         ScreenshotTileList.Loaded -= OnTileListLoaded;
         ScreenshotTileList.Loaded += OnTileListLoaded;
-        // In-strip keyboard Left/Right: SmoothScroll Center (Toolkit case 3 in sub_180080120).
-        // Gated so PreviewViewer Escape restore (OnPreviewViewerClosed has no SmoothScroll [ASM 0x1821B94F0])
-        // does not Center — only when focus moves between tiles already in this list.
+
         ScreenshotTileList.GettingFocus -= OnTileListGettingFocus;
         ScreenshotTileList.GettingFocus += OnTileListGettingFocus;
         ScreenshotTileList.PreviewKeyDown -= OnTileListPreviewKeyDown;
@@ -69,8 +67,6 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        // Store OnPreviewViewerClosed does not SmoothScroll. Focus restore into the strip from
-        // outside (Escape / popup) must not Center — only in-strip keyboard tile-to-tile moves.
         if (e.OldFocusedElement is not DependencyObject oldHost ||
             FindAscendantOrSelf<ListViewItem>(oldHost) is not ListViewItem oldItem ||
             !IsDescendantOf(ScreenshotTileList, oldItem))
@@ -92,7 +88,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         var index = ScreenshotTileList.IndexFromContainer(item);
         if (index >= 0)
         {
-            // SmoothScroll Center + animated: Toolkit case 3 in sub_180080120 (disableAnimation=false).
+
             _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
         }
     }
@@ -120,7 +116,7 @@ public sealed partial class ScreenshotsViewer : UserControl
                 if (targetIndex >= 0 && targetIndex < ScreenshotTileList.Items.Count)
                 {
                     e.Handled = true;
-                    // Focus only — Center comes from GettingFocus when OldFocused is in-strip.
+
                     FocusItem(targetIndex, FocusState.Keyboard);
                 }
             }
@@ -224,8 +220,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void OnTileListClick(object sender, ItemClickEventArgs e)
     {
-        // sub_1821817F0 [ASM/Hex-Rays]: raise Clicked, then
-        // SetUpPreviewViewer(helper, ClickedItem, flag: 1).
+
         var index = ScreenshotTileList.Items.IndexOf(e.ClickedItem);
         if (index < 0) index = 0;
         LastClickedIndex = index;
@@ -258,27 +253,14 @@ public sealed partial class ScreenshotsViewer : UserControl
     public void BringItemFlushToEdge(int index)
     {
         if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;
-        // Store never tests "is this the item already open" — the flush-to-edge is not a click-time
-        // call at all. It is a side effect of the PreviewViewer selection changing: the
-        // ListViewSource SelectedIndex setter (sub_1828AA360) calls ScrollToIndex (sub_1821B9980),
-        // which runs UpdateSelectedIndex (sub_180080120). Re-selecting the item that is already
-        // current does not change the index, so the setter does not run and the strip does not
-        // move — reopening a partly-hidden item leaves it where it is. Same guard here, because
-        // this method is a direct entry point rather than the change notification.
+
         if (Helper?.Popup?.List != null && Helper.Popup.List.SelectedIndex == index) return;
-        // The other half of the Store gate is inside sub_180080120 case 0 (lines 410-414): the
-        // scroll block is skipped entirely when the container is already inside the viewport.
+
         if (IsItemFullyVisible(index)) return;
         ScreenshotTileList.ScrollIntoView(ScreenshotTileList.Items[index], ScrollIntoViewAlignment.Leading);
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushContainerToEdge(index));
     }
 
-    /// <summary>
-    /// Focus a strip tile. Port helper name — Store has no <c>FocusItem</c> string/method.
-    /// Does not SmoothScroll here; in-strip keyboard Center is handled by <see cref="OnTileListGettingFocus"/>.
-    /// Close/sync scroll uses <see cref="PreviewViewerHelperListViewSource.ScrollToIndex"/>
-    /// → UpdateSelectedIndex (Default, disableAnimation: true) [ASM 0x1821B9980].
-    /// </summary>
     public void FocusItem(int index, FocusState state)
     {
         if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;

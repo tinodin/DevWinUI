@@ -1,13 +1,5 @@
 ﻿namespace DevWinUI;
 
-/// <summary>
-/// An artwork image control with load/error backplate states. Ported from the
-/// Microsoft Store product-page screenshots carousel (<c>WinStore.UX.Controls.TileImage</c>).
-/// Faithful to <c>tools/StoreRE/reconstructed/TileImage.cs</c>: 7 DPs only
-/// (FooterTemplate, ImageItem, ImageProcessed, RequestedImageHeight/Width,
-/// ShowBackgroundColor, Stretch) - no Source DP. Images are loaded via
-/// <see cref="IImageItem.ImageUri"/>.
-/// </summary>
 [TemplatePart(Name = "RootGrid", Type = typeof(Grid))]
 [TemplatePart(Name = "MainImage", Type = typeof(Image))]
 public partial class TileImage : Control
@@ -16,15 +8,11 @@ public partial class TileImage : Control
     private Image _image;
     private ImageSource _currentSource;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TileImage"/> class.
-    /// </summary>
     public TileImage()
     {
         DefaultStyleKey = typeof(TileImage);
     }
 
-    /// <inheritdoc/>
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -49,7 +37,6 @@ public partial class TileImage : Control
             }
         }
 
-        // Re-apply current ImageItem to ensure correct DecodePixel sizing and backplate state
         if (ImageItem != null)
             ApplyImageItem(ImageItem);
         else
@@ -58,9 +45,7 @@ public partial class TileImage : Control
 
     internal void UpdateImageSize()
     {
-        // RequestedImageWidth/RequestedImageHeight are passed to the image loader.
-        // The Store does not impose those values on the rendered Image element;
-        // its decoded source size determines the tile's natural aspect ratio.
+
     }
 
     internal void ApplyImageItem(IImageItem item)
