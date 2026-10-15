@@ -237,12 +237,12 @@ public partial class StoreCarousel2 : Control
 
         _listViewSource?.RestoreSourceVisibility();
 
-        // Store's close path is exactly: await StartBackwardConnectedAnimationAsync, nothing else.
-        // Verified in 22607 WinStore.App.dll — sub_1821B94F0 (<OnPreviewViewerClosed>d__30::MoveNext)
-        // -> sub_18209EE40 -> sub_182F291E0 -> sub_1821B9660, with zero calls to ScrollToIndex
-        // (0x1821B9980) or SmoothScrollIntoViewWithIndexAsync (0x182D8EA00) anywhere in the chain,
-        // and no strip Focus. The strip is positioned only while navigating the open viewer, via
-        // the FlipView SelectedIndex change; closing never moves it.
+        var focusState = _viewer.WasKeyboardFocusActive ? FocusState.Keyboard : FocusState.Programmatic;
+        if (finalIndex >= 0)
+        {
+            _card.FocusItem(finalIndex, focusState);
+        }
+
         if (_card.TileList != null)
         {
             _ = _card.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
@@ -290,6 +290,11 @@ public partial class StoreCarousel2 : Control
                         }
                         catch { }
                     }
+                }
+
+                if (finalIndex >= 0)
+                {
+                    _card.FocusItem(finalIndex, focusState);
                 }
             });
         }
