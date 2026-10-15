@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Windows.Media.Playback;
 using Windows.System;
 
 namespace DevWinUI;
@@ -208,6 +209,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private int _selectionRequestVersion;
     private bool _pendingSelectionSet;
     private ConnectedAnimation _pendingAnimation;
+    private int _videoPlayGeneration;
 
     public static readonly DependencyProperty AgeRestrictedProperty =
         DependencyProperty.Register(nameof(AgeRestricted), typeof(bool), typeof(PreviewViewer), new PropertyMetadata(false, OnAgeRestrictedChanged));
@@ -674,11 +676,8 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         PrepareBackAnimation(currentContainer);
 
         // Store sub_1823F0D20 runs here: walk the view-model items backwards and tear down
-        // every VideoPlayerSource (sub_1823F6200). Port: the same walk over the containers
-        // captured above, clearing each video item's media element — so the next open starts the
-        // clip from the beginning (Store re-assigns the source in sub_182172450) and no audio
-        // survives the close (WinUI 3 keeps playing when an element merely goes invisible).
-        TeardownAllVideos(containers);
+        // every VideoPlayerSource (sub_1823F6200).
+        TeardownAllVideos();
 
         Closed?.Invoke(this, EventArgs.Empty);
     }
@@ -706,22 +705,48 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     }
 
     /// <summary>
-    /// Per-video teardown for <see cref="Hide"/> — the port of Store <c>sub_1823F0D20</c>.
+    /// Per-video teardown for <see cref="Hide"/> — the exact port of Store <c>sub_1823F0D20</c>.
+    /// Walks the view-model items backwards, exactly as Store does, and tears down every <see cref="VideoPlayerSource"/>
+    /// via <c>sub_1823F6200</c>.
     /// </summary>
-    private void TeardownAllVideos(List<FrameworkElement> containers)
+    private void TeardownAllVideos()
     {
-        foreach (var container in containers)
+        if (_flipView?.Items != null)
         {
-            if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+            for (var i = 0; i < _flipView.Items.Count; i++)
             {
-                videoItem.ResetSource();
-                continue;
+                if (SafeContainerFromIndex(i) is FrameworkElement container)
+                {
+                    if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+                    {
+                        videoItem.ResetSource();
+                    }
+                    else if (FindDescendant<MediaPlayerElement>(container) is { } player)
+                    {
+                        try { player.SetMediaPlayer(null); } catch { }
+                    }
+                }
             }
+        }
 
-            var player = FindDescendant<MediaPlayerElement>(container);
-            if (player?.MediaPlayer != null)
+        if (ViewModel?.Items != null)
+        {
+            for (var i = ViewModel.Items.Count - 1; i >= 0; i--)
             {
-                try { player.MediaPlayer.Pause(); } catch { }
+                if (ViewModel.Items[i] is VideoPlayerSource video)
+                {
+                    video.TeardownPlayer();
+                }
+            }
+        }
+        else if (_flipView?.Items != null)
+        {
+            for (var i = _flipView.Items.Count - 1; i >= 0; i--)
+            {
+                if (_flipView.Items[i] is VideoPlayerSource video)
+                {
+                    video.TeardownPlayer();
+                }
             }
         }
     }
@@ -918,16 +943,93 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             }
         }
 
+        if (e?.RemovedItems != null)
+        {
+            foreach (var item in e.RemovedItems)
+            {
+                if (item is VideoPlayerSource removedVideo)
+                {
+                    try
+                    {
+                        if (removedVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
+                        {
+                            removedVideo.MediaPlayer.Pause();
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+
         StopOtherVideos();
-        EnsureCurrentVideoStarted();
+        UpdateCurrentVideoOnSelectionChanged();
     }
 
     /// <summary>
-    /// Ensures the current video item has its source and is playing, waiting for the FlipView
-    /// container to be realized. Open and selection change both land before the new container
-    /// exists, and after a close-time teardown the source has to be re-applied, so this polls
-    /// the same 15 ms layout cadence the forward connected animation uses (0x18220B920 →
-    /// <c>sub_180A5CA00</c>).
+    /// Connects the current video item's MediaPlayer to the container and sets AutoPlay (Store <c>sub_182172450</c>),
+    /// then schedules the 1000ms delayed resume pipeline (Store <c>sub_1821726D0</c>).
+    /// </summary>
+    private void UpdateCurrentVideoOnSelectionChanged()
+    {
+        if (_flipView == null) return;
+        var selectedItem = _flipView.SelectedItem;
+        if (selectedItem is VideoPlayerSource videoSource)
+        {
+            var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement
+                ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
+            if (container != null)
+            {
+                if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+                {
+                    videoItem.ApplySource();
+                    var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
+                    if (element != null)
+                    {
+                        element.AutoPlay = true;
+                    }
+                }
+            }
+
+            ScheduleVideoResume(videoSource);
+        }
+    }
+
+    /// <summary>
+    /// Store reactive resume pipeline (<c>sub_1821726D0</c>):
+    /// <c>Observable.Return(SelectedItem).Delay(TimeSpan.FromTicks(10_000_000)).ObserveOn(DispatcherQueue).OfType&lt;VideoPlayerSource&gt;().Where(v =&gt; v.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Paused).Subscribe(v =&gt; { if (SelectedItem == v) v.MediaPlayer.Play(); })</c>.
+    /// <para>
+    /// Delay is 10,000,000 ticks = 1,000 ms. The FlipView horizontal page turn animation takes ~450ms (~27 frames @ 60 FPS),
+    /// leaving exactly 550 ms (33 frames) after the animation finishes before the video resumes playback without reloading.
+    /// </para>
+    /// </summary>
+    private async void ScheduleVideoResume(VideoPlayerSource videoSource)
+    {
+        int generation = ++_videoPlayGeneration;
+
+        await System.Threading.Tasks.Task.Delay(1000);
+
+        if (generation != _videoPlayGeneration || !_isOpen || _flipView == null)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(_flipView.SelectedItem, videoSource))
+        {
+            var player = videoSource.MediaPlayer;
+            if (player?.PlaybackSession?.PlaybackState == MediaPlaybackState.Paused)
+            {
+                try
+                {
+                    player.Play();
+                }
+                catch { }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Ensures the current video item has its source attached and begins playback on initial open,
+    /// waiting for the FlipView container to be realized.
     /// </summary>
     private async void EnsureCurrentVideoStarted()
     {
@@ -943,13 +1045,13 @@ public sealed partial class PreviewViewer : OverlayPopupBase
                 await System.Threading.Tasks.Task.Delay(15);
             }
 
-            if (_flipView == null)
+            if (_flipView == null || !_isOpen)
             {
                 return;
             }
 
             if (SafeContainerFromIndex(_flipView.SelectedIndex) is FrameworkElement container
-                && FindDescendant<MediaPlayerElement>(container) != null)
+                && (FindDescendant<PreviewViewerVideoItem>(container) != null || FindDescendant<MediaPlayerElement>(container) != null))
             {
                 PlayCurrentVideo();
                 return;
@@ -965,30 +1067,57 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement;
         if (container == null) return;
 
-        // Store sub_182172450 (handler wired on the FlipView by the compiled-XAML Connect step
-        // 0x182172B70): when the current item is a VideoPlayerSource, assign its media to the
-        // item's media element (slot 21) and set autoplay from a feature check. Re-applying
-        // here is what makes a reopen start the clip from the beginning after the close-time
-        // teardown — the same observable Store gets from its host content being nulled.
-        if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+        if (_flipView.SelectedItem is VideoPlayerSource videoSource)
         {
-            videoItem.ApplySource();
-        }
+            if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+            {
+                videoItem.ApplySource();
+                var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
+                if (element != null)
+                {
+                    element.AutoPlay = true;
+                }
+            }
 
-        var player = FindDescendant<MediaPlayerElement>(container);
-        try { player?.MediaPlayer?.Play(); } catch { }
+            try
+            {
+                videoSource.MediaPlayer?.Play();
+            }
+            catch { }
+        }
     }
 
     private void StopOtherVideos()
     {
-        if (_flipView == null || _flipView.Items == null) return;
-        for (var i = 0; i < _flipView.Items.Count; i++)
+        if (ViewModel?.Items != null)
         {
-            if (i == _flipView.SelectedIndex) continue;
-            if (SafeContainerFromIndex(i) is FrameworkElement container)
+            for (var i = 0; i < ViewModel.Items.Count; i++)
             {
-                var player = FindDescendant<MediaPlayerElement>(container);
-                try { player?.MediaPlayer?.Pause(); } catch { }
+                if (_flipView != null && i == _flipView.SelectedIndex) continue;
+                if (ViewModel.Items[i] is VideoPlayerSource video)
+                {
+                    try
+                    {
+                        if (video.MediaPlayer?.PlaybackSession?.CanPause == true)
+                        {
+                            video.MediaPlayer.Pause();
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        if (_flipView?.Items != null)
+        {
+            for (var i = 0; i < _flipView.Items.Count; i++)
+            {
+                if (i == _flipView.SelectedIndex) continue;
+                if (SafeContainerFromIndex(i) is FrameworkElement container)
+                {
+                    var player = FindDescendant<MediaPlayerElement>(container);
+                    try { player?.MediaPlayer?.Pause(); } catch { }
+                }
             }
         }
     }

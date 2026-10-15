@@ -32,38 +32,41 @@ public sealed partial class PreviewViewerVideoItem : UserControl
 
     private void UpdateSource()
     {
-        var player = FindName("VideoPlayerItemElement") as MediaPlayerElement;
-        if (player != null && VideoPlayerSource?.Source != null)
-            player.Source = MediaSource.CreateFromUri(VideoPlayerSource.Source);
+        var element = VideoPlayerItemElement;
+        if (element == null || VideoPlayerSource == null)
+            return;
+
+        try
+        {
+            element.SetMediaPlayer(VideoPlayerSource.MediaPlayer);
+        }
+        catch { }
     }
 
     /// <summary>
-    /// Re-assigns the media source, i.e. Store's <c>sub_182172450</c> putting the item's media
-    /// holder onto the media element. Called when the viewer becomes active on a video item
-    /// (open and selection change) so a reopened clip starts from the beginning.
+    /// Connects the VideoPlayerSource's MediaPlayer to the container's MediaPlayerElement.
+    /// Recovers Store's <c>sub_182172450</c> (which calls <c>IMediaPlayerElement::SetMediaPlayer</c> at slot 21 / 0x1804FD5F0).
     /// </summary>
     internal void ApplySource()
     {
-        var player = FindName("VideoPlayerItemElement") as MediaPlayerElement;
-        if (player != null && VideoPlayerSource?.Source != null)
-        {
-            player.Source = MediaSource.CreateFromUri(VideoPlayerSource.Source);
-        }
+        UpdateSource();
     }
 
     /// <summary>
-    /// Stops playback and releases the media source. The port of Store's per-video teardown
-    /// on close (<c>sub_1823F0D20</c> → <c>sub_1823F6200</c>, which nulls a property on every
-    /// <c>VideoPlayerSource</c> item's media object). Clearing the source is what makes the
-    /// next open restart the clip instead of resuming it.
+    /// Per-video teardown on close (Store <c>sub_1823F0D20</c> -> <c>sub_1823F6200</c>).
     /// </summary>
     internal void ResetSource()
     {
-        var player = FindName("VideoPlayerItemElement") as MediaPlayerElement;
-        if (player == null)
-            return;
+        try
+        {
+            var element = VideoPlayerItemElement;
+            if (element != null)
+            {
+                element.SetMediaPlayer(null);
+            }
+        }
+        catch { }
 
-        try { player.MediaPlayer?.Pause(); } catch { }
-        try { player.Source = null; } catch { }
+        VideoPlayerSource?.TeardownPlayer();
     }
 }

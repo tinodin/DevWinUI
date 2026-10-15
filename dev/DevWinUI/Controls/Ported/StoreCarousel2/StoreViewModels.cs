@@ -80,6 +80,7 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
     /// <summary>
     /// Store setter <c>0x1823F0170</c>: write only when value changes, then raise
     /// PropertyChanged for SelectedIndex, Caption, CurrentIndex, TotalIndex.
+    /// Also pauses previous video item when navigating away.
     /// </summary>
     public int SelectedIndex
     {
@@ -88,6 +89,7 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
         {
             if (_selectedIndex != value)
             {
+                int oldIndex = _selectedIndex;
                 _selectedIndex = value;
                 if (_items != null && value >= 0 && value < _items.Count)
                 {
@@ -97,6 +99,22 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
                 OnPropertyChanged("Caption");
                 OnPropertyChanged("CurrentIndex");
                 OnPropertyChanged("TotalIndex");
+
+                // Store sub_1823F0170: Pause previous video item when navigating away
+                if (_items != null && oldIndex >= 0 && oldIndex < _items.Count)
+                {
+                    if (_items[oldIndex] is VideoPlayerSource oldVideo)
+                    {
+                        try
+                        {
+                            if (oldVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
+                            {
+                                oldVideo.MediaPlayer.Pause();
+                            }
+                        }
+                        catch { }
+                    }
+                }
             }
         }
     }
@@ -176,14 +194,72 @@ public class VideoPlayerSource : IImageItem, IAgeRestrictedItem
             return _imageSource;
         }
     }
+    private Windows.Media.Playback.MediaPlayer _mediaPlayer;
+    /// <summary>
+    /// Store VideoPlayerSource player instance (field +0x18 / sub_18033C2F0).
+    /// Kept alive for the duration of the preview session so navigation does not reload the media.
+    /// </summary>
+    public Windows.Media.Playback.MediaPlayer MediaPlayer
+    {
+        get
+        {
+            if (_mediaPlayer == null)
+            {
+                _mediaPlayer = new Windows.Media.Playback.MediaPlayer();
+                EnsureMediaSource();
+            }
+            return _mediaPlayer;
+        }
+    }
+
     private Windows.Media.Core.MediaSource _videoSource;
     public Windows.Media.Core.MediaSource VideoMediaSource
     {
         get
         {
-            if (_videoSource == null && Source != null)
-                try { _videoSource = Windows.Media.Core.MediaSource.CreateFromUri(Source); } catch { }
+            EnsureMediaSource();
             return _videoSource;
         }
+    }
+
+    public void EnsureMediaSource()
+    {
+        if (_videoSource == null && Source != null)
+        {
+            try
+            {
+                _videoSource = Windows.Media.Core.MediaSource.CreateFromUri(Source);
+                if (_mediaPlayer != null && _mediaPlayer.Source == null)
+                {
+                    _mediaPlayer.Source = _videoSource;
+                }
+            }
+            catch { }
+        }
+    }
+
+    /// <summary>
+    /// Store sub_1823F6200: per-video teardown on close. Pauses playback, nulls the source,
+    /// and dereferences the player and media source so a reopen starts fresh from the beginning.
+    /// Avoids calling Dispose() directly on MediaPlayer or MediaSource to prevent native RO_E_CLOSED crashes
+    /// in the WinUI 3 compositor when visual containers are detached.
+    /// </summary>
+    public void TeardownPlayer()
+    {
+        if (_mediaPlayer != null)
+        {
+            try
+            {
+                if (_mediaPlayer.PlaybackSession?.PlaybackState != Windows.Media.Playback.MediaPlaybackState.None)
+                {
+                    _mediaPlayer.Pause();
+                }
+            }
+            catch { }
+            try { _mediaPlayer.Source = null; } catch { }
+            _mediaPlayer = null;
+        }
+
+        _videoSource = null;
     }
 }
