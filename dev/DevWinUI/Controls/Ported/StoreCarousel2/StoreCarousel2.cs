@@ -270,10 +270,15 @@ public partial class StoreCarousel2 : Control
 
         _listViewSource?.RestoreSourceVisibility();
 
-        var focusState = _viewer.WasKeyboardFocusActive ? FocusState.Keyboard : FocusState.Programmatic;
+        // Programmatic, never Keyboard. Every Focus call in the Store's ItemClick -> open ->
+        // close chain passes 3 (0x180D90006, 0x18220BAFB); no edx=2 Focus site exists on this
+        // path. The framework resolves Programmatic against the last input device, so a keyboard
+        // close still yields the Keyboard focus rect, while the next pointer press resolves to
+        // Pointer again and drops it — which is how the Store's tile loses its rect when the
+        // user clicks anywhere. A literal Keyboard state would pin the rect until focus moves.
         if (finalIndex >= 0)
         {
-            _card.FocusItem(finalIndex, focusState);
+            _card.FocusItem(finalIndex, FocusState.Programmatic);
         }
 
         if (_card.TileList != null)
@@ -325,7 +330,7 @@ public partial class StoreCarousel2 : Control
 
                 if (finalIndex >= 0)
                 {
-                    _card.FocusItem(finalIndex, focusState);
+                    _card.FocusItem(finalIndex, FocusState.Programmatic);
                 }
             });
         }

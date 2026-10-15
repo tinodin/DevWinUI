@@ -539,9 +539,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     // (dead close button, FlipView selection no longer syncing) whenever Loaded did not
     // re-fire. See status .md §N.
 
-    public bool WasKeyboardFocusActive { get; private set; }
-    private bool _isKeyboardNavigationActive;
-
     public event EventHandler Closed;
 
     /// <summary>
@@ -580,9 +577,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     public void Show()
     {
-        _isKeyboardNavigationActive = false;
-        WasKeyboardFocusActive = false;
-
         if (XamlRoot != null)
         {
             _popup.XamlRoot = XamlRoot;
@@ -633,8 +627,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     /// Closes the overlay popup (matching MS Store's <c>Close 0x182172170</c>).
     /// Verbatim order: <c>RemoveOverlayPopup (0x180D91CA0)</c> (early-out when not
     /// removed) → <c>PrepareBackAnimation (0x1821722D0)</c> → closed callbacks.
-    /// The keyboard-focus probe stays before removal: it must read the focused element
-    /// while the tree is intact (WinUI 3 adaptation; Store has no equivalent probe).
     /// Per-video media teardown mirrors Store's <c>sub_1823F0D20</c>, which walks the
     /// view-model items backwards on close and tears down every <c>VideoPlayerSource</c>
     /// (<c>sub_1823F6200</c>); <see cref="PreviewViewerVideoItem.ResetSource"/> is its
@@ -650,10 +642,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         if (!IsOpen) return;
         _pendingAnimation = null;
-
-        var focused = FocusManager.GetFocusedElement(XamlRoot) as DependencyObject;
-        WasKeyboardFocusActive = _isKeyboardNavigationActive
-            || (focused is Control ctrl && ctrl.FocusState == FocusState.Keyboard);
 
         // Store's close order is Remove → Prepare → per-item teardown, and both of those read a
         // container list cached on the FlipView object, which survives the content being nulled.
@@ -915,7 +903,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Hide();
     private void OnViewerKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        _isKeyboardNavigationActive = true;
         if (e.Key == VirtualKey.Escape)
         {
             e.Handled = true;
