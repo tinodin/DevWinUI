@@ -24,7 +24,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:StoreCarousel2">
-                    <local:ScreenshotsViewer x:Name="ScreenshotsControl" Height="316" Margin="0,24" AgeRestricted="{TemplateBinding AgeRestricted}" ItemsSource="{TemplateBinding ItemsSource}" />
+                    <local:ScreenshotsViewer x:Name="ScreenshotsControl" Height="316" Margin="0,24" AgeRestricted="{TemplateBinding AgeRestricted}" IsAgeBlocked="{TemplateBinding IsAgeBlocked}" ItemsSource="{TemplateBinding ItemsSource}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

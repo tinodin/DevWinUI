@@ -14,7 +14,13 @@
                 <local:ControlExample.Xaml>
                     &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
                 </local:ControlExample.Xaml>
-                <dev:StoreCarousel2 ItemsSource="{x:Bind Media}" />
+                <local:ControlExample.Pane>
+                    <StackPanel Spacing="10">
+                        <ToggleSwitch x:Name="TGSimpleAgeRestricted" Header="AgeRestricted" IsOn="False" />
+                        <ToggleSwitch x:Name="TGSimpleIsAgeBlocked" Header="IsAgeBlocked" IsOn="False" />
+                    </StackPanel>
+                </local:ControlExample.Pane>
+                <dev:StoreCarousel2 AgeRestricted="{x:Bind TGSimpleAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGSimpleIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
             </local:ControlExample>
             <local:ControlExample DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2 inside a Card">
                 <local:ControlExample.Xaml>
@@ -27,11 +33,17 @@
                         &lt;/dev:Card&gt;
                     </x:String>
                 </local:ControlExample.Xaml>
+                <local:ControlExample.Pane>
+                    <StackPanel Spacing="10">
+                        <ToggleSwitch x:Name="TGCardAgeRestricted" Header="AgeRestricted" IsOn="True" />
+                        <ToggleSwitch x:Name="TGCardIsAgeBlocked" Header="IsAgeBlocked" IsOn="False" />
+                    </StackPanel>
+                </local:ControlExample.Pane>
                 <dev:Card Title="Screenshots" Padding="0">
                     <dev:Card.TitleContent>
                         <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" AutomationProperties.Name="See all" Click="ShowAllIconButton_Click" Style="{StaticResource ModuleRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
                     </dev:Card.TitleContent>
-                    <dev:StoreCarousel2 x:Name="CardCarousel" ItemsSource="{x:Bind Media}" />
+                    <dev:StoreCarousel2 x:Name="CardCarousel" AgeRestricted="{x:Bind TGCardAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGCardIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
                 </dev:Card>
             </local:ControlExample>
 

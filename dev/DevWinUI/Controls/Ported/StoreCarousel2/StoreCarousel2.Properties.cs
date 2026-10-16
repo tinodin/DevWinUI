@@ -23,6 +23,7 @@ public partial class StoreCarousel2
                 foreach (var item in items) vm.Items.Add(item);
             c._card.PreviewViewModel = vm;
             c._card.AgeRestricted = c.AgeRestricted;
+            c._card.IsAgeBlocked = c.IsAgeBlocked;
         }
 
         if (c._card?.TileList != null)
@@ -46,6 +47,22 @@ public partial class StoreCarousel2
         var carousel = (StoreCarousel2)d;
         carousel._card?.AgeRestricted = (bool)e.NewValue;
         carousel._viewer?.AgeRestricted = (bool)e.NewValue;
+    }
+
+    public bool IsAgeBlocked
+    {
+        get => (bool)GetValue(IsAgeBlockedProperty);
+        set => SetValue(IsAgeBlockedProperty, value);
+    }
+
+    public static readonly DependencyProperty IsAgeBlockedProperty =
+        DependencyProperty.Register(nameof(IsAgeBlocked), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(false, OnIsAgeBlockedChanged));
+
+    private static void OnIsAgeBlockedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var carousel = (StoreCarousel2)d;
+        carousel._card?.IsAgeBlocked = (bool)e.NewValue;
+        carousel._viewer?.IsAgeBlocked = (bool)e.NewValue;
     }
 
     public bool IsViewerEnabled

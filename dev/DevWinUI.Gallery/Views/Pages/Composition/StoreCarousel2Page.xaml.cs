@@ -1,6 +1,4 @@
-using System.Collections.ObjectModel;
-
-namespace DevWinUIGallery.Views;
+﻿namespace DevWinUIGallery.Views;
 
 public sealed partial class StoreCarousel2Page : Page
 {
@@ -20,5 +18,10 @@ public sealed partial class StoreCarousel2Page : Page
     private void ShowAllIconButton_Click(object sender, RoutedEventArgs e)
     {
         CardCarousel.OpenPreview(0);
+    }
+
+    private async void StoreCarousel2_SignInClicked(object sender, EventArgs e)
+    {
+        await MessageBox.ShowInfoAsync("Sign in clicked!");
     }
 }

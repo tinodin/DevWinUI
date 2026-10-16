@@ -160,7 +160,22 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private static void OnAgeRestrictedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var viewer = (PreviewViewer)d;
-        viewer.ApplyAgeRestriction((bool)e.NewValue);
+        viewer.ApplyAgeRestriction();
+    }
+
+    public static readonly DependencyProperty IsAgeBlockedProperty =
+        DependencyProperty.Register(nameof(IsAgeBlocked), typeof(bool), typeof(PreviewViewer), new PropertyMetadata(false, OnIsAgeBlockedChanged));
+
+    public bool IsAgeBlocked
+    {
+        get => (bool)GetValue(IsAgeBlockedProperty);
+        set => SetValue(IsAgeBlockedProperty, value);
+    }
+
+    private static void OnIsAgeBlockedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var viewer = (PreviewViewer)d;
+        viewer.ApplyAgeRestriction();
     }
 
     public static readonly DependencyProperty ViewModelProperty =
@@ -384,7 +399,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
 
         AttachParts();
-        ApplyAgeRestriction(AgeRestricted);
+        ApplyAgeRestriction();
 
         if (_flipView != null && ViewModel != null && _flipView.ItemsSource != ViewModel.Items)
         {
@@ -414,6 +429,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     }
 
     public event EventHandler Closed;
+    public event EventHandler SignInClicked;
 
     public bool IsOpen => _isOpen;
 
@@ -690,12 +706,13 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
     }
 
-    private void ApplyAgeRestriction(bool ageRestricted)
+    private void ApplyAgeRestriction()
     {
         if (_templateSelector == null)
             return;
 
-        _templateSelector.AgeRestricted = ageRestricted;
+        _templateSelector.AgeRestricted = AgeRestricted;
+        _templateSelector.IsAgeBlocked = IsAgeBlocked;
         if (_flipView != null && ViewModel != null)
             ApplySelection();
     }
@@ -709,6 +726,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) => UpdateOverlaySize();
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Hide();
+    private void OnAgeGatingSignInClicked(object sender, RoutedEventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
     private void OnViewerKeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Escape)

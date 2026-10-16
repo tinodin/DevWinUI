@@ -17,6 +17,7 @@ public partial class StoreCarousel2 : Control
     }
 
     public event EventHandler ScreenshotClicked;
+    public event EventHandler SignInClicked;
 
     protected override void OnApplyTemplate()
     {
@@ -28,6 +29,7 @@ public partial class StoreCarousel2 : Control
         if (_card != null)
         {
             _card.ScreenshotClicked += OnScreenshotClicked;
+            _card.SignInClicked += OnSignInClicked;
             if (ItemsSource != null)
             {
                 var vm = new PreviewModuleViewModel();
@@ -35,6 +37,7 @@ public partial class StoreCarousel2 : Control
                 _card.PreviewViewModel = vm;
             }
             _card.AgeRestricted = AgeRestricted;
+            _card.IsAgeBlocked = IsAgeBlocked;
 
             EnsureHelper();
         }
@@ -51,6 +54,7 @@ public partial class StoreCarousel2 : Control
         {
             _viewer = new PreviewViewer();
             _viewer.Closed += OnViewerClosed;
+            _viewer.SignInClicked += OnSignInClicked;
         }
 
         _viewer.SetThemeSource(this);
@@ -96,6 +100,7 @@ public partial class StoreCarousel2 : Control
         }
 
         _viewer.AgeRestricted = AgeRestricted;
+        _viewer.IsAgeBlocked = IsAgeBlocked;
         _card.Helper = IsViewerEnabled ? _helper : null;
     }
 
@@ -158,10 +163,13 @@ public partial class StoreCarousel2 : Control
         if (_card != null)
         {
             _card.ScreenshotClicked -= OnScreenshotClicked;
+            _card.SignInClicked -= OnSignInClicked;
             _card.Helper = null;
             _card = null;
         }
     }
+
+    private void OnSignInClicked(object sender, EventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
 
     private void OnScreenshotClicked(object sender, object e)
     {
@@ -181,7 +189,7 @@ public partial class StoreCarousel2 : Control
 
     public void OpenPreview(int index = 0)
     {
-        if (!IsViewerEnabled || _card == null)
+        if (!IsViewerEnabled || AgeRestricted || _card == null)
         {
             return;
         }

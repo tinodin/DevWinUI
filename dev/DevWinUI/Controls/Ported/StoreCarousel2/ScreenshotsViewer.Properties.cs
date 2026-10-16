@@ -44,8 +44,6 @@ public sealed partial class ScreenshotsViewer
     {
         var c = (ScreenshotsViewer)d;
         c.OnPreviewViewModelChanged(e.OldValue as PreviewModuleViewModel, e.NewValue as PreviewModuleViewModel);
-        if (c.ScreenshotTileList != null && e.NewValue is PreviewModuleViewModel vm)
-            c.ScreenshotTileList.ItemsSource = vm.Items;
     }
 
     public static readonly DependencyProperty ScreenshotContainerStyleProperty =
@@ -78,7 +76,22 @@ public sealed partial class ScreenshotsViewer
     private static void OnAgeRestrictedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var viewer = (ScreenshotsViewer)d;
-        viewer.ApplyAgeRestriction((bool)e.NewValue);
+        viewer.ApplyAgeRestriction();
+    }
+
+    public static readonly DependencyProperty IsAgeBlockedProperty =
+        DependencyProperty.Register(nameof(IsAgeBlocked), typeof(bool), typeof(ScreenshotsViewer), new PropertyMetadata(false, OnIsAgeBlockedChanged));
+
+    public bool IsAgeBlocked
+    {
+        get => (bool)GetValue(IsAgeBlockedProperty);
+        set => SetValue(IsAgeBlockedProperty, value);
+    }
+
+    private static void OnIsAgeBlockedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var viewer = (ScreenshotsViewer)d;
+        viewer.ApplyAgeRestriction();
     }
 
     public static readonly DependencyProperty ItemsSourceProperty =

@@ -6,6 +6,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 {
     public event EventHandler<object> ScreenshotClicked;
     public event EventHandler Clicked;
+    public event EventHandler SignInClicked;
 
     public ListViewBase TileList => ScreenshotTileList;
     public int LastClickedIndex { get; private set; }
@@ -27,12 +28,43 @@ public sealed partial class ScreenshotsViewer : UserControl
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         AttachTileList();
-        ApplyAgeRestriction(AgeRestricted);
+        ApplyAgeRestriction();
     }
 
-    private void ApplyAgeRestriction(bool ageRestricted)
+    private void ApplyAgeRestriction()
     {
-        ScreenshotTemplateSelector?.AgeRestricted = ageRestricted;
+        var selector = ScreenshotTemplateSelector;
+        if (selector != null)
+        {
+            selector.AgeRestricted = AgeRestricted;
+            selector.IsAgeBlocked = IsAgeBlocked;
+        }
+
+        RefreshTileListSource();
+        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, HookAgeGateSignInButtons);
+    }
+
+    private void RefreshTileListSource()
+    {
+        if (ScreenshotTileList == null)
+        {
+            return;
+        }
+
+        var items = PreviewViewModel?.Items;
+        if (items == null)
+        {
+            ScreenshotTileList.ItemsSource = null;
+            return;
+        }
+
+        if (AgeRestricted && items.Count > 0)
+        {
+            ScreenshotTileList.ItemsSource = new List<object> { items[0] };
+            return;
+        }
+
+        ScreenshotTileList.ItemsSource = items;
     }
 
     private void AttachTileList()
@@ -50,9 +82,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotTileList.GettingFocus += OnTileListGettingFocus;
         ScreenshotTileList.PreviewKeyDown -= OnTileListPreviewKeyDown;
         ScreenshotTileList.PreviewKeyDown += OnTileListPreviewKeyDown;
-        if (PreviewViewModel != null)
-            ScreenshotTileList.ItemsSource = PreviewViewModel.Items;
-        ApplyAgeRestriction(AgeRestricted);
+        ApplyAgeRestriction();
         ScreenshotTileList.SelectedIndex = SelectedIndex;
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ForceUpdateVideoThumbnails);
     }
@@ -117,7 +147,11 @@ public sealed partial class ScreenshotsViewer : UserControl
         }
     }
 
-    private void OnTileListLoaded(object sender, RoutedEventArgs e) => ForceUpdateVideoThumbnails();
+    private void OnTileListLoaded(object sender, RoutedEventArgs e)
+    {
+        ForceUpdateVideoThumbnails();
+        HookAgeGateSignInButtons();
+    }
 
     private void ForceUpdateVideoThumbnails()
     {
@@ -165,9 +199,56 @@ public sealed partial class ScreenshotsViewer : UserControl
         }
     }
 
+    private bool HookAgeGateSignInButton(FrameworkElement container)
+    {
+        if (container == null)
+        {
+            return false;
+        }
+
+        DependencyObject searchRoot = container;
+        if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
+            searchRoot = lviRoot;
+
+        var button = FindDescendant<Button>(searchRoot) ?? FindDescendant<Button>(container);
+        if (button == null)
+        {
+            return false;
+        }
+
+        button.Click -= OnAgeGatingSignInClicked;
+        button.Click += OnAgeGatingSignInClicked;
+        return true;
+    }
+
+    private void HookAgeGateSignInButtons()
+    {
+        if (!AgeRestricted || ScreenshotTileList == null)
+        {
+            return;
+        }
+
+        for (var i = 0; i < ScreenshotTileList.Items.Count; i++)
+        {
+            if (ScreenshotTileList.ContainerFromIndex(i) is FrameworkElement container)
+            {
+                HookAgeGateSignInButton(container);
+            }
+        }
+    }
+
+    private void OnAgeGatingSignInClicked(object sender, RoutedEventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
+
     private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
         if (args.InRecycleQueue) return;
+
+        if (AgeRestricted && !HookAgeGateSignInButton(args.ItemContainer as FrameworkElement) && args.Phase < 3)
+        {
+            args.RegisterUpdateCallback(OnContainerContentChanging);
+            return;
+        }
+
         if (args.Item is not VideoPlayerSource videoItem || videoItem.ImageUri == null) return;
 
         if (args.Phase == 0)
@@ -239,6 +320,11 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotClicked?.Invoke(this, e.ClickedItem ?? index);
         Clicked?.Invoke(this, EventArgs.Empty);
 
+        if (AgeRestricted)
+        {
+            return;
+        }
+
         if (Helper != null && e.ClickedItem != null)
         {
             Helper.SetUpPreviewViewer(e.ClickedItem);
@@ -251,8 +337,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     internal void OnPreviewViewModelChanged(PreviewModuleViewModel oldValue, PreviewModuleViewModel newValue)
     {
-        if (ScreenshotTileList != null && newValue != null)
-            ScreenshotTileList.ItemsSource = newValue.Items;
+        RefreshTileListSource();
     }
 
     public void BringItemFlushToEdge(int index)

@@ -31,7 +31,7 @@
             </Grid>
         </DataTemplate>
 
-        <local:ScreenshotDataTemplateSelector x:Key="ScreenshotTemplateSelector" AgeRestrictedDataTemplate="{StaticResource AgeRestrictedDataTemplate}" ScreenshotDataTemplate="{StaticResource ScreenshotTileContentTemplate}" VideoItemDataTemplate="{StaticResource PreviewVideoThumbnailTemplate}" VideoPlayerTemplate="{StaticResource VideoPlaySourceTemplate}" />
+        <local:ScreenshotDataTemplateSelector x:Key="ScreenshotTemplateSelector" AgeRestrictedBlockedDataTemplate="{StaticResource AgeRestrictedBlockedDataTemplate}" AgeRestrictedDataTemplate="{StaticResource AgeRestrictedDataTemplate}" ScreenshotDataTemplate="{StaticResource ScreenshotTileContentTemplate}" VideoItemDataTemplate="{StaticResource PreviewVideoThumbnailTemplate}" VideoPlayerTemplate="{StaticResource VideoPlaySourceTemplate}" />
 
         <DataTemplate x:Key="PreviewVideoThumbnailTemplate">
             <Grid x:Name="VideoPreviewImage">

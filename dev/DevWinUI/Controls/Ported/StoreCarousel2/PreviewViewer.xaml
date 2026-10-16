@@ -27,7 +27,7 @@
                 </interactivity:Interaction.Behaviors>
             </local:PreviewViewerVideoItem>
         </DataTemplate>
-        <local:ScreenshotDataTemplateSelector x:Key="FlipViewDataTemplateSelector" AgeRestrictedDataTemplate="{StaticResource AgeRestrictedDataTemplate}" ScreenshotDataTemplate="{StaticResource FlipViewScreenshotTemplate}" VideoPlayerTemplate="{StaticResource VideoPlayerTemplate}" />
+        <local:ScreenshotDataTemplateSelector x:Key="FlipViewDataTemplateSelector" AgeRestrictedBlockedDataTemplate="{StaticResource AgeRestrictedBlockedDataTemplate}" AgeRestrictedDataTemplate="{StaticResource AgeRestrictedDataTemplate}" ScreenshotDataTemplate="{StaticResource FlipViewScreenshotTemplate}" VideoPlayerTemplate="{StaticResource VideoPlayerTemplate}" />
         <Style x:Key="CircleArrowScrollViewerButtonFlipViewStyle" TargetType="FlipView">
             <Setter Property="Template">
                 <Setter.Value>
@@ -257,6 +257,38 @@
                         <local:ViewDisplayedBehavior />
                     </interactivity:Interaction.Behaviors>
                     <ContentControl.Content>
+                        <local:ResponsiveTileButton AutomationProperties.AutomationId="ScreenshotsAgeGatingButton" Click="OnAgeGatingSignInClicked" IsTabStop="False" Style="{StaticResource ScreenshotMosaicTileButtonStyle}">
+                            <local:ResponsiveTileButton.Content>
+                                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                    <local:TileImage HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ImageItem="{Binding}" ShowBackgroundColor="False" />
+                                    <Rectangle Fill="{ThemeResource ImageOpacityOverlayBackgroundBrush}">
+                                        <Rectangle.Opacity>
+                                            <Binding FallbackValue="0" Path="PointerElementOpacity">
+                                                <Binding.RelativeSource>
+                                                    <RelativeSource Mode="TemplatedParent" />
+                                                </Binding.RelativeSource>
+                                            </Binding>
+                                        </Rectangle.Opacity>
+                                    </Rectangle>
+                                    <StackPanel Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{ThemeResource HighContrastBackgroundBrush}">
+                                        <TextBlock AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="ScreenshotsAgeGatingMessage" Foreground="{ThemeResource WhiteTextForegroundBrush}" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingSignInMessage}" TextAlignment="Center" />
+                                        <TextBlock Margin="0,8,0,0" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="ScreenshotsSignInMessage" FontWeight="SemiBold" Foreground="{ThemeResource WhiteTextForegroundBrush}" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingContentSubtitle}" TextAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </local:ResponsiveTileButton.Content>
+                        </local:ResponsiveTileButton>
+                    </ContentControl.Content>
+                </ContentControl>
+            </controls:ConstrainedBox>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AgeRestrictedBlockedDataTemplate">
+            <controls:ConstrainedBox AspectRatio="16:9">
+                <ContentControl Style="{StaticResource ImageContentControlStyle}">
+                    <interactivity:Interaction.Behaviors>
+                        <local:ViewDisplayedBehavior />
+                    </interactivity:Interaction.Behaviors>
+                    <ContentControl.Content>
                         <local:ResponsiveTileButton AutomationProperties.AutomationId="ScreenshotsAgeGatingButton" IsTabStop="False" Style="{StaticResource ScreenshotMosaicTileButtonStyle}">
                             <local:ResponsiveTileButton.Content>
                                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
@@ -271,8 +303,7 @@
                                         </Rectangle.Opacity>
                                     </Rectangle>
                                     <StackPanel Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{ThemeResource HighContrastBackgroundBrush}">
-                                        <TextBlock AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="ScreenshotsAgeGatingMessage" Foreground="{ThemeResource WhiteTextForegroundBrush}" Style="{StaticResource BodyTextBlockStyle}" TextAlignment="Center" />
-                                        <TextBlock Margin="0,8,0,0" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="ScreenshotsSignInMessage" FontWeight="SemiBold" Foreground="{ThemeResource WhiteTextForegroundBrush}" Style="{StaticResource BodyTextBlockStyle}" TextAlignment="Center" />
+                                        <TextBlock AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="ScreenshotsAgeGatingMessage" Foreground="{ThemeResource WhiteTextForegroundBrush}" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingBlockedMessage}" TextAlignment="Center" />
                                     </StackPanel>
                                 </Grid>
                             </local:ResponsiveTileButton.Content>

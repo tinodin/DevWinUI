@@ -18,11 +18,6 @@ public interface IImageItem
     Uri ImageUri { get; }
 }
 
-public interface IAgeRestrictedItem
-{
-    bool AgeRestricted { get; }
-}
-
 public class PreviewModuleViewModel
 {
     public object CurrentItem { get; set; }
@@ -125,12 +120,11 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
     }
 }
 
-public class ScreenshotTileItem : IImageItem, IAgeRestrictedItem
+public class ScreenshotTileItem : IImageItem
 {
     public object Data { get; set; }
     public Uri ImageUri { get; set; }
     public string Title { get; set; }
-    public bool AgeRestricted { get; set; }
 
     public ImageSource ImageSource
     {
@@ -143,13 +137,12 @@ public class ScreenshotTileItem : IImageItem, IAgeRestrictedItem
     }
 }
 
-public class VideoPlayerSource : IImageItem, IAgeRestrictedItem
+public class VideoPlayerSource : IImageItem
 {
     public object Data { get; set; }
     public Uri Source { get; set; }
     public Uri ImageUri { get; set; }
     public string Title { get; set; }
-    public bool AgeRestricted { get; set; }
 
     public ImageSource ImageSource
     {
