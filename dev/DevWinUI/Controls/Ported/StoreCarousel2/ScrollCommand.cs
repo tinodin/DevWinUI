@@ -2,7 +2,7 @@
 
 namespace DevWinUI;
 
-public sealed class ScrollCommand : XamlUICommand
+public partial class ScrollCommand : XamlUICommand
 {
     private ScrollViewer _scrollViewer;
 

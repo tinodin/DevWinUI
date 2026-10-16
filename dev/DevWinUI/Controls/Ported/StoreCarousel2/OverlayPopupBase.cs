@@ -1,9 +1,6 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿namespace DevWinUI;
 
-namespace DevWinUI;
-
-public class OverlayPopupBase : UserControl
+public partial class OverlayPopupBase : UserControl
 {
     public static readonly DependencyProperty CloseOnNavigateBackProperty =
         DependencyProperty.Register(nameof(CloseOnNavigateBack), typeof(bool), typeof(OverlayPopupBase), new PropertyMetadata(false));

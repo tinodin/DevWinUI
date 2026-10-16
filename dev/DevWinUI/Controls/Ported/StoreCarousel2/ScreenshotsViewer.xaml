@@ -17,13 +17,17 @@
                     </controls:ConstrainedBox>
                     <Image>
                         <interactivity:Interaction.Behaviors>
-                            <interactivity:EventTriggerBehavior EventName="ImageOpened">
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=PlayButton}" Value="Visible" />
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
-                            </interactivity:EventTriggerBehavior>
-                            <interactivity:EventTriggerBehavior EventName="ImageFailed">
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
-                            </interactivity:EventTriggerBehavior>
+                            <local:ImageOpenedEventTriggerBehavior>
+                                <local:ImageOpenedEventTriggerBehavior.Actions>
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=PlayButton}" Value="Visible" />
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
+                                </local:ImageOpenedEventTriggerBehavior.Actions>
+                            </local:ImageOpenedEventTriggerBehavior>
+                            <local:ImageFailedEventTriggerBehavior>
+                                <local:ImageFailedEventTriggerBehavior.Actions>
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
+                                </local:ImageFailedEventTriggerBehavior.Actions>
+                            </local:ImageFailedEventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Image>
                     <Button x:Name="PlayButton" Content="{StaticResource StoreGlyphPlay}" Style="{StaticResource VideoPlayButtonStyle}" Visibility="Collapsed" />
@@ -41,13 +45,17 @@
                     </controls:ConstrainedBox>
                     <Image>
                         <interactivity:Interaction.Behaviors>
-                            <interactivity:EventTriggerBehavior EventName="ImageOpened">
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=PlayIcon}" Value="Visible" />
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
-                            </interactivity:EventTriggerBehavior>
-                            <interactivity:EventTriggerBehavior EventName="ImageFailed">
-                                <interactivity:ChangePropertyAction PropertyName="Visibility" TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
-                            </interactivity:EventTriggerBehavior>
+                            <local:ImageOpenedEventTriggerBehavior>
+                                <local:ImageOpenedEventTriggerBehavior.Actions>
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=PlayIcon}" Value="Visible" />
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
+                                </local:ImageOpenedEventTriggerBehavior.Actions>
+                            </local:ImageOpenedEventTriggerBehavior>
+                            <local:ImageFailedEventTriggerBehavior>
+                                <local:ImageFailedEventTriggerBehavior.Actions>
+                                    <local:ChangeVisibilityPropertyAction TargetObject="{Binding ElementName=Shimmer}" Value="Collapsed" />
+                                </local:ImageFailedEventTriggerBehavior.Actions>
+                            </local:ImageFailedEventTriggerBehavior>
                             <local:ViewDisplayedBehavior />
                         </interactivity:Interaction.Behaviors>
                     </Image>
