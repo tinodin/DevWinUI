@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Input;
+﻿using Microsoft.UI.Xaml.Input;
 using Windows.System;
 
 namespace DevWinUI;
@@ -62,12 +62,8 @@ public partial class NoPointerWheelListView : ListView
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
-
-        if (_scrollViewer != null)
-        {
-            _scrollViewer.RemoveHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler);
-            _scrollViewer = null;
-        }
+        _scrollViewer?.RemoveHandler(PointerWheelChangedEvent, _pointerWheelHandler);
+        _scrollViewer = null;
 
         _scrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
         if (_scrollViewer != null)
@@ -112,11 +108,8 @@ public partial class NoPointerWheelListView : ListView
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
-        if (_scrollViewer != null)
-        {
-            _scrollViewer.RemoveHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler);
-            _scrollViewer = null;
-        }
+        _scrollViewer?.RemoveHandler(PointerWheelChangedEvent, _pointerWheelHandler);
+        _scrollViewer = null;
 
         if (DisposeOnUnloaded)
             ItemsSource = null;

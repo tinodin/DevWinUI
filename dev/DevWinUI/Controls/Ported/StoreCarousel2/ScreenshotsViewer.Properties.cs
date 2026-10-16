@@ -46,7 +46,6 @@ public sealed partial class ScreenshotsViewer
         c.OnPreviewViewModelChanged(e.OldValue as PreviewModuleViewModel, e.NewValue as PreviewModuleViewModel);
         if (c.ScreenshotTileList != null && e.NewValue is PreviewModuleViewModel vm)
             c.ScreenshotTileList.ItemsSource = vm.Items;
-        c.UpdateEmptyState();
     }
 
     public static readonly DependencyProperty ScreenshotContainerStyleProperty =

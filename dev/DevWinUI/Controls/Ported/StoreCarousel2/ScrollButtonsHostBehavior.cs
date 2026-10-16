@@ -1,4 +1,5 @@
-﻿using Microsoft.Xaml.Interactivity;
+﻿using Microsoft.UI.Xaml.Input;
+using Microsoft.Xaml.Interactivity;
 
 namespace DevWinUI;
 
@@ -81,13 +82,13 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         DetachScrollViewer();
     }
 
-    private void OnPointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
     {
         _isPointerOver = true;
         UpdateButtons();
     }
 
-    private void OnPointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void OnPointerExited(object sender, PointerRoutedEventArgs e)
     {
         _isPointerOver = false;
         UpdateButtons();
@@ -99,7 +100,6 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         _scrollViewer = FindDescendant<ScrollViewer>(AssociatedObject);
         if (_scrollViewer != null)
         {
-
             _scrollViewer.ViewChanged += OnViewChanged;
             WireScrollCommandTargets(_scrollViewer);
             _ = AssociatedObject.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, UpdateButtons);
@@ -108,7 +108,6 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 
     private void WireScrollCommandTargets(ScrollViewer scrollViewer)
     {
-
         if (LeftScrollButton?.Command is ScrollCommand left)
         {
             left.TargetElement = scrollViewer;
@@ -122,11 +121,8 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 
     private void DetachScrollViewer()
     {
-        if (_scrollViewer != null)
-        {
-            _scrollViewer.ViewChanged -= OnViewChanged;
-            _scrollViewer = null;
-        }
+        _scrollViewer?.ViewChanged -= OnViewChanged;
+        _scrollViewer = null;
     }
 
     private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)

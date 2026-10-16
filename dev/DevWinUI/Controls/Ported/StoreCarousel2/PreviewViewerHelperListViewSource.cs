@@ -1,40 +1,23 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public class PreviewViewerHelperListViewSource
 {
-    private ListViewBase _innerListView;
     private UIElement _hiddenSourceElement;
-
-    public PreviewViewerHelperListViewSource() { }
 
     public PreviewViewerHelperListViewSource(ListViewBase listView)
     {
-        _innerListView = listView;
+        InnerListView = listView;
     }
 
-    public ListViewBase InnerListView
-    {
-        get => _innerListView;
-        set => _innerListView = value;
-    }
+    public ListViewBase InnerListView { get; set; }
 
     public void RestoreSourceVisibility()
     {
-        if (_hiddenSourceElement != null)
-        {
-            _hiddenSourceElement.Opacity = 1;
-            _hiddenSourceElement = null;
-        }
+        _hiddenSourceElement?.Opacity = 1;
+        _hiddenSourceElement = null;
     }
 
-    public bool GetAnimationSourceElementName(object item, out string name)
+    public static bool GetAnimationSourceElementName(object item, out string name)
     {
         name = null;
         if (item is ScreenshotTileItem)
@@ -64,15 +47,15 @@ public class PreviewViewerHelperListViewSource
             return;
         }
 
-        if (_innerListView == null)
+        if (InnerListView == null)
         {
             return;
         }
 
-        var container = _innerListView.ContainerFromItem(dataItem) as FrameworkElement;
+        var container = InnerListView.ContainerFromItem(dataItem) as FrameworkElement;
         if (container == null && dataItem is int idx)
         {
-            container = _innerListView.ContainerFromIndex(idx) as FrameworkElement;
+            container = InnerListView.ContainerFromIndex(idx) as FrameworkElement;
         }
 
         if (container == null || !IsVisibleWithNonZeroSize(container))
@@ -108,7 +91,7 @@ public class PreviewViewerHelperListViewSource
 
         try
         {
-            anim = _innerListView.PrepareConnectedAnimation("screenshotForwardAnimation", dataItem, name);
+            anim = InnerListView.PrepareConnectedAnimation("screenshotForwardAnimation", dataItem, name);
         }
         catch { }
 
@@ -137,60 +120,12 @@ public class PreviewViewerHelperListViewSource
 
     public void UpdateSelectedIndex(int index)
     {
-        if (_innerListView == null || _innerListView.Items == null || index < 0 || index >= _innerListView.Items.Count)
+        if (InnerListView == null || InnerListView.Items == null || index < 0 || index >= InnerListView.Items.Count)
         {
             return;
         }
 
-        _ = _innerListView.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Default, disableAnimation: true);
-    }
-
-    private void FlushItemToEdge(int index, ScrollViewer sv, FrameworkElement container = null)
-    {
-        if (sv == null || _innerListView == null) return;
-        container ??= _innerListView.ContainerFromIndex(index) as FrameworkElement;
-        if (container == null) return;
-
-        var content = sv.Content as UIElement;
-        if (content == null) return;
-
-        Windows.Foundation.Point origin;
-        try
-        {
-            origin = container.TransformToVisual(content).TransformPoint(new Windows.Foundation.Point(0, 0));
-        }
-        catch
-        {
-            return;
-        }
-
-        double itemLeft = origin.X;
-        double itemRight = itemLeft + container.ActualWidth;
-
-        double viewportWidth = sv.ViewportWidth > 0 ? sv.ViewportWidth : sv.ActualWidth;
-        double currentOffset = sv.HorizontalOffset;
-        double viewportRight = currentOffset + viewportWidth;
-
-        const double epsilon = 1.0;
-        if (itemLeft >= currentOffset - epsilon && itemRight <= viewportRight + epsilon)
-        {
-            return;
-        }
-
-        double targetOffset;
-        if (itemLeft < currentOffset)
-        {
-            targetOffset = itemLeft;
-        }
-        else
-        {
-            targetOffset = itemRight - viewportWidth;
-        }
-
-        if (targetOffset < 0) targetOffset = 0;
-        if (targetOffset > sv.ScrollableWidth) targetOffset = sv.ScrollableWidth;
-
-        sv.ChangeView(targetOffset, null, null, disableAnimation: true);
+        _ = InnerListView.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Default, disableAnimation: true);
     }
 
     public async Task StartBackwardConnectedAnimationAsync(object dataItem)
@@ -201,15 +136,15 @@ public class PreviewViewerHelperListViewSource
         }
 
         var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("screenshotBackAnimation");
-        if (animation == null || _innerListView == null)
+        if (animation == null || InnerListView == null)
         {
             return;
         }
 
-        var container = _innerListView.ContainerFromItem(dataItem) as FrameworkElement;
+        var container = InnerListView.ContainerFromItem(dataItem) as FrameworkElement;
         if (container == null && dataItem is int idx)
         {
-            container = _innerListView.ContainerFromIndex(idx) as FrameworkElement;
+            container = InnerListView.ContainerFromIndex(idx) as FrameworkElement;
         }
 
         animation.Configuration = new DirectConnectedAnimationConfiguration();
@@ -217,17 +152,14 @@ public class PreviewViewerHelperListViewSource
         bool started = false;
         try
         {
-            started = await _innerListView.TryStartConnectedAnimationAsync(animation, dataItem, name);
+            started = await InnerListView.TryStartConnectedAnimationAsync(animation, dataItem, name);
         }
         catch { }
 
         if (!started && container != null)
         {
             UIElement target = FindNamedDescendant(container, name) ?? container;
-            if (target != null)
-            {
-                target.Opacity = 1;
-            }
+            target?.Opacity = 1;
             animation.TryStart(target);
         }
 

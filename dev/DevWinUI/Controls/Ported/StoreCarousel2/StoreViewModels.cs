@@ -1,4 +1,4 @@
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public enum PreviewType
 {
@@ -26,38 +26,28 @@ public interface IAgeRestrictedItem
 public class PreviewModuleViewModel
 {
     public object CurrentItem { get; set; }
-    public ObservableCollection<object> Items { get; } = new();
-
-    public event EventHandler<object> FullscreenParentShown;
-
-    public void OnFullscreenParentShown(object dataItem)
-    {
-        FullscreenParentShown?.Invoke(this, dataItem);
-    }
+    public ObservableCollection<object> Items { get; } = [];
 }
 
 public partial class PreviewItemsViewModel : System.ComponentModel.INotifyPropertyChanged
 {
-    private ObservableCollection<object> _items = new();
     private object _currentItem;
-    private int _selectedIndex = -1;
 
     public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
     public ObservableCollection<object> Items
     {
-        get => _items;
+        get;
         set
         {
-            if (_items != value)
+            if (field != value)
             {
-                _items = value;
+                field = value;
                 OnPropertyChanged(nameof(Items));
-
-                OnPropertyChanged("TotalIndex");
+                OnPropertyChanged(nameof(TotalIndex));
             }
         }
-    }
+    } = [];
 
     public object CurrentItem
     {
@@ -75,25 +65,25 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
 
     public int SelectedIndex
     {
-        get => _selectedIndex;
+        get;
         set
         {
-            if (_selectedIndex != value)
+            if (field != value)
             {
-                int oldIndex = _selectedIndex;
-                _selectedIndex = value;
-                if (_items != null && value >= 0 && value < _items.Count)
+                int oldIndex = field;
+                field = value;
+                if (Items != null && value >= 0 && value < Items.Count)
                 {
-                    _currentItem = _items[value];
+                    _currentItem = Items[value];
                 }
-                OnPropertyChanged("SelectedIndex");
-                OnPropertyChanged("Caption");
-                OnPropertyChanged("CurrentIndex");
-                OnPropertyChanged("TotalIndex");
+                OnPropertyChanged(nameof(SelectedIndex));
+                OnPropertyChanged(nameof(Caption));
+                OnPropertyChanged(nameof(CurrentIndex));
+                OnPropertyChanged(nameof(TotalIndex));
 
-                if (_items != null && oldIndex >= 0 && oldIndex < _items.Count)
+                if (Items != null && oldIndex >= 0 && oldIndex < Items.Count)
                 {
-                    if (_items[oldIndex] is VideoPlayerSource oldVideo)
+                    if (Items[oldIndex] is VideoPlayerSource oldVideo)
                     {
                         try
                         {
@@ -107,7 +97,7 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
                 }
             }
         }
-    }
+    } = -1;
 
     public string Caption
     {
@@ -125,9 +115,9 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
         }
     }
 
-    public string CurrentIndex => _selectedIndex >= 0 ? (_selectedIndex + 1).ToString() : "1";
+    public string CurrentIndex => SelectedIndex >= 0 ? (SelectedIndex + 1).ToString() : "1";
 
-    public string TotalIndex => _items != null ? _items.Count.ToString() : "0";
+    public string TotalIndex => Items != null ? Items.Count.ToString() : "0";
 
     protected virtual void OnPropertyChanged(string propertyName)
     {
@@ -141,14 +131,14 @@ public class ScreenshotTileItem : IImageItem, IAgeRestrictedItem
     public Uri ImageUri { get; set; }
     public string Title { get; set; }
     public bool AgeRestricted { get; set; }
-    private ImageSource _imageSource;
+
     public ImageSource ImageSource
     {
         get
         {
-            if (_imageSource == null && ImageUri != null)
-                _imageSource = new BitmapImage(ImageUri) { CreateOptions = BitmapCreateOptions.None };
-            return _imageSource;
+            if (field == null && ImageUri != null)
+                field = new BitmapImage(ImageUri) { CreateOptions = BitmapCreateOptions.None };
+            return field;
         }
     }
 }
@@ -160,18 +150,18 @@ public class VideoPlayerSource : IImageItem, IAgeRestrictedItem
     public Uri ImageUri { get; set; }
     public string Title { get; set; }
     public bool AgeRestricted { get; set; }
-    private ImageSource _imageSource;
+
     public ImageSource ImageSource
     {
         get
         {
-            if (_imageSource == null && ImageUri != null)
-                _imageSource = new BitmapImage(ImageUri)
+            if (field == null && ImageUri != null)
+                field = new BitmapImage(ImageUri)
                 {
                     CreateOptions = BitmapCreateOptions.None,
                     DecodePixelHeight = 316
                 };
-            return _imageSource;
+            return field;
         }
     }
     private Windows.Media.Playback.MediaPlayer _mediaPlayer;

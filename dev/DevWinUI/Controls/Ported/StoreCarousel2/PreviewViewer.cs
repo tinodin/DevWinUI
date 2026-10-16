@@ -1,14 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.ComponentModel;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Media.Playback;
 using Windows.System;
 
@@ -47,10 +41,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         if (!ReferenceEquals(_themeSource, source))
         {
-            if (_themeSource != null)
-            {
-                _themeSource.ActualThemeChanged -= OnThemeSourceActualThemeChanged;
-            }
+            _themeSource?.ActualThemeChanged -= OnThemeSourceActualThemeChanged;
 
             _themeSource = source;
             _themeSource.ActualThemeChanged += OnThemeSourceActualThemeChanged;
@@ -201,19 +192,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         }
     }
 
-    private void RefreshItems()
-    {
-        if (_flipView == null || ViewModel == null) return;
-        if (_flipView.ItemsSource != ViewModel.Items)
-        {
-            BindFlipViewItemsSource(ViewModel);
-        }
-        else
-        {
-            OnViewModelPropertyChanged(ViewModel, new PropertyChangedEventArgs(string.Empty));
-        }
-    }
-
     private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         ApplyViewModelState(e?.PropertyName);
@@ -265,18 +243,12 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         if (updateAll || string.Equals(prop, "CurrentIndex", StringComparison.Ordinal))
         {
-            if (_currentIndexRun != null)
-            {
-                _currentIndexRun.Text = vm.CurrentIndex;
-            }
+            _currentIndexRun?.Text = vm.CurrentIndex;
         }
 
         if (updateAll || string.Equals(prop, "TotalIndex", StringComparison.Ordinal))
         {
-            if (_totalIndexRun != null)
-            {
-                _totalIndexRun.Text = vm.TotalIndex;
-            }
+            _totalIndexRun?.Text = vm.TotalIndex;
         }
     }
 
@@ -390,17 +362,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         _templateSelector = FindResource("FlipViewDataTemplateSelector") as ScreenshotDataTemplateSelector;
 
-        if (_flipView != null)
-        {
-            _flipView.SelectionChanged -= OnSelectionChanged;
-        }
+        _flipView?.SelectionChanged -= OnSelectionChanged;
 
         _flipView = flipView;
-        if (_flipView != null)
-        {
-
-            _flipView.SelectionChanged += OnSelectionChanged;
-        }
+        _flipView?.SelectionChanged += OnSelectionChanged;
 
         if (_viewerRoot != null)
         {
@@ -515,9 +480,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         if (!IsOpen) return;
         _pendingAnimation = null;
 
-        var currentContainer = _flipView != null && _flipView.SelectedIndex >= 0
-            ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement
-            : null;
+        var currentContainer = _flipView != null && _flipView.SelectedIndex >= 0 ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement : null;
         var containers = SnapshotRealizedContainers();
 
         if (!RemoveOverlayPopup())
@@ -607,11 +570,11 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         }
 
         _isOpen = false;
-        if (XamlRoot != null) XamlRoot.Changed -= OnXamlRootChanged;
+        XamlRoot?.Changed -= OnXamlRootChanged;
         return true;
     }
 
-    private void PrepareBackAnimation(FrameworkElement container)
+    private static void PrepareBackAnimation(FrameworkElement container)
     {
         if (container == null) return;
 
@@ -622,10 +585,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         try
         {
             var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, target);
-            if (backAnim != null)
-            {
-                backAnim.Configuration = new DirectConnectedAnimationConfiguration();
-            }
+            backAnim?.Configuration = new DirectConnectedAnimationConfiguration();
         }
         catch { }
     }
@@ -649,7 +609,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         FrameworkElement container = null;
         for (int attempt = 0; attempt < 6; attempt++)
         {
-            await System.Threading.Tasks.Task.Delay(15);
+            await Task.Delay(15);
             int idx = _flipView != null && _flipView.SelectedIndex >= 0 ? _flipView.SelectedIndex : SelectedIndex;
             container = SafeContainerFromIndex(idx) as FrameworkElement;
             if (container != null && container.ActualWidth > 0 && container.ActualHeight > 0)
@@ -662,9 +622,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         {
             UIElement target = container;
             var player = FindDescendant<MediaPlayerElement>(container);
-            var duration = player != null && player.MediaPlayer != null
-                ? player.MediaPlayer.NaturalDuration.TotalSeconds
-                : 0;
+            var duration = player != null && player.MediaPlayer != null ? player.MediaPlayer.NaturalDuration.TotalSeconds : 0;
 
             if (player != null && duration > 0)
             {
@@ -696,8 +654,16 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private DependencyObject SafeContainerFromIndex(int index)
     {
-        if (_flipView == null || index < 0 || _flipView.Items == null || index >= _flipView.Items.Count) return null;
-        try { return _flipView.ContainerFromIndex(index); } catch { return null; }
+        if (_flipView == null || index < 0 || _flipView.Items == null || index >= _flipView.Items.Count)
+            return null;
+        try
+        {
+            return _flipView.ContainerFromIndex(index);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private void TryStartPendingAnimation()
@@ -718,8 +684,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             }
             catch { }
         }
-        if (SafeContainerFromIndex(SelectedIndex) != null) TryStart();
-        else if (_flipView != null) _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
+        if (SafeContainerFromIndex(SelectedIndex) != null)
+            TryStart();
+        else if (_flipView != null)
+            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
     }
 
     private void ApplyAgeRestriction(bool ageRestricted)
@@ -789,18 +757,14 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         var selectedItem = _flipView.SelectedItem;
         if (selectedItem is VideoPlayerSource videoSource)
         {
-            var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement
-                ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
+            var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
             if (container != null)
             {
                 if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
                 {
                     videoItem.ApplySource();
                     var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
-                    if (element != null)
-                    {
-                        element.AutoPlay = true;
-                    }
+                    element?.AutoPlay = true;
                 }
             }
 
@@ -812,7 +776,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         int generation = ++_videoPlayGeneration;
 
-        await System.Threading.Tasks.Task.Delay(1000);
+        await Task.Delay(1000);
 
         if (generation != _videoPlayGeneration || !_isOpen || _flipView == null)
         {
@@ -844,7 +808,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         {
             if (attempt > 0)
             {
-                await System.Threading.Tasks.Task.Delay(15);
+                await Task.Delay(15);
             }
 
             if (_flipView == null || !_isOpen)
@@ -852,8 +816,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
                 return;
             }
 
-            if (SafeContainerFromIndex(_flipView.SelectedIndex) is FrameworkElement container
-                && (FindDescendant<PreviewViewerVideoItem>(container) != null || FindDescendant<MediaPlayerElement>(container) != null))
+            if (SafeContainerFromIndex(_flipView.SelectedIndex) is FrameworkElement container && (FindDescendant<PreviewViewerVideoItem>(container) != null || FindDescendant<MediaPlayerElement>(container) != null))
             {
                 PlayCurrentVideo();
                 return;
@@ -865,7 +828,8 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void PlayCurrentVideo()
     {
-        if (_flipView == null || _flipView.SelectedIndex < 0 || _flipView.Items == null || _flipView.SelectedIndex >= _flipView.Items.Count) return;
+        if (_flipView == null || _flipView.SelectedIndex < 0 || _flipView.Items == null || _flipView.SelectedIndex >= _flipView.Items.Count)
+            return;
         var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement;
         if (container == null) return;
 
@@ -875,10 +839,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             {
                 videoItem.ApplySource();
                 var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
-                if (element != null)
-                {
-                    element.AutoPlay = true;
-                }
+                element?.AutoPlay = true;
             }
 
             try

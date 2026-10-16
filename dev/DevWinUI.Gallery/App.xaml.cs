@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Windowing;
-
-namespace DevWinUIGallery;
+﻿namespace DevWinUIGallery;
 
 public partial class App : Application
 {

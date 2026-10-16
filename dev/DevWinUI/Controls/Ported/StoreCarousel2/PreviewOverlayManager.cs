@@ -1,10 +1,7 @@
-using Microsoft.UI.Xaml;
-
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public sealed class PreviewOverlayManager
 {
-
     public PreviewViewer Current { get; private set; }
 
     public void ShowOverlay(PreviewViewer viewer)
@@ -15,10 +12,7 @@ public sealed class PreviewOverlayManager
         }
 
         var current = Current;
-        if (current != null)
-        {
-            current.Close();
-        }
+        current?.Close();
 
         Current = viewer;
         viewer.AttachToOverlayHost();

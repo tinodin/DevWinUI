@@ -1,11 +1,4 @@
-
-using System;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
+﻿using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DevWinUI;
 
@@ -21,7 +14,6 @@ public enum ScrollItemPlacement
 
 public static partial class ListViewExtensions
 {
-
     public static async Task SmoothScrollIntoViewWithIndexAsync(
         this ListViewBase listViewBase,
         int index,
@@ -201,9 +193,11 @@ public static partial class ListViewExtensions
         }
 
         if (finalXPosition < 0) finalXPosition = 0;
-        if (finalXPosition > scrollViewer.ScrollableWidth) finalXPosition = scrollViewer.ScrollableWidth;
+        if (finalXPosition > scrollViewer.ScrollableWidth)
+            finalXPosition = scrollViewer.ScrollableWidth;
         if (finalYPosition < 0) finalYPosition = 0;
-        if (finalYPosition > scrollViewer.ScrollableHeight) finalYPosition = scrollViewer.ScrollableHeight;
+        if (finalYPosition > scrollViewer.ScrollableHeight)
+            finalYPosition = scrollViewer.ScrollableHeight;
 
         await scrollViewer.ChangeViewCoreAsync(finalXPosition, finalYPosition, zoomFactor: null, disableAnimation);
     }

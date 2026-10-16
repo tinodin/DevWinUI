@@ -40,7 +40,6 @@ public sealed class ScrollCommand : XamlUICommand
 
     private void OnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-
         var sv = _scrollViewer ?? ResolveScrollViewer(TargetElement);
         if (sv == null)
         {
@@ -104,11 +103,8 @@ public sealed class ScrollCommand : XamlUICommand
 
     private void AttachContentSizeSource(FrameworkElement content)
     {
-        if (_contentSizeSource != null)
-        {
-            _contentSizeSource.SizeChanged -= OnScrollViewerSizeChanged;
-            _contentSizeSource = null;
-        }
+        _contentSizeSource?.SizeChanged -= OnScrollViewerSizeChanged;
+        _contentSizeSource = null;
 
         if (content == null)
         {
@@ -121,11 +117,8 @@ public sealed class ScrollCommand : XamlUICommand
 
     private void DetachScrollViewer()
     {
-        if (_contentSizeSource != null)
-        {
-            _contentSizeSource.SizeChanged -= OnScrollViewerSizeChanged;
-            _contentSizeSource = null;
-        }
+        _contentSizeSource?.SizeChanged -= OnScrollViewerSizeChanged;
+        _contentSizeSource = null;
 
         if (_scrollViewer == null)
         {
@@ -144,20 +137,14 @@ public sealed class ScrollCommand : XamlUICommand
 
     private static bool CanScroll(ScrollViewer sv, ScrollDirection direction)
     {
-        switch (direction)
+        return direction switch
         {
-            case ScrollDirection.Left:
-                return sv.HorizontalOffset > 0.0;
-            case ScrollDirection.Right:
-
-                return sv.ScrollableWidth > sv.HorizontalOffset;
-            case ScrollDirection.Up:
-                return sv.VerticalOffset > 0.0;
-            case ScrollDirection.Down:
-                return sv.ScrollableHeight > sv.VerticalOffset;
-            default:
-                return false;
-        }
+            ScrollDirection.Left => sv.HorizontalOffset > 0.0,
+            ScrollDirection.Right => sv.ScrollableWidth > sv.HorizontalOffset,
+            ScrollDirection.Up => sv.VerticalOffset > 0.0,
+            ScrollDirection.Down => sv.ScrollableHeight > sv.VerticalOffset,
+            _ => false,
+        };
     }
 
     private static void ScrollByDirection(ScrollViewer sv, ScrollDirection direction)

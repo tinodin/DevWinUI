@@ -1,10 +1,4 @@
-using System;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 [TemplatePart(Name = "ScreenshotsControl", Type = typeof(ScreenshotsViewer))]
 public partial class StoreCarousel2 : Control
@@ -88,11 +82,7 @@ public partial class StoreCarousel2 : Control
             _helper.ListViewSource = _listViewSource;
             _popupList ??= new PreviewListFacade();
             _popupList.BindToViewModel(_viewerVm);
-            if (_helper.Popup == null)
-            {
-                _helper.Popup = new PreviewPopupHost();
-            }
-
+            _helper.Popup ??= new PreviewPopupHost();
             _helper.Popup.List = _popupList;
             _helper.Popup.Items = _viewerVm.Items;
         }
@@ -157,10 +147,9 @@ public partial class StoreCarousel2 : Control
         {
             _viewer.ViewModel = _viewerVm;
         }
-        else if (_viewer != null)
+        else
         {
-
-            _viewer.ViewModel = _viewerVm;
+            _viewer?.ViewModel = _viewerVm;
         }
     }
 
@@ -181,19 +170,13 @@ public partial class StoreCarousel2 : Control
 
         if (!IsViewerEnabled)
         {
-            if (_card != null)
-            {
-                _card.Helper = null;
-            }
+            _card?.Helper = null;
 
             return;
         }
 
         EnsureHelper();
-        if (_viewer != null)
-        {
-            _viewer.XamlRoot = XamlRoot;
-        }
+        _viewer?.XamlRoot = XamlRoot;
     }
 
     public void OpenPreview(int index = 0)
@@ -205,10 +188,7 @@ public partial class StoreCarousel2 : Control
 
         EnsureHelper();
 
-        if (_viewer != null)
-        {
-            _viewer.XamlRoot = XamlRoot;
-        }
+        _viewer?.XamlRoot = XamlRoot;
 
         if (_helper == null || _viewerVm == null || _viewerVm.Items.Count == 0)
         {
@@ -221,7 +201,7 @@ public partial class StoreCarousel2 : Control
         }
 
         var dataItem = _viewerVm.Items[index];
-        _helper.SetUpPreviewViewer(dataItem, flag: true);
+        _helper.SetUpPreviewViewer(dataItem);
     }
 
     private void OnViewerClosed(object sender, EventArgs e)
@@ -251,9 +231,7 @@ public partial class StoreCarousel2 : Control
                     return;
                 }
 
-                object item = (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count)
-                    ? _card.TileList.Items[finalIndex]
-                    : null;
+                object item = (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count) ? _card.TileList.Items[finalIndex] : null;
 
                 if (_listViewSource != null && item != null)
                 {

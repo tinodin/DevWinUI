@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Input;
+﻿using Microsoft.UI.Xaml.Input;
 
 namespace DevWinUI;
 
@@ -32,10 +32,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void ApplyAgeRestriction(bool ageRestricted)
     {
-        if (ScreenshotTemplateSelector != null)
-        {
-            ScreenshotTemplateSelector.AgeRestricted = ageRestricted;
-        }
+        ScreenshotTemplateSelector?.AgeRestricted = ageRestricted;
     }
 
     private void AttachTileList()
@@ -67,9 +64,7 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        if (e.OldFocusedElement is not DependencyObject oldHost ||
-            FindAscendantOrSelf<ListViewItem>(oldHost) is not ListViewItem oldItem ||
-            !IsDescendantOf(ScreenshotTileList, oldItem))
+        if (e.OldFocusedElement is not DependencyObject oldHost || FindAscendantOrSelf<ListViewItem>(oldHost) is not ListViewItem oldItem || !IsDescendantOf(ScreenshotTileList, oldItem))
         {
             return;
         }
@@ -88,7 +83,6 @@ public sealed partial class ScreenshotsViewer : UserControl
         var index = ScreenshotTileList.IndexFromContainer(item);
         if (index >= 0)
         {
-
             _ = ScreenshotTileList.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Center, disableAnimation: false, scrollIfVisible: true);
         }
     }
@@ -130,14 +124,17 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (ScreenshotTileList == null) return;
         for (int i = 0; i < ScreenshotTileList.Items.Count; i++)
         {
-            if (ScreenshotTileList.Items[i] is not VideoPlayerSource videoItem || videoItem.ImageUri == null) continue;
+            if (ScreenshotTileList.Items[i] is not VideoPlayerSource videoItem || videoItem.ImageUri == null)
+                continue;
             var container = ScreenshotTileList.ContainerFromIndex(i) as FrameworkElement;
-            if (container == null) continue;
+            if (container == null)
+                continue;
             DependencyObject searchRoot = container;
             if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
                 searchRoot = lviRoot;
             var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
-            if (image == null) continue;
+            if (image == null)
+                continue;
             if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
                 continue;
             try
@@ -154,8 +151,13 @@ public sealed partial class ScreenshotsViewer : UserControl
                     var capturedUri = videoItem.ImageUri;
                     vdb.ViewDisplayedAction = () =>
                     {
-                        if (capturedImage.Source != null) return;
-                        try { capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+                        if (capturedImage.Source != null)
+                            return;
+                        try
+                        {
+                            capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
+                        }
+                        catch { }
                     };
                     break;
                 }
@@ -177,7 +179,8 @@ public sealed partial class ScreenshotsViewer : UserControl
         var container = args.ItemContainer as FrameworkElement;
         if (container == null)
         {
-            if (args.Phase < 3) args.RegisterUpdateCallback(OnContainerContentChanging);
+            if (args.Phase < 3)
+                args.RegisterUpdateCallback(OnContainerContentChanging);
             return;
         }
 
@@ -188,7 +191,8 @@ public sealed partial class ScreenshotsViewer : UserControl
         var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
         if (image == null)
         {
-            if (args.Phase < 3) args.RegisterUpdateCallback(OnContainerContentChanging);
+            if (args.Phase < 3)
+                args.RegisterUpdateCallback(OnContainerContentChanging);
             return;
         }
 
@@ -203,7 +207,11 @@ public sealed partial class ScreenshotsViewer : UserControl
 
         if (needsLoad)
         {
-            try { image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+            try
+            {
+                image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
+            }
+            catch { }
         }
 
         if (targetVdb != null && targetVdb.ViewDisplayedAction == null)
@@ -212,15 +220,19 @@ public sealed partial class ScreenshotsViewer : UserControl
             var capturedUri = videoItem.ImageUri;
             targetVdb.ViewDisplayedAction = () =>
             {
-                if (capturedImage.Source != null) return;
-                try { capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 }; } catch { }
+                if (capturedImage.Source != null)
+                    return;
+                try
+                {
+                    capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
+                }
+                catch { }
             };
         }
     }
 
     private void OnTileListClick(object sender, ItemClickEventArgs e)
     {
-
         var index = ScreenshotTileList.Items.IndexOf(e.ClickedItem);
         if (index < 0) index = 0;
         LastClickedIndex = index;
@@ -229,7 +241,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
         if (Helper != null && e.ClickedItem != null)
         {
-            Helper.SetUpPreviewViewer(e.ClickedItem, flag: true);
+            Helper.SetUpPreviewViewer(e.ClickedItem);
         }
         else if (Helper?.ListViewSource != null)
         {
@@ -241,22 +253,18 @@ public sealed partial class ScreenshotsViewer : UserControl
     {
         if (ScreenshotTileList != null && newValue != null)
             ScreenshotTileList.ItemsSource = newValue.Items;
-        UpdateEmptyState();
-    }
-
-    private void UpdateEmptyState()
-    {
-        var isEmpty = ScreenshotTileList == null || ScreenshotTileList.Items.Count == 0;
-        if (isEmpty) { }
     }
 
     public void BringItemFlushToEdge(int index)
     {
-        if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count) return;
+        if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count)
+            return;
 
-        if (Helper?.Popup?.List != null && Helper.Popup.List.SelectedIndex == index) return;
+        if (Helper?.Popup?.List != null && Helper.Popup.List.SelectedIndex == index)
+            return;
 
-        if (IsItemFullyVisible(index)) return;
+        if (IsItemFullyVisible(index))
+            return;
         ScreenshotTileList.ScrollIntoView(ScreenshotTileList.Items[index], ScrollIntoViewAlignment.Leading);
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushContainerToEdge(index));
     }
@@ -318,10 +326,10 @@ public sealed partial class ScreenshotsViewer : UserControl
     private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
     {
         if (root == null) return null;
-        var count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(root);
+        var count = VisualTreeHelper.GetChildrenCount(root);
         for (var i = 0; i < count; i++)
         {
-            var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(root, i);
+            var child = VisualTreeHelper.GetChild(root, i);
             if (child is T m) return m;
             var d = FindDescendant<T>(child);
             if (d != null) return d;

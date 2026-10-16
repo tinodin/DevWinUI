@@ -44,10 +44,8 @@ public partial class StoreCarousel2
     private static void OnAgeRestrictedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var carousel = (StoreCarousel2)d;
-        if (carousel._card != null)
-            carousel._card.AgeRestricted = (bool)e.NewValue;
-        if (carousel._viewer != null)
-            carousel._viewer.AgeRestricted = (bool)e.NewValue;
+        carousel._card?.AgeRestricted = (bool)e.NewValue;
+        carousel._viewer?.AgeRestricted = (bool)e.NewValue;
     }
 
     public bool IsViewerEnabled

@@ -1,76 +1,39 @@
-using System;
-using System.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
+﻿using System.ComponentModel;
 
 namespace DevWinUI;
 
 public class PreviewViewerHelper
 {
-    private PreviewViewer _previewViewer;
-    private PreviewPopupHost _popup;
-    private Action<object, string> _warningAction;
-    private PreviewViewerHelperListViewSource _listViewSource;
-    private int _mode;
-
-    public PreviewViewer PreviewViewer
-    {
-        get => _previewViewer;
-        set => _previewViewer = value;
-    }
+    public PreviewViewer PreviewViewer { get; set; }
 
     public PreviewPopupHost Popup
     {
-        get => _popup;
+        get;
         set
         {
-            if (_popup?.List != null)
+            if (field?.List != null)
             {
-                _popup.List.PropertyChanged -= OnPopupPreviewSelectionChanged;
+                field.List.PropertyChanged -= OnPopupPreviewSelectionChanged;
             }
-            _popup = value;
-            if (_popup?.List != null)
+            field = value;
+            if (field?.List != null)
             {
-                _popup.List.PropertyChanged += OnPopupPreviewSelectionChanged;
+                field.List.PropertyChanged += OnPopupPreviewSelectionChanged;
             }
         }
     }
 
-    public PreviewViewerHelperListViewSource ListViewSource
-    {
-        get => _listViewSource;
-        set => _listViewSource = value;
-    }
+    public PreviewViewerHelperListViewSource ListViewSource { get; set; }
 
-    public int Mode
+    public void SetUpPreviewViewer(object dataItem)
     {
-        get => _mode;
-        set => _mode = value;
-    }
-
-    public Action<object, string> WarningAction
-    {
-        get => _warningAction;
-        set => _warningAction = value;
-    }
-
-    public void SetUpPreviewViewer(object dataItem, bool flag = false)
-    {
-        var popup = _popup;
-        if (popup == null || popup.List == null)
+        var popup = Popup;
+        if (popup == null || popup.List == null || dataItem == null)
         {
             return;
         }
 
-        if (!IsValidDataItem(dataItem, flag))
-        {
-            _warningAction?.Invoke(dataItem, nameof(SetUpPreviewViewer));
-            return;
-        }
-
-        if (_listViewSource != null)
-        {
-            _listViewSource.PrepareForwardConnectedAnimation(dataItem);
-        }
+        ListViewSource?.PrepareForwardConnectedAnimation(dataItem);
 
         popup.List.CurrentItem = dataItem;
 
@@ -80,7 +43,7 @@ public class PreviewViewerHelper
 
     public void OnPopupPreviewSelectionChanged(object sender, PropertyChangedEventArgs e)
     {
-        var popup = _popup;
+        var popup = Popup;
         if (popup == null || popup.List == null || popup.Items == null)
         {
             return;
@@ -110,10 +73,7 @@ public class PreviewViewerHelper
             index = popup.List.SelectedIndex;
         }
 
-        if (_listViewSource != null)
-        {
-            _listViewSource.ScrollToIndex(index);
-        }
+        ListViewSource?.ScrollToIndex(index);
     }
 
     public void OpenPreviewViewer(int index, object dataItem)
@@ -123,7 +83,7 @@ public class PreviewViewerHelper
             return;
         }
 
-        var popup = _popup;
+        var popup = Popup;
         if (popup == null || popup.List == null)
         {
             return;
@@ -142,77 +102,24 @@ public class PreviewViewerHelper
 
         popup.List.SelectedIndex = index;
 
-        if (_previewViewer == null)
+        if (PreviewViewer == null)
         {
             return;
         }
 
-        _previewViewer.OpenOverlayPopup();
+        PreviewViewer.OpenOverlayPopup();
     }
 
-    public bool IsValidDataItem(object dataItem, bool flag)
-    {
-        if (dataItem == null)
-        {
-            return false;
-        }
-
-        if (dataItem is ScreenshotTileItem)
-        {
-            return _mode == 0;
-        }
-
-        if (dataItem is VideoPlayerSource)
-        {
-            if (_mode == 0)
-            {
-                return true;
-            }
-
-            return _mode == 1 && flag;
-        }
-
-        return true;
-    }
-
-    public string GetItemKey(object dataItem)
-    {
-        if (dataItem == null)
-        {
-            return string.Empty;
-        }
-
-        if (dataItem is ScreenshotTileItem screenshot)
-        {
-            return screenshot.ImageUri?.ToString() ?? screenshot.Title ?? string.Empty;
-        }
-
-        if (dataItem is VideoPlayerSource video)
-        {
-            return video.Source?.ToString() ?? video.ImageUri?.ToString() ?? video.Title ?? string.Empty;
-        }
-
-        return dataItem.ToString() ?? string.Empty;
-    }
 }
 
 public class PreviewPopupHost
 {
     public PreviewListFacade List { get; set; }
-    public System.Collections.Generic.IList<object> Items { get; set; }
-    public PreviewPopupContent Content { get; set; }
+    public IList<object> Items { get; set; }
 }
 
-public class PreviewPopupContent
+public partial class PreviewListFacade : INotifyPropertyChanged
 {
-    public Uri Uri { get; set; }
-}
-
-public class PreviewListFacade : INotifyPropertyChanged
-{
-    private object _currentItem;
-    private object _selectedItem;
-    private int _selectedIndex = -1;
     private PreviewItemsViewModel _boundViewModel;
     private bool _syncingFromBound;
 
@@ -220,12 +127,12 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     public object CurrentItem
     {
-        get => _currentItem;
+        get;
         set
         {
-            if (_currentItem != value)
+            if (field != value)
             {
-                _currentItem = value;
+                field = value;
                 OnPropertyChanged(nameof(CurrentItem));
                 if (!_syncingFromBound && _boundViewModel != null && !ReferenceEquals(_boundViewModel.CurrentItem, value))
                 {
@@ -237,12 +144,12 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     public object SelectedItem
     {
-        get => _selectedItem;
+        get;
         set
         {
-            if (_selectedItem != value)
+            if (field != value)
             {
-                _selectedItem = value;
+                field = value;
                 OnPropertyChanged(nameof(SelectedItem));
             }
         }
@@ -250,12 +157,12 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     public int SelectedIndex
     {
-        get => _selectedIndex;
+        get;
         set
         {
-            if (_selectedIndex != value)
+            if (field != value)
             {
-                _selectedIndex = value;
+                field = value;
                 OnPropertyChanged(nameof(SelectedIndex));
                 OnPropertyChanged("Caption");
                 OnPropertyChanged("CurrentIndex");
@@ -266,7 +173,7 @@ public class PreviewListFacade : INotifyPropertyChanged
                 }
             }
         }
-    }
+    } = -1;
 
     public ItemCollection Items { get; set; }
 
@@ -307,10 +214,7 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     public void BindToViewModel(PreviewItemsViewModel viewModel)
     {
-        if (_boundViewModel != null)
-        {
-            _boundViewModel.PropertyChanged -= OnBoundViewModelPropertyChanged;
-        }
+        _boundViewModel?.PropertyChanged -= OnBoundViewModelPropertyChanged;
 
         _boundViewModel = viewModel;
         if (_boundViewModel != null)
@@ -322,9 +226,7 @@ public class PreviewListFacade : INotifyPropertyChanged
 
     private void OnBoundViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (string.IsNullOrEmpty(e?.PropertyName)
-            || string.Equals(e.PropertyName, "SelectedIndex", StringComparison.Ordinal)
-            || string.Equals(e.PropertyName, "CurrentItem", StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(e?.PropertyName) || string.Equals(e.PropertyName, "SelectedIndex", StringComparison.Ordinal) || string.Equals(e.PropertyName, "CurrentItem", StringComparison.Ordinal))
         {
             SyncFromBoundViewModel();
         }
