@@ -10,9 +10,9 @@
 
     <ScrollViewer>
         <StackPanel Margin="10" dev:PanelAttach.ChildrenTransitions="Default" Spacing="10">
-            <local:ControlExample DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2">
+            <local:ControlExample CSharpSource="Composition/StoreCarousel2/StoreCarousel2Page_cs.txt" DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2">
                 <local:ControlExample.Xaml>
-                    &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
+                    &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" /&gt;
                 </local:ControlExample.Xaml>
                 <local:ControlExample.Pane>
                     <StackPanel Spacing="10">
@@ -22,26 +22,16 @@
                 </local:ControlExample.Pane>
                 <dev:StoreCarousel2 AgeRestricted="{x:Bind TGSimpleAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGSimpleIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
             </local:ControlExample>
-            <local:ControlExample DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2 inside a Card">
-                <local:ControlExample.Xaml>
-                    <x:String>
-                        &lt;dev:Card Title="Screenshots" Padding="0"&gt;
-                        &lt;dev:Card.TitleContent&gt;
-                        &lt;Button Style="{StaticResource ModuleRightChevronButtonStyle}" /&gt;
-                        &lt;/dev:Card.TitleContent&gt;
-                        &lt;dev:StoreCarousel2 ItemsSource="{x:Bind Media}" /&gt;
-                        &lt;/dev:Card&gt;
-                    </x:String>
-                </local:ControlExample.Xaml>
+            <local:ControlExample CSharpSource="Composition/StoreCarousel2/StoreCarousel2Page_Card_cs.txt" DocPage="controls/storeCarousel2" HeaderText="Store Carousel 2 inside a Card" XamlSource="Composition/StoreCarousel2/StoreCarousel2Page_xaml.txt">
                 <local:ControlExample.Pane>
                     <StackPanel Spacing="10">
-                        <ToggleSwitch x:Name="TGCardAgeRestricted" Header="AgeRestricted" IsOn="True" />
+                        <ToggleSwitch x:Name="TGCardAgeRestricted" Header="AgeRestricted" IsOn="False" />
                         <ToggleSwitch x:Name="TGCardIsAgeBlocked" Header="IsAgeBlocked" IsOn="False" />
                     </StackPanel>
                 </local:ControlExample.Pane>
                 <dev:Card Title="Screenshots" Padding="0">
                     <dev:Card.TitleContent>
-                        <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" AutomationProperties.Name="See all" Click="ShowAllIconButton_Click" Style="{StaticResource ModuleRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
+                        <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" Click="ShowAllIconButton_Click" Style="{StaticResource ModuleRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
                     </dev:Card.TitleContent>
                     <dev:StoreCarousel2 x:Name="CardCarousel" AgeRestricted="{x:Bind TGCardAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGCardIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
                 </dev:Card>
