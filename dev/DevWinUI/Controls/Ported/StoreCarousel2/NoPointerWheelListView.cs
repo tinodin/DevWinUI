@@ -83,7 +83,7 @@ public partial class NoPointerWheelListView : ListView
 
             if (HorizontalScrollMode == ScrollMode.Enabled)
             {
-                _scrollViewer.AddHandler(UIElement.PointerWheelChangedEvent, _pointerWheelHandler, true);
+                _scrollViewer.AddHandler(PointerWheelChangedEvent, _pointerWheelHandler, true);
             }
         }
     }

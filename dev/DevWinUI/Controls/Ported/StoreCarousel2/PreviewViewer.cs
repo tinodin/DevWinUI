@@ -397,7 +397,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-
         AttachParts();
         ApplyAgeRestriction();
 
