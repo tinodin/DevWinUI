@@ -100,10 +100,48 @@ public partial class NoPointerWheelListView : ListView
     {
         base.OnKeyDown(e);
 
+        if (e.Key == VirtualKey.Left || e.Key == VirtualKey.Right)
+        {
+            ScrollFocusedItemIntoCenter();
+            return;
+        }
+
         if (RemoveSelectedItemOnUpDownNavigation && (e.Key == VirtualKey.Up || e.Key == VirtualKey.Down))
         {
             SelectedItem = null;
         }
+    }
+
+    private void ScrollFocusedItemIntoCenter()
+    {
+        if (_scrollViewer == null || XamlRoot == null)
+        {
+            return;
+        }
+
+        if (FocusManager.GetFocusedElement(XamlRoot) is not FrameworkElement focused || !focused.IsLoaded)
+        {
+            return;
+        }
+
+        var origin = focused.TransformToVisual(_scrollViewer).TransformPoint(new Point(0, 0));
+        var target = origin.X + _scrollViewer.HorizontalOffset + focused.ActualWidth * 0.5 - _scrollViewer.ViewportWidth * 0.5;
+
+        if (double.IsNaN(target))
+        {
+            target = 0;
+        }
+
+        if (target < 0)
+        {
+            target = 0;
+        }
+        else if (target > _scrollViewer.ScrollableWidth)
+        {
+            target = _scrollViewer.ScrollableWidth;
+        }
+
+        _scrollViewer.ChangeView(target, 0, null, false);
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)

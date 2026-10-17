@@ -12,9 +12,6 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <AcrylicBrush x:Key="AcrylicInAppFillColorThinBrush" FallbackColor="#A3545454" TintColor="#FF545454" TintLuminosityOpacity="0.64" TintOpacity="0" />
-            <StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="AcrylicInAppFillColorThinBrush" />
             <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.4</x:Double>
             <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
             <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
@@ -67,9 +64,6 @@
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="HighContrast">
-            <StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SystemControlBackgroundBaseLowBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="SystemControlBackgroundBaseLowBrush" />
             <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0</x:Double>
             <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
             <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">2</Thickness>
@@ -122,9 +116,6 @@
 
         <ResourceDictionary x:Key="Light">
             <AcrylicBrush x:Key="AcrylicInAppFillColorThinBrush" FallbackColor="#99D3D3D3" TintColor="#FFD3D3D3" TintLuminosityOpacity="0.44" TintOpacity="0" />
-            <StaticResource x:Key="ScreenshotsCarouselPanelBackgroundBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselPanelBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
-            <StaticResource x:Key="ScreenshotsCarouselViewerBackdropBrush" ResourceKey="AcrylicInAppFillColorThinBrush" />
             <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.1</x:Double>
             <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
             <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
@@ -186,44 +177,66 @@
     <x:Double x:Key="SubtleIconButtonWidth">32</x:Double>
     <x:Double x:Key="SubtleIconButtonHeight">32</x:Double>
     <Thickness x:Key="SubtleIconButtonPadding">0</Thickness>
-    <Style x:Key="SubtleIconButtonStyle" TargetType="Button">
-        <Setter Property="Width" Value="{StaticResource SubtleIconButtonWidth}" />
-        <Setter Property="Height" Value="{StaticResource SubtleIconButtonHeight}" />
-        <Setter Property="Padding" Value="{StaticResource SubtleIconButtonPadding}" />
+
+    <Style x:Key="SubtleIconButtonBaseStyle" TargetType="Button">
         <Setter Property="Background" Value="{ThemeResource SubtleIconButtonBackground}" />
         <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
         <Setter Property="Foreground" Value="{ThemeResource SubtleIconButtonForeground}" />
         <Setter Property="BorderBrush" Value="{ThemeResource SubtleIconButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="{ThemeResource SubtleIconButtonBorderThemeThickness}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+        <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+        <Setter Property="FocusVisualMargin" Value="-3" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
-        <Setter Property="UseSystemFocusVisuals" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <ContentPresenter x:Name="ContentPresenter" Padding="{TemplateBinding Padding}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{TemplateBinding Background}" BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" CornerRadius="{TemplateBinding CornerRadius}">
+                    <ContentPresenter x:Name="ContentPresenter" Padding="{TemplateBinding Padding}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw" Background="{TemplateBinding Background}" BackgroundSizing="{TemplateBinding BackgroundSizing}" BackgroundTransition="{StaticResource DefaultBackgroundTransition}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" CornerRadius="{TemplateBinding CornerRadius}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="PointerOver">
-                                    <VisualState.Setters>
-                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleIconButtonBackgroundPointerOver}" />
-                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource SubtleIconButtonBorderBrushPointerOver}" />
-                                        <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SubtleIconButtonForegroundPointerOver}" />
-                                    </VisualState.Setters>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBackgroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonForegroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
-                                    <VisualState.Setters>
-                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleIconButtonBackgroundPressed}" />
-                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource SubtleIconButtonBorderBrushPressed}" />
-                                        <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SubtleIconButtonForegroundPressed}" />
-                                    </VisualState.Setters>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBackgroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonForegroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
-                                    <VisualState.Setters>
-                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleIconButtonBackgroundDisabled}" />
-                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource SubtleIconButtonBorderBrushDisabled}" />
-                                        <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SubtleIconButtonForegroundDisabled}" />
-                                    </VisualState.Setters>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBackgroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonBorderBrushDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleIconButtonForegroundDisabled}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
@@ -233,6 +246,11 @@
         </Setter>
     </Style>
 
+    <Style x:Key="SubtleIconButtonStyle" BasedOn="{StaticResource SubtleIconButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Width" Value="{StaticResource SubtleIconButtonWidth}" />
+        <Setter Property="Height" Value="{StaticResource SubtleIconButtonHeight}" />
+        <Setter Property="Padding" Value="{StaticResource SubtleIconButtonPadding}" />
+    </Style>
 
     <Style x:Key="VideoPlayButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="{ThemeResource PlayButtonBackground}" />
@@ -509,7 +527,6 @@
         </Grid>
     </DataTemplate>
 
-
     <Style x:Key="ImageContentControlStyle" TargetType="ContentControl">
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
@@ -623,7 +640,6 @@
             </Grid>
         </controls:ConstrainedBox>
     </DataTemplate>
-
 
     <Style x:Key="StaticListViewStyle" TargetType="local:NoPointerWheelListView">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -794,17 +810,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-
-    <Thickness x:Key="PdpModuleMargin">0,0,0,8</Thickness>
-    <Thickness x:Key="ModuleHeaderInnerPadding">24,0,16,0</Thickness>
-    <x:Double x:Key="ModuleHeaderFontSize">16</x:Double>
-    <Style x:Key="PdpModuleStackPanelStyle" TargetType="StackPanel">
-        <Setter Property="CornerRadius" Value="{ThemeResource OverlayCornerRadius}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
     </Style>
 
     <Style x:Key="DefaultStoreCarousel2Style" TargetType="local:StoreCarousel2">
