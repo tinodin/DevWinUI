@@ -101,7 +101,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             return;
         }
 
-        _scrollingHost ??= FindDescendant<ScrollViewer>(_flipView);
+        _scrollingHost ??= _flipView.FindDescendant<ScrollViewer>();
         if (_scrollingHost == null || _scrollingHost.ActualWidth <= 0 || _scrollingHost.ActualHeight <= 0)
         {
             return;
@@ -140,7 +140,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private TextBlock _counterTextBlock;
     private Run _currentIndexRun;
     private Run _totalIndexRun;
-    private ScreenshotDataTemplateSelector _templateSelector;
 
     private int _pendingSelectedIndex;
     private int _selectionRequestVersion;
@@ -368,14 +367,12 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         var flipView = FindName("ItemsFlipView") as FlipView;
         _captionTextBlock = FindName("CaptionTextBlock") as TextBlock;
         var indexGrid = FindName("IndexTextBlock") as Grid;
-        _counterTextBlock = indexGrid != null ? FindDescendant<TextBlock>(indexGrid) : null;
+        _counterTextBlock = indexGrid?.FindDescendant<TextBlock>();
         if (_counterTextBlock != null && _counterTextBlock.Inlines.Count >= 5)
         {
             _currentIndexRun = _counterTextBlock.Inlines[0] as Run;
             _totalIndexRun = _counterTextBlock.Inlines[4] as Run;
         }
-
-        _templateSelector = FindResource("FlipViewDataTemplateSelector") as ScreenshotDataTemplateSelector;
 
         _flipView?.SelectionChanged -= OnSelectionChanged;
 
@@ -537,11 +534,11 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             {
                 if (SafeContainerFromIndex(i) is FrameworkElement container)
                 {
-                    if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+                    if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
                     {
                         videoItem.ResetSource();
                     }
-                    else if (FindDescendant<MediaPlayerElement>(container) is { } player)
+                    else if (container.FindDescendant<MediaPlayerElement>() is { } player)
                     {
                         try { player.SetMediaPlayer(null); } catch { }
                     }
@@ -593,8 +590,8 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         if (container == null) return;
 
-        UIElement target = FindDescendant<Image>(container)
-                        ?? FindDescendant<TileImage>(container)
+        UIElement target = container.FindDescendant<Image>()
+                        ?? container.FindDescendant<TileImage>()
                         ?? (UIElement)container;
 
         try
@@ -636,7 +633,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         if (container != null)
         {
             UIElement target = container;
-            var player = FindDescendant<MediaPlayerElement>(container);
+            var player = container.FindDescendant<MediaPlayerElement>();
             var duration = player != null && player.MediaPlayer != null ? player.MediaPlayer.NaturalDuration.TotalSeconds : 0;
 
             if (player != null && duration > 0)
@@ -645,7 +642,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             }
             else
             {
-                target = FindDescendant<Image>(container) ?? FindDescendant<TileImage>(container) ?? container;
+                target = container.FindDescendant<Image>() ?? container.FindDescendant<TileImage>() ?? container;
             }
 
             try
@@ -690,7 +687,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         {
             UIElement target = null;
             if (SafeContainerFromIndex(SelectedIndex) is FrameworkElement container)
-                target = FindDescendant<Image>(container) ?? FindDescendant<TileImage>(container) ?? container;
+                target = container.FindDescendant<Image>() ?? container.FindDescendant<TileImage>() ?? container;
             target ??= _flipView;
             try
             {
@@ -707,20 +704,8 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void ApplyAgeRestriction()
     {
-        if (_templateSelector == null)
-            return;
-
-        _templateSelector.AgeRestricted = AgeRestricted;
-        _templateSelector.IsAgeBlocked = IsAgeBlocked;
         if (_flipView != null && ViewModel != null)
             ApplySelection();
-    }
-
-    private object FindResource(object key)
-    {
-        if (Resources.ContainsKey(key))
-            return Resources[key];
-        return null;
     }
 
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) => UpdateOverlaySize();
@@ -777,10 +762,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
             if (container != null)
             {
-                if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+                if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
                 {
                     videoItem.ApplySource();
-                    var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
+                    var element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
                     element?.AutoPlay = true;
                 }
             }
@@ -833,7 +818,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
                 return;
             }
 
-            if (SafeContainerFromIndex(_flipView.SelectedIndex) is FrameworkElement container && (FindDescendant<PreviewViewerVideoItem>(container) != null || FindDescendant<MediaPlayerElement>(container) != null))
+            if (SafeContainerFromIndex(_flipView.SelectedIndex) is FrameworkElement container && (container.FindDescendant<PreviewViewerVideoItem>() != null || container.FindDescendant<MediaPlayerElement>() != null))
             {
                 PlayCurrentVideo();
                 return;
@@ -852,10 +837,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         if (_flipView.SelectedItem is VideoPlayerSource videoSource)
         {
-            if (FindDescendant<PreviewViewerVideoItem>(container) is { } videoItem)
+            if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
             {
                 videoItem.ApplySource();
-                var element = videoItem.VideoPlayerItemElement ?? FindDescendant<MediaPlayerElement>(container);
+                var element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
                 element?.AutoPlay = true;
             }
 
@@ -895,23 +880,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
                 if (i == _flipView.SelectedIndex) continue;
                 if (SafeContainerFromIndex(i) is FrameworkElement container)
                 {
-                    var player = FindDescendant<MediaPlayerElement>(container);
+                    var player = container.FindDescendant<MediaPlayerElement>();
                     try { player?.MediaPlayer?.Pause(); } catch { }
                 }
             }
         }
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T m) return m;
-            var d = FindDescendant<T>(child);
-            if (d != null) return d;
-        }
-        return null;
     }
 }

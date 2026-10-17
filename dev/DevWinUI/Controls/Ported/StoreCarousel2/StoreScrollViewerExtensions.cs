@@ -48,21 +48,7 @@ public static class StoreScrollViewerExtensions
             sv.ChangeView(0, null, null, true);
             return;
         }
-        var inner = FindDescendant<ScrollViewer>(root);
+        var inner = root.FindDescendant<ScrollViewer>();
         inner?.ChangeView(0, null, null, true);
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null) return null;
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T m) return m;
-            var d = FindDescendant<T>(child);
-            if (d != null) return d;
-        }
-        return null;
     }
 }

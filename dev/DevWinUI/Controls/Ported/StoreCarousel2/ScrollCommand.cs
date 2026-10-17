@@ -190,33 +190,7 @@ public partial class ScrollCommand : XamlUICommand
             return sv;
         }
 
-        return FindDescendant<ScrollViewer>(element);
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null)
-        {
-            return null;
-        }
-
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T match)
-            {
-                return match;
-            }
-
-            var desc = FindDescendant<T>(child);
-            if (desc != null)
-            {
-                return desc;
-            }
-        }
-
-        return null;
+        return element.FindDescendant<ScrollViewer>();
     }
 }
 

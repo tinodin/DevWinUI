@@ -8,13 +8,10 @@ public partial class ScreenshotDataTemplateSelector : DataTemplateSelector
     public DataTemplate VideoItemDataTemplate { get; set; }
     public DataTemplate VideoPlayerTemplate { get; set; }
 
-    public bool AgeRestricted { get; set; }
-    public bool IsAgeBlocked { get; set; }
-
     protected override DataTemplate SelectTemplateCore(object item)
     {
-        if (AgeRestricted)
-            return IsAgeBlocked ? AgeRestrictedBlockedDataTemplate ?? AgeRestrictedDataTemplate : AgeRestrictedDataTemplate;
+        if (item is AgeRestrictedTileItem ageRestricted)
+            return ageRestricted.IsAgeBlocked ? AgeRestrictedBlockedDataTemplate ?? AgeRestrictedDataTemplate : AgeRestrictedDataTemplate;
 
         if (item is VideoPlayerSource)
             return VideoItemDataTemplate ?? VideoPlayerTemplate;

@@ -40,7 +40,7 @@ public static partial class ListViewExtensions
 
         index = (index < 0) ? (index + listViewBase.Items.Count) : index;
 
-        var scrollViewer = FindDescendant<ScrollViewer>(listViewBase);
+        var scrollViewer = listViewBase.FindDescendant<ScrollViewer>();
         if (scrollViewer == null)
         {
             return;
@@ -54,8 +54,6 @@ public static partial class ListViewExtensions
         if (selectorItem == null)
         {
             isVirtualizing = true;
-            previousXOffset = scrollViewer.HorizontalOffset;
-            previousYOffset = scrollViewer.VerticalOffset;
 
             var tcs = new TaskCompletionSource<object>();
             void ViewChanged(object sender, ScrollViewerViewChangedEventArgs args) => tcs.TrySetResult(null);
@@ -250,19 +248,5 @@ public static partial class ListViewExtensions
         {
             scrollViewer.ViewChanged -= ViewChanged;
         }
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null) return null;
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T m) return m;
-            var d = FindDescendant<T>(child);
-            if (d != null) return d;
-        }
-        return null;
     }
 }

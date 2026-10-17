@@ -252,9 +252,7 @@ public partial class StoreCarousel2 : Control
                     {
                         if (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count && _card.TileList.ContainerFromIndex(finalIndex) is FrameworkElement container)
                         {
-                            target = FindDescendant<Image>(container)
-                                  ?? FindDescendant<TileImage>(container)
-                                  ?? container;
+                            target = container.FindDescendant<Image>() ?? container.FindDescendant<TileImage>() ?? container;
                         }
                     }
                     catch { }
@@ -281,19 +279,5 @@ public partial class StoreCarousel2 : Control
                 }
             });
         }
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null) return null;
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T match) return match;
-            var desc = FindDescendant<T>(child);
-            if (desc != null) return desc;
-        }
-        return null;
     }
 }

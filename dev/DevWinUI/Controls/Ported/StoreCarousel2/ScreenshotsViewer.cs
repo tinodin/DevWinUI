@@ -33,13 +33,6 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void ApplyAgeRestriction()
     {
-        var selector = ScreenshotTemplateSelector;
-        if (selector != null)
-        {
-            selector.AgeRestricted = AgeRestricted;
-            selector.IsAgeBlocked = IsAgeBlocked;
-        }
-
         RefreshTileListSource();
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, HookAgeGateSignInButtons);
     }
@@ -51,20 +44,13 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        var items = PreviewViewModel?.Items;
-        if (items == null)
+        if (AgeRestricted)
         {
-            ScreenshotTileList.ItemsSource = null;
+            ScreenshotTileList.ItemsSource = new List<object> { AgeRestrictedTileItem.Create(PreviewViewModel?.Items, IsAgeBlocked) };
             return;
         }
 
-        if (AgeRestricted && items.Count > 0)
-        {
-            ScreenshotTileList.ItemsSource = new List<object> { items[0] };
-            return;
-        }
-
-        ScreenshotTileList.ItemsSource = items;
+        ScreenshotTileList.ItemsSource = PreviewViewModel?.Items;
     }
 
     private void AttachTileList()
@@ -94,7 +80,7 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        if (e.OldFocusedElement is not DependencyObject oldHost || FindAscendantOrSelf<ListViewItem>(oldHost) is not ListViewItem oldItem || !IsDescendantOf(ScreenshotTileList, oldItem))
+        if (e.OldFocusedElement is not DependencyObject oldHost || oldHost.FindAscendantOrSelf<ListViewItem>() is not ListViewItem oldItem || !IsDescendantOf(ScreenshotTileList, oldItem))
         {
             return;
         }
@@ -104,7 +90,7 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        var item = FindAscendantOrSelf<ListViewItem>(target);
+        var item = target.FindAscendantOrSelf<ListViewItem>();
         if (item == null)
         {
             return;
@@ -130,7 +116,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         }
 
         var currentFocused = FocusManager.GetFocusedElement(ScreenshotTileList.XamlRoot) as DependencyObject;
-        var currentItem = FindAscendantOrSelf<ListViewItem>(currentFocused);
+        var currentItem = currentFocused?.FindAscendantOrSelf<ListViewItem>();
         if (currentItem != null)
         {
             var currentIndex = ScreenshotTileList.IndexFromContainer(currentItem);
@@ -166,7 +152,7 @@ public sealed partial class ScreenshotsViewer : UserControl
             DependencyObject searchRoot = container;
             if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
                 searchRoot = lviRoot;
-            var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
+            var image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
             if (image == null)
                 continue;
             if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
@@ -210,7 +196,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
             searchRoot = lviRoot;
 
-        var button = FindDescendant<Button>(searchRoot) ?? FindDescendant<Button>(container);
+        var button = searchRoot.FindDescendant<Button>() ?? container.FindDescendant<Button>();
         if (button == null)
         {
             return false;
@@ -269,7 +255,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (args.ItemContainer is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
             searchRoot = lviRoot;
 
-        var image = FindDescendant<Image>(searchRoot) ?? FindDescendant<Image>(container);
+        var image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
         if (image == null)
         {
             if (args.Phase < 3)
@@ -383,8 +369,8 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void FlushContainerToEdge(int index)
     {
-        var sv = FindDescendant<ScrollViewer>(ScreenshotTileList);
-        FrameworkElement container = null;
+        var sv = ScreenshotTileList?.FindDescendant<ScrollViewer>();
+        FrameworkElement container;
         try { container = ScreenshotTileList.ContainerFromIndex(index) as FrameworkElement; } catch { return; }
         if (sv == null || container == null) return;
         var content = sv.Content as UIElement; if (content == null) return;
@@ -395,41 +381,14 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private bool IsItemFullyVisible(int index)
     {
-        var sv = FindDescendant<ScrollViewer>(ScreenshotTileList);
-        FrameworkElement container = null;
+        var sv = ScreenshotTileList?.FindDescendant<ScrollViewer>();
+        FrameworkElement container;
         try { container = ScreenshotTileList.ContainerFromIndex(index) as FrameworkElement; } catch { return false; }
         if (sv == null || container == null) return false;
         var origin = container.TransformToVisual(sv).TransformPoint(new Windows.Foundation.Point(0, 0));
         var right = origin.X + container.ActualWidth;
         const double epsilon = 1.0;
         return origin.X >= -epsilon && right <= sv.ViewportWidth + epsilon;
-    }
-
-    private ScreenshotDataTemplateSelector ScreenshotTemplateSelector =>
-        Resources["ScreenshotTemplateSelector"] as ScreenshotDataTemplateSelector;
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null) return null;
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T m) return m;
-            var d = FindDescendant<T>(child);
-            if (d != null) return d;
-        }
-        return null;
-    }
-
-    private static T FindAscendantOrSelf<T>(DependencyObject element) where T : DependencyObject
-    {
-        while (element != null)
-        {
-            if (element is T match) return match;
-            element = VisualTreeHelper.GetParent(element);
-        }
-        return null;
     }
 
     private static bool IsDescendantOf(DependencyObject root, DependencyObject node)

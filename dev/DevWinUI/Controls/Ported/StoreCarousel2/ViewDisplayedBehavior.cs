@@ -39,7 +39,7 @@ public partial class ViewDisplayedBehavior : Behavior<FrameworkElement>
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _scrollViewer = FindAncestorScrollViewer(AssociatedObject);
+        _scrollViewer = AssociatedObject?.FindAscendant<ScrollViewer>();
         if (_scrollViewer != null)
         {
             _scrollViewer.ViewChanged -= OnScrollChanged;
@@ -54,11 +54,8 @@ public partial class ViewDisplayedBehavior : Behavior<FrameworkElement>
 
     private void DetachScrollViewer()
     {
-        if (_scrollViewer != null)
-        {
-            _scrollViewer.ViewChanged -= OnScrollChanged;
-            _scrollViewer = null;
-        }
+        _scrollViewer?.ViewChanged -= OnScrollChanged;
+        _scrollViewer = null;
     }
 
     private void UpdateVisibility()
@@ -71,20 +68,9 @@ public partial class ViewDisplayedBehavior : Behavior<FrameworkElement>
 
     private static bool IsVisibleInViewport(FrameworkElement element)
     {
-        var sv = FindAncestorScrollViewer(element);
+        var sv = element.FindAscendant<ScrollViewer>();
         if (sv == null) return element.IsLoaded;
         var bounds = element.TransformToVisual(sv).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
         return bounds.Right >= 0 && bounds.Bottom >= 0 && bounds.Left <= sv.ViewportWidth && bounds.Top <= sv.ViewportHeight;
-    }
-
-    private static ScrollViewer FindAncestorScrollViewer(DependencyObject start)
-    {
-        var cur = VisualTreeHelper.GetParent(start);
-        while (cur != null)
-        {
-            if (cur is ScrollViewer sv) return sv;
-            cur = VisualTreeHelper.GetParent(cur);
-        }
-        return null;
     }
 }

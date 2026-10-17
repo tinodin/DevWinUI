@@ -97,7 +97,7 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
     private void AttachScrollViewer()
     {
         DetachScrollViewer();
-        _scrollViewer = FindDescendant<ScrollViewer>(AssociatedObject);
+        _scrollViewer = AssociatedObject?.FindDescendant<ScrollViewer>();
         if (_scrollViewer != null)
         {
             _scrollViewer.ViewChanged += OnViewChanged;
@@ -143,7 +143,7 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
             return;
         }
 
-        var sv = _scrollViewer ?? FindDescendant<ScrollViewer>(AssociatedObject);
+        var sv = _scrollViewer ?? AssociatedObject?.FindDescendant<ScrollViewer>();
         if (sv != null)
         {
             WireScrollCommandTargets(sv);
@@ -158,31 +158,5 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 
         left.Visibility = Visibility.Visible;
         right.Visibility = Visibility.Visible;
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null)
-        {
-            return null;
-        }
-
-        var count = VisualTreeHelper.GetChildrenCount(root);
-        for (var i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T match)
-            {
-                return match;
-            }
-
-            var desc = FindDescendant<T>(child);
-            if (desc != null)
-            {
-                return desc;
-            }
-        }
-
-        return null;
     }
 }

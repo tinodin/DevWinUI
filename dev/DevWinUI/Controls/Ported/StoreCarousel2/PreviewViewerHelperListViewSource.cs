@@ -74,7 +74,7 @@ public class PreviewViewerHelperListViewSource
             container.Height = container.ActualHeight;
         }
 
-        UIElement source = FindNamedDescendant(container, name) ?? container;
+        UIElement source = container.FindDescendantOrSelf(name) ?? container;
         if (source is FrameworkElement sourceFe)
         {
             if (sourceFe.ActualWidth > 0 && double.IsNaN(sourceFe.Width))
@@ -158,7 +158,7 @@ public class PreviewViewerHelperListViewSource
 
         if (!started && container != null)
         {
-            UIElement target = FindNamedDescendant(container, name) ?? container;
+            UIElement target = container.FindDescendantOrSelf(name) ?? container;
             target?.Opacity = 1;
             animation.TryStart(target);
         }
@@ -180,45 +180,4 @@ public class PreviewViewerHelperListViewSource
         return element.Visibility == Visibility.Visible && element.ActualWidth > 0 && element.ActualHeight > 0;
     }
 
-    private static UIElement FindNamedDescendant(DependencyObject root, string name)
-    {
-        if (root == null || string.IsNullOrEmpty(name)) return null;
-
-        if (root is FrameworkElement fe && fe.Name == name)
-        {
-            return fe;
-        }
-
-        int count = VisualTreeHelper.GetChildrenCount(root);
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is FrameworkElement childFe && childFe.Name == name)
-            {
-                return childFe;
-            }
-
-            var found = FindNamedDescendant(child, name);
-            if (found != null)
-            {
-                return found;
-            }
-        }
-
-        return null;
-    }
-
-    private static T FindDescendant<T>(DependencyObject root) where T : DependencyObject
-    {
-        if (root == null) return null;
-        int count = VisualTreeHelper.GetChildrenCount(root);
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T match) return match;
-            var desc = FindDescendant<T>(child);
-            if (desc != null) return desc;
-        }
-        return null;
-    }
 }
