@@ -330,7 +330,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Button x:Name="CloseButton" Margin="0,24,0,12" HorizontalAlignment="Right" ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5" Style="{ThemeResource SubtleIconButtonStyle}">
+                <Button x:Name="CloseButton" Margin="0,24,0,12" HorizontalAlignment="Right" ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5" Style="{ThemeResource SubtleButtonStyle}" Width="32" Height="32" Padding="0">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" FontFamily="Segoe MDL2 Assets" FontSize="16" FontWeight="Normal" IsTextScaleFactorEnabled="False" LineStackingStrategy="BaselineToBaseline" OpticalMarginAlignment="TrimSideBearings" Text="&#xE711;" TextLineBounds="Tight" TextTrimming="Clip" />
                     <animations:Implicit.ShowAnimations>
                         <animations:OpacityAnimation From="0" To="1" Duration="0:0:0.4" />
