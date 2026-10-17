@@ -796,4 +796,28 @@
         </Setter>
     </Style>
 
+
+    <Thickness x:Key="PdpModuleMargin">0,0,0,8</Thickness>
+    <Thickness x:Key="ModuleHeaderInnerPadding">24,0,16,0</Thickness>
+    <x:Double x:Key="ModuleHeaderFontSize">16</x:Double>
+    <Style x:Key="PdpModuleStackPanelStyle" TargetType="StackPanel">
+        <Setter Property="CornerRadius" Value="{ThemeResource OverlayCornerRadius}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+    </Style>
+
+    <Style x:Key="DefaultStoreCarousel2Style" TargetType="local:StoreCarousel2">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:StoreCarousel2">
+                    <local:ScreenshotsViewer x:Name="ScreenshotsControl" Height="316" Margin="0,24" AgeRestricted="{TemplateBinding AgeRestricted}" IsAgeBlocked="{TemplateBinding IsAgeBlocked}" ItemsSource="{TemplateBinding ItemsSource}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style BasedOn="{StaticResource DefaultStoreCarousel2Style}" TargetType="local:StoreCarousel2" />
+
 </ResourceDictionary>

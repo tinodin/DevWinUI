@@ -820,7 +820,7 @@
         {
           "UniqueId": "DevWinUIGallery.Views.StoreCarousel2Page",
           "Title": "Store Carousel 2",
-          "Subtitle": "A modern, Store-style carousel ported from the Microsoft Store, designed to showcase screenshots and videos with the ability to expand into fullscreen.",
+          "Subtitle": "A modern, Store-style carousel inspired by the Microsoft Store, designed to showcase screenshots and videos with the ability to expand into fullscreen.",
           "IsNew": true,
           "ImagePath": "ms-appx:///Assets/Fluent/Image.png"
         },
