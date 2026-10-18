@@ -144,7 +144,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private int _pendingSelectedIndex;
     private int _selectionRequestVersion;
     private bool _pendingSelectionSet;
-    private ConnectedAnimation _pendingAnimation;
     private int _videoPlayGeneration;
 
     public static readonly DependencyProperty AgeRestrictedProperty =
@@ -430,13 +429,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     public bool IsOpen => _isOpen;
 
     public PreviewOverlayManager OverlayManager { get; set; } = new PreviewOverlayManager();
-    public FlipView PreviewFlipView => _flipView;
-
-    public void StartConnectedAnimation(ConnectedAnimation animation)
-    {
-        _pendingAnimation = animation;
-        TryStartPendingAnimation();
-    }
 
     public void OpenOverlayPopup()
     {
@@ -475,7 +467,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         FocusFlipViewProgrammatic();
 
         TryStartForwardConnectedAnimation();
-        TryStartPendingAnimation();
         if (_flipView != null)
         {
             _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => EnsureCurrentVideoStarted());
@@ -490,7 +481,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     public void Hide()
     {
         if (!IsOpen) return;
-        _pendingAnimation = null;
 
         var currentContainer = _flipView != null && _flipView.SelectedIndex >= 0 ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement : null;
 
@@ -650,30 +640,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         {
             return null;
         }
-    }
-
-    private void TryStartPendingAnimation()
-    {
-        if (_pendingAnimation == null) return;
-        var animation = _pendingAnimation;
-        _pendingAnimation = null;
-        void TryStart()
-        {
-            UIElement target = null;
-            if (SafeContainerFromIndex(SelectedIndex) is FrameworkElement container)
-                target = container.FindDescendant<Image>() ?? container.FindDescendant<TileImage>() ?? container;
-            target ??= _flipView;
-            try
-            {
-                animation.Configuration = new DirectConnectedAnimationConfiguration();
-                _ = animation.TryStart(target);
-            }
-            catch { }
-        }
-        if (SafeContainerFromIndex(SelectedIndex) != null)
-            TryStart();
-        else if (_flipView != null)
-            _ = _flipView.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, TryStart);
     }
 
     private void ApplyAgeRestriction()

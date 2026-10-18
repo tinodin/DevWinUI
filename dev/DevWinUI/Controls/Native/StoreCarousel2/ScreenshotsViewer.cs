@@ -7,7 +7,6 @@ public sealed partial class ScreenshotsViewer : UserControl
     public event EventHandler SignInClicked;
 
     public ListViewBase TileList => ScreenshotTileList;
-    public int LastClickedIndex { get; private set; }
 
     public PreviewViewerHelper Helper { get; set; }
 
@@ -236,7 +235,6 @@ public sealed partial class ScreenshotsViewer : UserControl
     {
         var index = ScreenshotTileList.Items.IndexOf(e.ClickedItem);
         if (index < 0) index = 0;
-        LastClickedIndex = index;
         ScreenshotClicked?.Invoke(this, e.ClickedItem ?? index);
         Clicked?.Invoke(this, EventArgs.Empty);
 
@@ -258,20 +256,6 @@ public sealed partial class ScreenshotsViewer : UserControl
     internal void OnPreviewViewModelChanged(PreviewModuleViewModel oldValue, PreviewModuleViewModel newValue)
     {
         RefreshTileListSource();
-    }
-
-    public void BringItemFlushToEdge(int index)
-    {
-        if (ScreenshotTileList == null || index < 0 || index >= ScreenshotTileList.Items.Count)
-            return;
-
-        if (Helper?.Popup?.List != null && Helper.Popup.List.SelectedIndex == index)
-            return;
-
-        if (IsItemFullyVisible(index))
-            return;
-        ScreenshotTileList.ScrollIntoView(ScreenshotTileList.Items[index], ScrollIntoViewAlignment.Leading);
-        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushContainerToEdge(index));
     }
 
     public void FocusItem(int index, FocusState state)
@@ -299,29 +283,5 @@ public sealed partial class ScreenshotsViewer : UserControl
             }
             catch { }
         });
-    }
-
-    private void FlushContainerToEdge(int index)
-    {
-        var sv = ScreenshotTileList?.FindDescendant<ScrollViewer>();
-        FrameworkElement container;
-        try { container = ScreenshotTileList.ContainerFromIndex(index) as FrameworkElement; } catch { return; }
-        if (sv == null || container == null) return;
-        var content = sv.Content as UIElement; if (content == null) return;
-        var origin = container.TransformToVisual(content).TransformPoint(new Windows.Foundation.Point(0, 0));
-        var target = origin.X; if (target < 0) target = 0; if (target > sv.ScrollableWidth) target = sv.ScrollableWidth;
-        sv.ChangeView(target, null, null, true);
-    }
-
-    private bool IsItemFullyVisible(int index)
-    {
-        var sv = ScreenshotTileList?.FindDescendant<ScrollViewer>();
-        FrameworkElement container;
-        try { container = ScreenshotTileList.ContainerFromIndex(index) as FrameworkElement; } catch { return false; }
-        if (sv == null || container == null) return false;
-        var origin = container.TransformToVisual(sv).TransformPoint(new Windows.Foundation.Point(0, 0));
-        var right = origin.X + container.ActualWidth;
-        const double epsilon = 1.0;
-        return origin.X >= -epsilon && right <= sv.ViewportWidth + epsilon;
     }
 }

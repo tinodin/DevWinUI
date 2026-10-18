@@ -1,5 +1,3 @@
-using Windows.Media.Core;
-
 namespace DevWinUI;
 
 public sealed partial class PreviewViewerVideoItem : UserControl
@@ -48,21 +46,5 @@ public sealed partial class PreviewViewerVideoItem : UserControl
     internal void ApplySource()
     {
         UpdateSource();
-    }
-
-    internal void ResetSource()
-    {
-        try
-        {
-            var element = VideoPlayerItemElement;
-            if (element != null)
-            {
-                element.PosterSource = null;
-                element.SetMediaPlayer(null);
-            }
-        }
-        catch { }
-
-        VideoPlayerSource?.TeardownPlayer();
     }
 }
