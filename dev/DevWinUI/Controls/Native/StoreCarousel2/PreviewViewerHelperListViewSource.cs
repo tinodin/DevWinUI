@@ -26,10 +26,6 @@ public class PreviewViewerHelperListViewSource
         }
         else if (item is VideoPlayerSource)
         {
-            name = "VideoPlayerPreviewGrid";
-        }
-        else if (item != null && item.GetType().Name == "VideoThumbnailItem")
-        {
             name = "VideoPreviewImage";
         }
         else

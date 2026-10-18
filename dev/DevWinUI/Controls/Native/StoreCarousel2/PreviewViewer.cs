@@ -493,18 +493,14 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         _pendingAnimation = null;
 
         var currentContainer = _flipView != null && _flipView.SelectedIndex >= 0 ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement : null;
-        var containers = SnapshotRealizedContainers();
-
-        if (!RemoveOverlayPopup())
-        {
-            return;
-        }
 
         PrepareBackAnimation(currentContainer);
 
         TeardownAllVideos();
 
         Closed?.Invoke(this, EventArgs.Empty);
+
+        RemoveOverlayPopup();
     }
 
     private List<FrameworkElement> SnapshotRealizedContainers()
@@ -528,24 +524,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void TeardownAllVideos()
     {
-        if (_flipView?.Items != null)
-        {
-            for (var i = 0; i < _flipView.Items.Count; i++)
-            {
-                if (SafeContainerFromIndex(i) is FrameworkElement container)
-                {
-                    if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
-                    {
-                        videoItem.ResetSource();
-                    }
-                    else if (container.FindDescendant<MediaPlayerElement>() is { } player)
-                    {
-                        try { player.SetMediaPlayer(null); } catch { }
-                    }
-                }
-            }
-        }
-
         if (ViewModel?.Items != null)
         {
             for (var i = ViewModel.Items.Count - 1; i >= 0; i--)
@@ -590,13 +568,9 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         if (container == null) return;
 
-        UIElement target = container.FindDescendant<Image>()
-                        ?? container.FindDescendant<TileImage>()
-                        ?? (UIElement)container;
-
         try
         {
-            var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, target);
+            var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, container);
             backAnim?.Configuration = new DirectConnectedAnimationConfiguration();
         }
         catch { }

@@ -256,7 +256,7 @@ public partial class StoreCarousel2 : Control
                         }
                     }
                     catch { }
-                    target ??= _card.TileList as UIElement ?? _card as UIElement;
+                    target ??= _card.TileList as UIElement ?? _card;
 
                     if (target != null)
                     {
