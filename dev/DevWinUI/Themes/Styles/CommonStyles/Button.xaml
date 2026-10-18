@@ -1,6 +1,51 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals">
+                    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+                    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+                    xmlns:media="using:CommunityToolkit.WinUI.Media"
+                    xmlns:ui="using:CommunityToolkit.WinUI">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.4</x:Double>
+            <Thickness x:Key="ArrowScrollViewerButtonBorderThemeThickness">0</Thickness>
+            <StaticResource x:Key="ArrowScrollViewerButtonBackground" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPointerOver" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPressed" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPointerOver" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForeground" ResourceKey="ControlStrongFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPointerOver" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPressed" ResourceKey="TextFillColorSecondaryBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0</x:Double>
+            <Thickness x:Key="ArrowScrollViewerButtonBorderThemeThickness">1</Thickness>
+            <StaticResource x:Key="ArrowScrollViewerButtonBackground" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPointerOver" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPressed" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrush" ResourceKey="SystemControlForegroundTransparentBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPointerOver" ResourceKey="SystemControlForegroundTransparentBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPressed" ResourceKey="SystemControlForegroundTransparentBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForeground" ResourceKey="SystemControlForegroundAltMediumHighBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPointerOver" ResourceKey="SystemControlHighlightAltAltMediumHighBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPressed" ResourceKey="SystemControlHighlightAltAltMediumHighBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <x:Double x:Key="HorizontalArrowScrollViewerButtonShadowOpacity">0.1</x:Double>
+            <Thickness x:Key="ArrowScrollViewerButtonBorderThemeThickness">0</Thickness>
+            <StaticResource x:Key="ArrowScrollViewerButtonBackground" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPointerOver" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBackgroundPressed" ResourceKey="AcrylicInAppFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPointerOver" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerButtonBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForeground" ResourceKey="ControlStrongFillColorDefaultBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPointerOver" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="ArrowScrollViewerArrowForegroundPressed" ResourceKey="TextFillColorSecondaryBrush" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
 
     <Style x:Key="HyperlinkButtonStyle" TargetType="HyperlinkButton" />
 
@@ -367,6 +412,167 @@
                         </VisualStateManager.VisualStateGroups>
                     </ContentPresenter>
 
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <media:AttachedCardShadow x:Key="HorizontalArrowScrollViewerButtonShadow" BlurRadius="12" CornerRadius="14" Opacity="{ThemeResource HorizontalArrowScrollViewerButtonShadowOpacity}" />
+
+    <x:Double x:Key="ArrowScrollViewerButtonWidth">28</x:Double>
+    <x:Double x:Key="ArrowScrollViewerButtonHeight">28</x:Double>
+    <CornerRadius x:Key="ArrowScrollViewerButtonCornerRadius">14</CornerRadius>
+    <x:Double x:Key="ArrowScrollViewerButtonFontSize">8</x:Double>
+    <x:Double x:Key="ArrowScrollViewerButtonFontSizePointerOver">9</x:Double>
+    <x:Double x:Key="ArrowScrollViewerButtonFontSizePressed">7</x:Double>
+    <Thickness x:Key="ArrowScrollViewerButtonHitTestExpansion">-12</Thickness>
+    <x:Double x:Key="ArrowScrollViewerButtonDisabledOpacity">1</x:Double>
+    <x:String x:Key="ArrowScrollViewerButtonDisabledVisiblity">Collapsed</x:String>
+    <animations:ImplicitAnimationSet x:Key="ArrowScrollViewerButtonImplicitAnimations" />
+
+    <Style x:Key="HorizontalArrowScrollViewerButtonStyle" TargetType="Button">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="UseSystemFocusVisuals" Value="False" />
+        <Setter Property="Width" Value="{ThemeResource ArrowScrollViewerButtonWidth}" />
+        <Setter Property="Height" Value="{ThemeResource ArrowScrollViewerButtonHeight}" />
+        <Setter Property="Margin" Value="8" />
+        <Setter Property="CornerRadius" Value="{ThemeResource ArrowScrollViewerButtonCornerRadius}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="LeftArrowScrollViewerButtonStyle" BasedOn="{StaticResource HorizontalArrowScrollViewerButtonStyle}" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="Root" Width="{ThemeResource ArrowScrollViewerButtonWidth}" Height="{ThemeResource ArrowScrollViewerButtonHeight}" ui:Effects.Shadow="{ThemeResource HorizontalArrowScrollViewerButtonShadow}" ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5" CornerRadius="{ThemeResource ArrowScrollViewerButtonCornerRadius}">
+                        <animations:Implicit.ShowAnimations>
+                            <animations:OpacityAnimation From="0" To="1" Duration="0:0:0.3" />
+                            <animations:TranslationAnimation From="-8,0,0" To="0,0,0" Duration="0:0:0.3" />
+                        </animations:Implicit.ShowAnimations>
+                        <Rectangle Margin="{StaticResource ArrowScrollViewerButtonHitTestExpansion}" Fill="#00FFFFFF" />
+                        <Border x:Name="Backplate" animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}" Background="{ThemeResource ArrowScrollViewerButtonBackground}" BorderBrush="{ThemeResource ArrowScrollViewerButtonBorderBrush}" BorderThickness="{ThemeResource ArrowScrollViewerButtonBorderThemeThickness}" CornerRadius="{TemplateBinding CornerRadius}" />
+                        <FontIcon x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center" animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="{StaticResource ArrowScrollViewerButtonFontSize}" Foreground="{ThemeResource ArrowScrollViewerArrowForeground}" Glyph="&#xEDD9;" MirroredWhenRightToLeft="True" UseLayoutRounding="False" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledVisiblity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RightArrowScrollViewerButtonStyle" BasedOn="{StaticResource HorizontalArrowScrollViewerButtonStyle}" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="Root" Width="{ThemeResource ArrowScrollViewerButtonWidth}" Height="{ThemeResource ArrowScrollViewerButtonHeight}" ui:Effects.Shadow="{ThemeResource HorizontalArrowScrollViewerButtonShadow}" ui:VisualExtensions.NormalizedCenterPoint="0.5,0.5" CornerRadius="{ThemeResource ArrowScrollViewerButtonCornerRadius}">
+                        <animations:Implicit.ShowAnimations>
+                            <animations:OpacityAnimation From="0" To="1" Duration="0:0:0.3" />
+                            <animations:TranslationAnimation From="8,0,0" To="0,0,0" Duration="0:0:0.3" />
+                        </animations:Implicit.ShowAnimations>
+                        <Rectangle Margin="{StaticResource ArrowScrollViewerButtonHitTestExpansion}" Fill="#00FFFFFF" />
+                        <Border x:Name="Backplate" animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}" Background="{ThemeResource ArrowScrollViewerButtonBackground}" BorderBrush="{ThemeResource ArrowScrollViewerButtonBorderBrush}" BorderThickness="{ThemeResource ArrowScrollViewerButtonBorderThemeThickness}" CornerRadius="{TemplateBinding CornerRadius}" />
+                        <FontIcon x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center" animations:Implicit.Animations="{StaticResource ArrowScrollViewerButtonImplicitAnimations}" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="{StaticResource ArrowScrollViewerButtonFontSize}" Foreground="{ThemeResource ArrowScrollViewerArrowForeground}" Glyph="&#xEDDA;" MirroredWhenRightToLeft="True" UseLayoutRounding="False" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBackgroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerArrowForegroundPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="FontSize">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ArrowScrollViewerButtonFontSizePressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledVisiblity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Backplate" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Arrow" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ArrowScrollViewerButtonDisabledOpacity}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
