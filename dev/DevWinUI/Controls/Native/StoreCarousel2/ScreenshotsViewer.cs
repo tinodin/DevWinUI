@@ -253,8 +253,15 @@ public sealed partial class ScreenshotsViewer : UserControl
         }
     }
 
-    internal void OnPreviewViewModelChanged(PreviewModuleViewModel oldValue, PreviewModuleViewModel newValue)
+    internal void OnPreviewModeChanged()
     {
+        PreviewViewModel?.PreviewMode = PreviewMode;
+    }
+
+    internal void OnPreviewViewModelChanged()
+    {
+        PreviewViewModel?.PreviewMode = PreviewMode;
+
         RefreshTileListSource();
     }
 

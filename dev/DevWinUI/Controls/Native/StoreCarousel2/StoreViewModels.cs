@@ -24,6 +24,7 @@ public class PreviewModuleViewModel
 {
     public object CurrentItem { get; set; }
     public ObservableCollection<object> Items { get; } = [];
+    public PreviewType PreviewMode { get; set; }
 }
 
 public partial class PreviewItemsViewModel : System.ComponentModel.INotifyPropertyChanged

@@ -2,77 +2,53 @@
 
 public static partial class ScrollViewerExtensions
 {
-    extension(ScrollViewer scrollViewer)
+    public static readonly DependencyProperty AutoResetOffsetProperty =
+        DependencyProperty.RegisterAttached(
+            "AutoResetOffset",
+            typeof(bool),
+            typeof(ScrollViewerExtensions),
+            new PropertyMetadata(false, OnAutoResetOffsetChanged));
+
+    public static bool GetAutoResetOffset(DependencyObject obj) => (bool)obj.GetValue(AutoResetOffsetProperty);
+    public static void SetAutoResetOffset(DependencyObject obj, bool value) => obj.SetValue(AutoResetOffsetProperty, value);
+
+    private static void OnAutoResetOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        public void ScrollToElement(UIElement element,
-        bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null)
+        if (d is FrameworkElement fe)
         {
-            var transform = element.TransformToVisual((UIElement)scrollViewer.Content);
-            var position = transform.TransformPoint(new Point(0, 0));
-
-            if (isVerticalScrolling)
+            if ((bool)e.NewValue)
             {
-                scrollViewer.ChangeView(null, position.Y, zoomFactor, !smoothScrolling);
+                fe.Loaded += OnTargetLoaded;
+                if (fe.IsLoaded)
+                    ResetOffset(fe);
             }
             else
             {
-                scrollViewer.ChangeView(position.X, null, zoomFactor, !smoothScrolling);
+                fe.Loaded -= OnTargetLoaded;
             }
         }
-        public void ScrollToElement(FrameworkElement element,
-            bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null, bool bringToTopOrLeft = true)
+        else if (d is ScrollViewer sv && (bool)e.NewValue)
         {
-            if (!bringToTopOrLeft && element.IsFullyVisibile(scrollViewer))
-                return;
-
-            var contentArea = (FrameworkElement)scrollViewer.Content;
-            var position = element.RelativePosition(contentArea);
-
-            if (isVerticalScrolling)
-            {
-                scrollViewer.ChangeView(null, position.Y, zoomFactor, !smoothScrolling);
-            }
-            else
-            {
-                scrollViewer.ChangeView(position.X, null, zoomFactor, !smoothScrolling);
-            }
+            sv.Loaded += (s, _) => sv.ChangeView(0, null, null, true);
+            if (sv.IsLoaded)
+                sv.ChangeView(0, null, null, true);
         }
-        public async Task ScrollToElementAsync(FrameworkElement element,
-        bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null, bool bringToTopOrLeft = true)
+    }
+
+    private static void OnTargetLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is DependencyObject d)
+            ResetOffset(d);
+    }
+
+    private static void ResetOffset(DependencyObject root)
+    {
+        if (root is ScrollViewer sv)
         {
-            if (!bringToTopOrLeft && element.IsFullyVisibile(scrollViewer))
-                return;
-
-            var contentArea = (FrameworkElement)scrollViewer.Content;
-            var position = element.RelativePosition(contentArea);
-
-            if (isVerticalScrolling)
-            {
-                await scrollViewer.ChangeViewAsync(null, position.Y, zoomFactor, !smoothScrolling);
-            }
-            else
-            {
-                await scrollViewer.ChangeViewAsync(position.X, null, zoomFactor, !smoothScrolling);
-            }
+            sv.ChangeView(0, null, null, true);
+            return;
         }
-        public Task ChangeViewAsync(double? horizontalOffset, double? verticalOffset, float? zoomFactor, bool disableAniamtion)
-        {
-            var taskSource = new TaskCompletionSource<bool>();
-
-            void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
-            {
-                if (e.IsIntermediate) return;
-
-                scrollViewer.ViewChanged -= OnViewChanged;
-                taskSource.SetResult(true);
-            }
-
-            scrollViewer.ViewChanged += OnViewChanged;
-            scrollViewer.ChangeView(horizontalOffset, verticalOffset, zoomFactor, disableAniamtion);
-
-            return taskSource.Task;
-        }
-
-        public CompositionPropertySet ScrollProperties() => ElementCompositionPreview.GetScrollViewerManipulationPropertySet(scrollViewer);
+        var inner = root.FindDescendant<ScrollViewer>();
+        inner?.ChangeView(0, null, null, true);
     }
 }

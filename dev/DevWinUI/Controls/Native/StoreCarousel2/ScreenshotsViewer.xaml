@@ -75,7 +75,7 @@
             </interactivity:Interaction.Behaviors>
             <Grid.Children>
 
-                <local:NoPointerWheelListView x:Name="ScreenshotTileList" Margin="0,0,0.5,0" Padding="12,0" local:StoreScrollViewerExtensions.AutoResetOffset="True" HorizontalScrollMode="Enabled" ItemContainerStyle="{StaticResource DefaultScreenshotContainerStyle}" ItemTemplateSelector="{StaticResource ScreenshotTemplateSelector}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollMode="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollMode="Disabled" SelectionMode="None" Style="{StaticResource StaticListViewStyle}">
+                <local:NoPointerWheelListView x:Name="ScreenshotTileList" Margin="0,0,0.5,0" Padding="12,0" local:ScrollViewerExtensions.AutoResetOffset="True" HorizontalScrollMode="Enabled" ItemContainerStyle="{StaticResource DefaultScreenshotContainerStyle}" ItemTemplateSelector="{StaticResource ScreenshotTemplateSelector}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollMode="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollMode="Disabled" SelectionMode="None" Style="{StaticResource StaticListViewStyle}">
                     <local:NoPointerWheelListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel Orientation="Horizontal" />

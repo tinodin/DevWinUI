@@ -140,7 +140,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private TextBlock _counterTextBlock;
     private Run _currentIndexRun;
     private Run _totalIndexRun;
-
     private int _pendingSelectedIndex;
     private int _selectionRequestVersion;
     private bool _pendingSelectionSet;

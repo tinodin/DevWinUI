@@ -23,12 +23,17 @@ public sealed partial class ScreenshotsViewer
     }
 
     public static readonly DependencyProperty PreviewModeProperty =
-        DependencyProperty.Register(nameof(PreviewMode), typeof(PreviewType), typeof(ScreenshotsViewer), new PropertyMetadata(PreviewType.None));
+        DependencyProperty.Register(nameof(PreviewMode), typeof(PreviewType), typeof(ScreenshotsViewer), new PropertyMetadata(PreviewType.None, OnPreviewModeChanged));
 
     public PreviewType PreviewMode
     {
         get => (PreviewType)GetValue(PreviewModeProperty);
         set => SetValue(PreviewModeProperty, value);
+    }
+
+    private static void OnPreviewModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        ((ScreenshotsViewer)d).OnPreviewModeChanged();
     }
 
     public static readonly DependencyProperty PreviewViewModelProperty =
@@ -42,8 +47,7 @@ public sealed partial class ScreenshotsViewer
 
     private static void OnPreviewViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        var c = (ScreenshotsViewer)d;
-        c.OnPreviewViewModelChanged(e.OldValue as PreviewModuleViewModel, e.NewValue as PreviewModuleViewModel);
+        ((ScreenshotsViewer)d).OnPreviewViewModelChanged();
     }
 
     public static readonly DependencyProperty ScreenshotContainerStyleProperty =
