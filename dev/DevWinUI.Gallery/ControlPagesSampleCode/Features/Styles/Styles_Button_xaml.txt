@@ -25,11 +25,6 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal"
             Spacing="10">
-    <Button Style="{StaticResource HorizontalArrowScrollViewerButtonStyle}">
-        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                    FontSize="{StaticResource ArrowScrollViewerButtonFontSize}"
-                    Glyph="&#xEDD9;" />
-    </Button>
     <Button Style="{StaticResource LeftArrowScrollViewerButtonStyle}" />
     <Button Style="{StaticResource RightArrowScrollViewerButtonStyle}" />
 </StackPanel>
