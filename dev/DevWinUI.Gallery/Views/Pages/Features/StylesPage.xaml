@@ -83,6 +83,7 @@
                                 <Button Style="{StaticResource LeftArrowScrollViewerButtonStyle}" />
                                 <Button Style="{StaticResource RightArrowScrollViewerButtonStyle}" />
                             </StackPanel>
+                            <Button HorizontalAlignment="Left" Style="{StaticResource CardRightChevronButtonStyle}" />
                         </StackPanel>
                     </local:ControlExample>
 

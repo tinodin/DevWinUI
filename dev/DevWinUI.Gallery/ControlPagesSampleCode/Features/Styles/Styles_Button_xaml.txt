@@ -28,3 +28,5 @@
     <Button Style="{StaticResource LeftArrowScrollViewerButtonStyle}" />
     <Button Style="{StaticResource RightArrowScrollViewerButtonStyle}" />
 </StackPanel>
+<Button Style="{StaticResource CardRightChevronButtonStyle}"
+        HorizontalAlignment="Left" />

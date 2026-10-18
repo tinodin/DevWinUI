@@ -1,6 +1,6 @@
 ﻿<dev:Card Title="Screenshots" Padding="0">
     <dev:Card.TitleContent>
-        <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" Click="ShowAllIconButton_Click" Style="{StaticResource ModuleRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
+        <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" Click="ShowAllIconButton_Click" Style="{StaticResource CardRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
     </dev:Card.TitleContent>
     <dev:StoreCarousel2 x:Name="CardCarousel" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
 </dev:Card>

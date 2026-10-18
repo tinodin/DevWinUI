@@ -43,11 +43,6 @@ public partial class TileImage : Control
             UpdateVisualState();
     }
 
-    internal void UpdateImageSize()
-    {
-
-    }
-
     internal void ApplyImageItem(IImageItem item)
     {
         if (item?.ImageUri != null)
@@ -68,16 +63,10 @@ public partial class TileImage : Control
         else
         {
             _currentSource = null;
-            if (_image != null)
-                _image.Source = null;
+            _image?.Source = null;
         }
 
-        UpdateImageSize();
-
-        if (_rootGrid != null)
-        {
-            _rootGrid.Opacity = 0;
-        }
+        _rootGrid?.Opacity = 0;
 
         ImageProcessed = _currentSource == null && item == null;
         InvalidateMeasure();
@@ -90,8 +79,7 @@ public partial class TileImage : Control
 
     private void UpdateVisualState()
     {
-        if (_rootGrid != null)
-            _rootGrid.Opacity = 0;
+        _rootGrid?.Opacity = 0;
 
         ImageProcessed = _currentSource == null && ImageItem == null;
         InvalidateMeasure();
@@ -107,16 +95,16 @@ public partial class TileImage : Control
 
         if (_rootGrid != null && _currentSource != null)
         {
-            var fadeIn = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimation
+            var fadeIn = new DoubleAnimation
             {
                 From = 0,
                 To = 1,
                 Duration = new Duration(TimeSpan.FromMilliseconds(300))
             };
-            Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTarget(fadeIn, _rootGrid);
-            Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTargetProperty(fadeIn, "Opacity");
+            Storyboard.SetTarget(fadeIn, _rootGrid);
+            Storyboard.SetTargetProperty(fadeIn, "Opacity");
 
-            var storyboard = new Microsoft.UI.Xaml.Media.Animation.Storyboard();
+            var storyboard = new Storyboard();
             storyboard.Children.Add(fadeIn);
             storyboard.Begin();
         }
