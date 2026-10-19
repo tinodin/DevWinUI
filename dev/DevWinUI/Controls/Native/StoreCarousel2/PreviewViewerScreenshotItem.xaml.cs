@@ -1,4 +1,4 @@
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public sealed partial class PreviewViewerScreenshotItem : UserControl
 {
@@ -32,6 +32,6 @@ public sealed partial class PreviewViewerScreenshotItem : UserControl
     {
         var img = FindName("Image") as Image;
         if (img != null && TileItem?.ImageUri != null)
-            img.Source = new BitmapImage(TileItem.ImageUri);
+            img.Source = TileItem.ImageSource;
     }
 }

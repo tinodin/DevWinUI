@@ -14,7 +14,7 @@ public sealed partial class ScreenshotsViewer
     }
 
     public static readonly DependencyProperty IsScrollingEnabledProperty =
-        DependencyProperty.Register(nameof(IsScrollingEnabled), typeof(bool), typeof(ScreenshotsViewer), new PropertyMetadata(false));
+        DependencyProperty.Register(nameof(IsScrollingEnabled), typeof(bool), typeof(ScreenshotsViewer), new PropertyMetadata(true));
 
     public bool IsScrollingEnabled
     {

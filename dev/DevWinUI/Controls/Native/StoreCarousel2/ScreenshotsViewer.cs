@@ -44,10 +44,24 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (AgeRestricted)
         {
             ScreenshotTileList.ItemsSource = new List<object> { AgeRestrictedTileItem.Create(PreviewViewModel?.Items, IsAgeBlocked) };
+        }
+        else
+        {
+            ScreenshotTileList.ItemsSource = PreviewViewModel?.Items;
+        }
+
+        UpdateScrollingState();
+    }
+
+    private void UpdateScrollingState()
+    {
+        var scrollViewer = ScreenshotTileList.FindDescendant<ScrollViewer>();
+        if (scrollViewer == null)
+        {
             return;
         }
 
-        ScreenshotTileList.ItemsSource = PreviewViewModel?.Items;
+        scrollViewer.HorizontalScrollMode = IsScrollingEnabled ? ScrollMode.Auto : ScrollMode.Disabled;
     }
 
     private void AttachTileList()

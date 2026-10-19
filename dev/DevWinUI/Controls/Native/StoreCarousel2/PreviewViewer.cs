@@ -603,6 +603,10 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             {
                 target = player;
             }
+            else if (player != null)
+            {
+                target = container.FindDescendant<PreviewViewerVideoItem>() ?? container;
+            }
             else
             {
                 target = container.FindDescendant<Image>() ?? container.FindDescendant<TileImage>() ?? container;
