@@ -33,7 +33,7 @@
                     <dev:Card.TitleContent>
                         <Button x:Name="ShowAllIconButton" Margin="0,0,16,0" Click="ShowAllIconButton_Click" Style="{StaticResource CardRightChevronButtonStyle}" ToolTipService.ToolTip="See all" />
                     </dev:Card.TitleContent>
-                    <dev:StoreCarousel2 x:Name="CardCarousel" AgeRestricted="{x:Bind TGCardAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGCardIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
+                    <dev:StoreCarousel2 x:Name="StoreCarousel2" AgeRestricted="{x:Bind TGCardAgeRestricted.IsOn, Mode=OneWay}" IsAgeBlocked="{x:Bind TGCardIsAgeBlocked.IsOn, Mode=OneWay}" ItemsSource="{x:Bind Media}" SignInClicked="StoreCarousel2_SignInClicked" />
                 </dev:Card>
             </local:ControlExample>
 

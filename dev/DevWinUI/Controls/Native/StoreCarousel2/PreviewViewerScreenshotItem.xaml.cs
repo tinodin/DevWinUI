@@ -32,6 +32,6 @@ public sealed partial class PreviewViewerScreenshotItem : UserControl
     {
         var img = FindName("Image") as Image;
         if (img != null && TileItem?.ImageUri != null)
-            img.Source = TileItem.ImageSource;
+            img.Source = new BitmapImage(TileItem.ImageUri);
     }
 }

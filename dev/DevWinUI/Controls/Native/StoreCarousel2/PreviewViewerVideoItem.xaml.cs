@@ -36,6 +36,7 @@ public sealed partial class PreviewViewerVideoItem : UserControl
 
         try
         {
+            element.AutoPlay = false;
             element.SetMediaPlayer(VideoPlayerSource.MediaPlayer);
 
             element.PosterSource = VideoPlayerSource.ImageSource;

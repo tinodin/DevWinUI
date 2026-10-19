@@ -17,7 +17,7 @@ public sealed partial class StoreCarousel2Page : Page
 
     private void ShowAllIconButton_Click(object sender, RoutedEventArgs e)
     {
-        CardCarousel.OpenPreview(0);
+        StoreCarousel2.OpenPreview(0);
     }
 
     private async void StoreCarousel2_SignInClicked(object sender, EventArgs e)
