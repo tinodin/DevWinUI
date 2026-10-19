@@ -13,6 +13,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.3.260402-preview2" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.3.260402-preview2" />
     <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.3.260402-preview2" />
@@ -28,7 +29,7 @@
       <TargetFile>Themes\Generic.xaml</TargetFile>
       <Visible>True</Visible>
     </XAMLCombineItems>
-    <XAMLCombineItems Include="Controls\Ported\**\*.xaml" Exclude="Controls\Ported\Sidebar\SidebarView.xaml">
+    <XAMLCombineItems Include="Controls\Ported\**\*.xaml" Exclude="Controls\Ported\Sidebar\SidebarView.xaml;Controls\Ported\StoreCarousel2\PreviewViewer.xaml;Controls\Ported\StoreCarousel2\ScreenshotsViewer.xaml;Controls\Ported\StoreCarousel2\PreviewViewerScreenshotItem.xaml;Controls\Ported\StoreCarousel2\PreviewViewerVideoItem.xaml">
       <TargetFile>Themes\Generic.xaml</TargetFile>
       <Visible>True</Visible>
     </XAMLCombineItems>

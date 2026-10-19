@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevWinUI;
 
@@ -19,31 +20,19 @@ public interface IImageItem
     Uri ImageUri { get; }
 }
 
-public partial class PreviewModuleViewModel : System.ComponentModel.INotifyPropertyChanged
+public partial class PreviewModuleViewModel : ObservableObject
 {
-    private PreviewType _previewMode;
-
-    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
     public object CurrentItem { get; set; }
     public ObservableCollection<object> Items { get; } = [];
 
     public ObservableCollection<object> PreviewItems { get; } = [];
 
-    public PreviewType PreviewMode
-    {
-        get => _previewMode;
-        set
-        {
-            if (_previewMode == value)
-            {
-                return;
-            }
+    [ObservableProperty]
+    public partial PreviewType PreviewMode { get; set; }
 
-            _previewMode = value;
-            RebuildPreviewItems();
-            OnPropertyChanged(nameof(PreviewMode));
-        }
+    partial void OnPreviewModeChanged(PreviewType value)
+    {
+        RebuildPreviewItems();
     }
 
     internal void RebuildPreviewItems()
@@ -60,92 +49,35 @@ public partial class PreviewModuleViewModel : System.ComponentModel.INotifyPrope
 
         OnPropertyChanged(nameof(PreviewItems));
     }
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-    }
 }
 
-public partial class PreviewItemsViewModel : System.ComponentModel.INotifyPropertyChanged
+public partial class PreviewItemsViewModel : ObservableObject
 {
-    private object _currentItem;
-
-    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
-    public ObservableCollection<object> Items
+    public PreviewItemsViewModel()
     {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(Items));
-                OnPropertyChanged(nameof(TotalIndex));
-            }
-        }
-    } = [];
-
-    public object CurrentItem
-    {
-        get => _currentItem;
-        set
-        {
-
-            if (_currentItem != value)
-            {
-                _currentItem = value;
-                OnPropertyChanged(nameof(CurrentItem));
-            }
-        }
+        Items = [];
+        SelectedIndex = -1;
     }
 
-    public int SelectedIndex
-    {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                int oldIndex = field;
-                field = value;
-                if (Items != null && value >= 0 && value < Items.Count)
-                {
-                    _currentItem = Items[value];
-                }
-                OnPropertyChanged(nameof(SelectedIndex));
-                OnPropertyChanged(nameof(Caption));
-                OnPropertyChanged(nameof(CurrentIndex));
-                OnPropertyChanged(nameof(TotalIndex));
+    [ObservableProperty]
+    public partial ObservableCollection<object> Items { get; set; }
 
-                if (Items != null && oldIndex >= 0 && oldIndex < Items.Count)
-                {
-                    if (Items[oldIndex] is VideoPlayerSource oldVideo)
-                    {
-                        try
-                        {
-                            if (oldVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
-                            {
-                                oldVideo.MediaPlayer.Pause();
-                            }
-                        }
-                        catch { }
-                    }
-                }
-            }
-        }
-    } = -1;
+    [ObservableProperty]
+    public partial object CurrentItem { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Caption), nameof(CurrentIndex), nameof(TotalIndex))]
+    public partial int SelectedIndex { get; set; }
 
     public string Caption
     {
         get
         {
-            if (_currentItem is ScreenshotTileItem screenshot)
+            if (CurrentItem is ScreenshotTileItem screenshot)
             {
                 return screenshot.Title ?? string.Empty;
             }
-            if (_currentItem is VideoPlayerSource video)
+            if (CurrentItem is VideoPlayerSource video)
             {
                 return video.Title ?? string.Empty;
             }
@@ -157,9 +89,32 @@ public partial class PreviewItemsViewModel : System.ComponentModel.INotifyProper
 
     public string TotalIndex => Items != null ? Items.Count.ToString() : "0";
 
-    protected virtual void OnPropertyChanged(string propertyName)
+    partial void OnItemsChanged(ObservableCollection<object> value)
     {
-        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+        OnPropertyChanged(nameof(TotalIndex));
+    }
+
+    partial void OnSelectedIndexChanged(int oldValue, int newValue)
+    {
+        if (Items != null && newValue >= 0 && newValue < Items.Count)
+        {
+            CurrentItem = Items[newValue];
+        }
+
+        if (Items != null && oldValue >= 0 && oldValue < Items.Count)
+        {
+            if (Items[oldValue] is VideoPlayerSource oldVideo)
+            {
+                try
+                {
+                    if (oldVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
+                    {
+                        oldVideo.MediaPlayer.Pause();
+                    }
+                }
+                catch { }
+            }
+        }
     }
 }
 
@@ -168,16 +123,6 @@ public class ScreenshotTileItem : IImageItem
     public object Data { get; set; }
     public Uri ImageUri { get; set; }
     public string Title { get; set; }
-
-    public ImageSource ImageSource
-    {
-        get
-        {
-            if (field == null && ImageUri != null)
-                field = new BitmapImage(ImageUri) { CreateOptions = BitmapCreateOptions.None };
-            return field;
-        }
-    }
 }
 
 public class VideoPlayerSource : IImageItem
@@ -216,14 +161,6 @@ public class VideoPlayerSource : IImageItem
     }
 
     private Windows.Media.Core.MediaSource _videoSource;
-    public Windows.Media.Core.MediaSource VideoMediaSource
-    {
-        get
-        {
-            EnsureMediaSource();
-            return _videoSource;
-        }
-    }
 
     public void EnsureMediaSource()
     {
