@@ -1,8 +1,6 @@
-﻿using Microsoft.Xaml.Interactivity;
+﻿namespace DevWinUI;
 
-namespace DevWinUI;
-
-public partial class ViewDisplayedBehavior : Behavior<FrameworkElement>
+public partial class ViewDisplayedBehavior : OnScreenBehaviorBase
 {
     public static readonly DependencyProperty ViewDisplayedActionProperty =
         DependencyProperty.Register(nameof(ViewDisplayedAction), typeof(Action), typeof(ViewDisplayedBehavior), new PropertyMetadata(null));
@@ -13,64 +11,19 @@ public partial class ViewDisplayedBehavior : Behavior<FrameworkElement>
         set => SetValue(ViewDisplayedActionProperty, value);
     }
 
-    private ScrollViewer _scrollViewer;
-    private bool _wasVisible;
-
-    protected override void OnAttached()
+    protected override void OnIsOnScreenChanged(bool isOnScreen)
     {
-        base.OnAttached();
-        if (AssociatedObject != null)
+        if (!isOnScreen)
         {
-            AssociatedObject.Loaded += OnLoaded;
-            AssociatedObject.Unloaded += OnUnloaded;
+            return;
         }
-    }
 
-    protected override void OnDetaching()
-    {
-        base.OnDetaching();
-        if (AssociatedObject != null)
+        if (AssociatedObject is not { } element || !element.IsLoaded || element.Visibility != Visibility.Visible)
         {
-            AssociatedObject.Loaded -= OnLoaded;
-            AssociatedObject.Unloaded -= OnUnloaded;
+            return;
         }
-        DetachScrollViewer();
-    }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        _scrollViewer = AssociatedObject?.FindAscendant<ScrollViewer>();
-        if (_scrollViewer != null)
-        {
-            _scrollViewer.ViewChanged -= OnScrollChanged;
-            _scrollViewer.ViewChanged += OnScrollChanged;
-        }
-        UpdateVisibility();
-    }
-
-    private void OnUnloaded(object sender, RoutedEventArgs e) => DetachScrollViewer();
-
-    private void OnScrollChanged(object sender, ScrollViewerViewChangedEventArgs e) => UpdateVisibility();
-
-    private void DetachScrollViewer()
-    {
-        _scrollViewer?.ViewChanged -= OnScrollChanged;
-        _scrollViewer = null;
-    }
-
-    private void UpdateVisibility()
-    {
-        if (AssociatedObject == null) return;
-        bool visible = IsVisibleInViewport(AssociatedObject);
-        if (visible && !_wasVisible) ViewDisplayedAction?.Invoke();
-        _wasVisible = visible;
-    }
-
-    private static bool IsVisibleInViewport(FrameworkElement element)
-    {
-        var sv = element.FindAscendant<ScrollViewer>();
-        if (sv == null) return element.IsLoaded;
-        var bounds = element.TransformToVisual(sv).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-        return bounds.Right >= 0 && bounds.Bottom >= 0 && bounds.Left <= sv.ViewportWidth && bounds.Top <= sv.ViewportHeight;
+        ViewDisplayedAction?.Invoke();
+        StopTracking();
     }
 }

@@ -9,6 +9,7 @@ public partial class StoreCarousel2 : Control
     private PreviewViewerHelperListViewSource _listViewSource;
     private PreviewItemsViewModel _viewerVm;
     private PreviewListFacade _popupList;
+    private PreviewModuleViewModel _hookedPreviewViewModel;
     private int _viewerTransitionVersion;
 
     public StoreCarousel2()
@@ -63,6 +64,7 @@ public partial class StoreCarousel2 : Control
         _listViewSource.InnerListView = _card.TileList;
 
         EnsureViewerViewModel();
+        HookPreviewViewModel();
 
         if (_helper == null)
         {
@@ -121,6 +123,17 @@ public partial class StoreCarousel2 : Control
 
     private void FillViewerViewModelItems()
     {
+        var previewItems = _card?.PreviewViewModel?.PreviewItems;
+        if (previewItems != null && previewItems.Count > 0)
+        {
+            foreach (var item in previewItems)
+            {
+                _viewerVm.Items.Add(item);
+            }
+
+            return;
+        }
+
         if (ItemsSource != null)
         {
             foreach (var item in ItemsSource)
@@ -158,6 +171,41 @@ public partial class StoreCarousel2 : Control
         }
     }
 
+    private void HookPreviewViewModel()
+    {
+        var viewModel = _card?.PreviewViewModel;
+        if (ReferenceEquals(_hookedPreviewViewModel, viewModel))
+        {
+            return;
+        }
+
+        UnhookPreviewViewModel();
+
+        _hookedPreviewViewModel = viewModel;
+
+        if (_hookedPreviewViewModel != null)
+        {
+            _hookedPreviewViewModel.PropertyChanged += OnPreviewViewModelPropertyChanged;
+        }
+    }
+
+    private void UnhookPreviewViewModel()
+    {
+        if (_hookedPreviewViewModel != null)
+        {
+            _hookedPreviewViewModel.PropertyChanged -= OnPreviewViewModelPropertyChanged;
+            _hookedPreviewViewModel = null;
+        }
+    }
+
+    private void OnPreviewViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (string.Equals(e?.PropertyName, nameof(PreviewModuleViewModel.PreviewItems), StringComparison.Ordinal))
+        {
+            ReplaceViewerViewModelItems();
+        }
+    }
+
     private void DetachCard()
     {
         if (_card != null)
@@ -167,6 +215,8 @@ public partial class StoreCarousel2 : Control
             _card.Helper = null;
             _card = null;
         }
+
+        UnhookPreviewViewModel();
     }
 
     private void OnSignInClicked(object sender, EventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);

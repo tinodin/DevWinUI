@@ -2,7 +2,7 @@
 
 namespace DevWinUI;
 
-public class PreviewViewerHelper
+public partial class PreviewViewerHelper : INotifyPropertyChanged
 {
     public PreviewViewer PreviewViewer { get; set; }
 
@@ -24,6 +24,43 @@ public class PreviewViewerHelper
     }
 
     public PreviewViewerHelperListViewSource ListViewSource { get; set; }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public PreviewModuleViewModel ViewModel
+    {
+        get;
+        set
+        {
+            if (ReferenceEquals(field, value))
+            {
+                return;
+            }
+
+            field = value;
+            OnPropertyChanged(nameof(ViewModel));
+        }
+    }
+
+    public PreviewType PreviewMode
+    {
+        get;
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            OnPropertyChanged(nameof(PreviewMode));
+        }
+    }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
     public void SetUpPreviewViewer(object dataItem)
     {

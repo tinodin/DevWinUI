@@ -23,7 +23,7 @@ public sealed partial class ScreenshotsViewer
     }
 
     public static readonly DependencyProperty PreviewModeProperty =
-        DependencyProperty.Register(nameof(PreviewMode), typeof(PreviewType), typeof(ScreenshotsViewer), new PropertyMetadata(PreviewType.None, OnPreviewModeChanged));
+        DependencyProperty.Register(nameof(PreviewMode), typeof(PreviewType), typeof(ScreenshotsViewer), new PropertyMetadata(PreviewType.All, OnPreviewModeChanged));
 
     public PreviewType PreviewMode
     {

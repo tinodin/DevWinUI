@@ -255,12 +255,30 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     internal void OnPreviewModeChanged()
     {
+        var helper = Helper;
+        if (helper != null && helper.PreviewMode != PreviewMode)
+        {
+            helper.PreviewMode = PreviewMode;
+        }
+
         PreviewViewModel?.PreviewMode = PreviewMode;
     }
 
     internal void OnPreviewViewModelChanged()
     {
-        PreviewViewModel?.PreviewMode = PreviewMode;
+        var viewModel = PreviewViewModel;
+        viewModel?.PreviewMode = PreviewMode;
+        viewModel?.RebuildPreviewItems();
+
+        if (Helper != null)
+        {
+            Helper.ViewModel = viewModel;
+
+            if (viewModel == null)
+            {
+                Helper.ListViewSource = null;
+            }
+        }
 
         RefreshTileListSource();
     }

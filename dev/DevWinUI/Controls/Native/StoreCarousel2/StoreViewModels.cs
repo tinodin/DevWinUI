@@ -4,9 +4,8 @@ namespace DevWinUI;
 
 public enum PreviewType
 {
-    None,
-    Screenshot,
-    Video
+    All,
+    VideoPlayerSource
 }
 
 public interface ICardDataModel
@@ -20,11 +19,52 @@ public interface IImageItem
     Uri ImageUri { get; }
 }
 
-public class PreviewModuleViewModel
+public partial class PreviewModuleViewModel : System.ComponentModel.INotifyPropertyChanged
 {
+    private PreviewType _previewMode;
+
+    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
     public object CurrentItem { get; set; }
     public ObservableCollection<object> Items { get; } = [];
-    public PreviewType PreviewMode { get; set; }
+
+    public ObservableCollection<object> PreviewItems { get; } = [];
+
+    public PreviewType PreviewMode
+    {
+        get => _previewMode;
+        set
+        {
+            if (_previewMode == value)
+            {
+                return;
+            }
+
+            _previewMode = value;
+            RebuildPreviewItems();
+            OnPropertyChanged(nameof(PreviewMode));
+        }
+    }
+
+    internal void RebuildPreviewItems()
+    {
+        PreviewItems.Clear();
+
+        foreach (var item in Items)
+        {
+            if (PreviewMode != PreviewType.VideoPlayerSource || item is VideoPlayerSource)
+            {
+                PreviewItems.Add(item);
+            }
+        }
+
+        OnPropertyChanged(nameof(PreviewItems));
+    }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+    }
 }
 
 public partial class PreviewItemsViewModel : System.ComponentModel.INotifyPropertyChanged
