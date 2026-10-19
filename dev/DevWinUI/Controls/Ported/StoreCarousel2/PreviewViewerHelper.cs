@@ -1,66 +1,35 @@
 ﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevWinUI;
 
-public partial class PreviewViewerHelper : INotifyPropertyChanged
+public partial class PreviewViewerHelper : ObservableObject
 {
     public PreviewViewer PreviewViewer { get; set; }
 
-    public PreviewPopupHost Popup
+    [ObservableProperty]
+    public partial PreviewPopupHost Popup { get; set; }
+
+    partial void OnPopupChanging(PreviewPopupHost oldValue, PreviewPopupHost newValue)
     {
-        get;
-        set
+        if (oldValue?.List != null)
         {
-            if (field?.List != null)
-            {
-                field.List.PropertyChanged -= OnPopupPreviewSelectionChanged;
-            }
-            field = value;
-            if (field?.List != null)
-            {
-                field.List.PropertyChanged += OnPopupPreviewSelectionChanged;
-            }
+            oldValue.List.PropertyChanged -= OnPopupPreviewSelectionChanged;
+        }
+    }
+
+    partial void OnPopupChanged(PreviewPopupHost oldValue, PreviewPopupHost newValue)
+    {
+        if (newValue?.List != null)
+        {
+            newValue.List.PropertyChanged += OnPopupPreviewSelectionChanged;
         }
     }
 
     public PreviewViewerHelperListViewSource ListViewSource { get; set; }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public PreviewModuleViewModel ViewModel
-    {
-        get;
-        set
-        {
-            if (ReferenceEquals(field, value))
-            {
-                return;
-            }
-
-            field = value;
-            OnPropertyChanged(nameof(ViewModel));
-        }
-    }
-
-    public PreviewType PreviewMode
-    {
-        get;
-        set
-        {
-            if (field == value)
-            {
-                return;
-            }
-
-            field = value;
-            OnPropertyChanged(nameof(PreviewMode));
-        }
-    }
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    [ObservableProperty]
+    public partial PreviewType PreviewMode { get; set; }
 
     public void SetUpPreviewViewer(object dataItem)
     {
@@ -155,64 +124,44 @@ public class PreviewPopupHost
     public IList<object> Items { get; set; }
 }
 
-public partial class PreviewListFacade : INotifyPropertyChanged
+public partial class PreviewListFacade : ObservableObject
 {
     private PreviewItemsViewModel _boundViewModel;
     private bool _syncingFromBound;
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public object CurrentItem
+    public PreviewListFacade()
     {
-        get;
-        set
+        SelectedIndex = -1;
+    }
+
+    [ObservableProperty]
+    public partial object CurrentItem { get; set; }
+
+    partial void OnCurrentItemChanged(object oldValue, object newValue)
+    {
+        if (!_syncingFromBound && _boundViewModel != null && !ReferenceEquals(_boundViewModel.CurrentItem, newValue))
         {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(CurrentItem));
-                if (!_syncingFromBound && _boundViewModel != null && !ReferenceEquals(_boundViewModel.CurrentItem, value))
-                {
-                    _boundViewModel.CurrentItem = value;
-                }
-            }
+            _boundViewModel.CurrentItem = newValue;
         }
     }
 
-    public object SelectedItem
+    [ObservableProperty]
+    public partial object SelectedItem { get; set; }
+
+    [ObservableProperty]
+    public partial int SelectedIndex { get; set; }
+
+    partial void OnSelectedIndexChanged(int oldValue, int newValue)
     {
-        get;
-        set
+        OnPropertyChanged("Caption");
+        OnPropertyChanged("CurrentIndex");
+        OnPropertyChanged("TotalIndex");
+
+        if (!_syncingFromBound && _boundViewModel != null && _boundViewModel.SelectedIndex != newValue)
         {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(SelectedItem));
-            }
+            _boundViewModel.SelectedIndex = newValue;
         }
     }
-
-    public int SelectedIndex
-    {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(nameof(SelectedIndex));
-                OnPropertyChanged("Caption");
-                OnPropertyChanged("CurrentIndex");
-                OnPropertyChanged("TotalIndex");
-                if (!_syncingFromBound && _boundViewModel != null && _boundViewModel.SelectedIndex != value)
-                {
-                    _boundViewModel.SelectedIndex = value;
-                }
-            }
-        }
-    } = -1;
-
-    public ItemCollection Items { get; set; }
 
     public int IndexOf(object item)
     {
@@ -221,32 +170,12 @@ public partial class PreviewListFacade : INotifyPropertyChanged
             return -1;
         }
 
-        if (_boundViewModel?.Items != null)
-        {
-            return _boundViewModel.Items.IndexOf(item);
-        }
-
-        if (Items != null)
-        {
-            return Items.IndexOf(item);
-        }
-
-        return -1;
+        return _boundViewModel?.Items?.IndexOf(item) ?? -1;
     }
 
     public int GetItemCount()
     {
-        if (_boundViewModel?.Items != null)
-        {
-            return _boundViewModel.Items.Count;
-        }
-
-        if (Items != null)
-        {
-            return Items.Count;
-        }
-
-        return 0;
+        return _boundViewModel?.Items?.Count ?? 0;
     }
 
     public void BindToViewModel(PreviewItemsViewModel viewModel)
@@ -287,10 +216,5 @@ public partial class PreviewListFacade : INotifyPropertyChanged
         {
             _syncingFromBound = false;
         }
-    }
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

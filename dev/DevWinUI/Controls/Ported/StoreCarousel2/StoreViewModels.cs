@@ -22,7 +22,6 @@ public interface IImageItem
 
 public partial class PreviewModuleViewModel : ObservableObject
 {
-    public object CurrentItem { get; set; }
     public ObservableCollection<object> Items { get; } = [];
 
     public ObservableCollection<object> PreviewItems { get; } = [];

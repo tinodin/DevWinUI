@@ -55,7 +55,6 @@ public partial class StoreCarousel2 : Control
         {
             _viewer = new PreviewViewer();
             _viewer.Closed += OnViewerClosed;
-            _viewer.SignInClicked += OnSignInClicked;
         }
 
         _viewer.SetThemeSource(this);
@@ -69,7 +68,6 @@ public partial class StoreCarousel2 : Control
         if (_helper == null)
         {
             _popupList = new PreviewListFacade();
-            _popupList.BindToViewModel(_viewerVm);
 
             _helper = new PreviewViewerHelper
             {
@@ -87,13 +85,11 @@ public partial class StoreCarousel2 : Control
             _helper.PreviewViewer = _viewer;
             _helper.ListViewSource = _listViewSource;
             _popupList ??= new PreviewListFacade();
-            _popupList.BindToViewModel(_viewerVm);
             _helper.Popup ??= new PreviewPopupHost();
             _helper.Popup.List = _popupList;
             _helper.Popup.Items = _viewerVm.Items;
         }
 
-        _popupList.Items = null;
         _popupList.BindToViewModel(_viewerVm);
 
         if (!ReferenceEquals(_viewer.ViewModel, _viewerVm))
@@ -161,14 +157,7 @@ public partial class StoreCarousel2 : Control
             _helper.Popup.Items = _viewerVm.Items;
         }
 
-        if (_viewer != null && !ReferenceEquals(_viewer.ViewModel, _viewerVm))
-        {
-            _viewer.ViewModel = _viewerVm;
-        }
-        else
-        {
-            _viewer?.ViewModel = _viewerVm;
-        }
+        _viewer?.ViewModel = _viewerVm;
     }
 
     private void HookPreviewViewModel()
@@ -270,7 +259,6 @@ public partial class StoreCarousel2 : Control
         }
 
         var finalIndex = _viewer.SelectedIndex;
-        _card.SelectedIndex = finalIndex;
         var transitionVersion = ++_viewerTransitionVersion;
 
         _listViewSource?.RestoreSourceVisibility();

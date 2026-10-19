@@ -16,12 +16,6 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
     public static readonly DependencyProperty IsOnScreenProperty =
         DependencyProperty.Register(nameof(IsOnScreen), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(false));
 
-    public static readonly DependencyProperty IsScrollPortProperty =
-        DependencyProperty.Register(nameof(IsScrollPort), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(false));
-
-    public static readonly DependencyProperty VisibleAreaProperty =
-        DependencyProperty.Register(nameof(VisibleArea), typeof(Rect), typeof(OnScreenBehaviorBase), new PropertyMetadata(default(Rect)));
-
     public static readonly DependencyProperty VisibleRatioThresholdProperty =
         DependencyProperty.Register(nameof(VisibleRatioThreshold), typeof(double), typeof(OnScreenBehaviorBase), new PropertyMetadata(0.5, OnVisibleRatioThresholdChanged));
 
@@ -35,18 +29,6 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
     {
         get => (bool)GetValue(IsOnScreenProperty);
         set => SetValue(IsOnScreenProperty, value);
-    }
-
-    public bool IsScrollPort
-    {
-        get => (bool)GetValue(IsScrollPortProperty);
-        set => SetValue(IsScrollPortProperty, value);
-    }
-
-    public Rect VisibleArea
-    {
-        get => (Rect)GetValue(VisibleAreaProperty);
-        set => SetValue(VisibleAreaProperty, value);
     }
 
     public double VisibleRatioThreshold
@@ -81,7 +63,6 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
 
         Unsubscribe();
         UpdateIsOnScreen(false);
-        SetValue(VisibleAreaProperty, default(Rect));
 
         base.OnDetaching();
     }
@@ -125,7 +106,6 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
 
         Unsubscribe();
         UpdateIsOnScreen(false);
-        SetValue(VisibleAreaProperty, default(Rect));
     }
 
     private void Subscribe()
@@ -191,21 +171,17 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
         var visibleHeight = (float)(Math.Min(height, _effectiveViewport.Y + _effectiveViewport.Height) - Math.Max(0.0, _effectiveViewport.Y));
 
         bool isOnScreen;
-        Rect visibleArea;
 
         if (visibleWidth <= 0 || visibleHeight <= 0)
         {
             isOnScreen = false;
-            visibleArea = new Rect(width, height, 0, 0);
         }
         else
         {
             var visibleRatio = visibleWidth * visibleHeight / (width * height);
             isOnScreen = visibleRatio >= VisibleRatioThreshold;
-            visibleArea = new Rect(width, height, visibleWidth, visibleHeight);
         }
 
-        SetValue(VisibleAreaProperty, visibleArea);
         UpdateIsOnScreen(isOnScreen);
     }
 

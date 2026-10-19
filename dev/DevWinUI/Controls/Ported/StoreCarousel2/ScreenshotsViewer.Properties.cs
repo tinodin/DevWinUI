@@ -59,15 +59,6 @@ public sealed partial class ScreenshotsViewer
         set => SetValue(ScreenshotContainerStyleProperty, value);
     }
 
-    public static readonly DependencyProperty SelectedIndexProperty =
-        DependencyProperty.Register(nameof(SelectedIndex), typeof(int), typeof(ScreenshotsViewer), new PropertyMetadata(0));
-
-    public int SelectedIndex
-    {
-        get => (int)GetValue(SelectedIndexProperty);
-        set => SetValue(SelectedIndexProperty, value);
-    }
-
     public static readonly DependencyProperty AgeRestrictedProperty =
         DependencyProperty.Register(nameof(AgeRestricted), typeof(bool), typeof(ScreenshotsViewer), new PropertyMetadata(false, OnAgeRestrictedChanged));
 

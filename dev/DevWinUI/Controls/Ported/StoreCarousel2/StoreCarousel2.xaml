@@ -8,69 +8,75 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <AcrylicBrush x:Key="AcrylicInAppFillColorThinBrush" FallbackColor="#A3545454" TintColor="#FF545454" TintLuminosityOpacity="0.64" TintOpacity="0" />
-            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
-            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
-            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
             <SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
-            <StaticResource x:Key="PlayButtonForeground" ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="TextFillColorTertiaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="TextFillColorSecondaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="ControlStrokeColorSecondaryBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="ControlStrokeColorOnAccentDisabledBrush" />
+            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
+            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
             <StaticResource x:Key="PlayButtonBackground" ResourceKey="ControlOnImageFillColorDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
             <StaticResource x:Key="PlayButtonBackgroundDisabled" ResourceKey="ControlOnImageFillColorDisabledBrush" />
-        </ResourceDictionary>
-
-        <ResourceDictionary x:Key="HighContrast">
-            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
-            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">2</Thickness>
-            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
-            <SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
-            <StaticResource x:Key="PlayButtonForeground" ResourceKey="SystemColorButtonTextColorBrush" />
-            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="SystemControlHighlightBaseHighBrush" />
-            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="SystemControlHighlightBaseHighBrush" />
-            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="SystemControlForegroundTransparentBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="SystemColorHighlightColorBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
-            <StaticResource x:Key="PlayButtonBackground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="SystemColorHighlightTextColorBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="ControlStrokeColorOnAccentDisabledBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="ControlStrokeColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" />
+            <StaticResource x:Key="PlayButtonForeground" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
+            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="TextFillColorTertiaryBrush" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
             <AcrylicBrush x:Key="AcrylicInAppFillColorThinBrush" FallbackColor="#99D3D3D3" TintColor="#FFD3D3D3" TintLuminosityOpacity="0.44" TintOpacity="0" />
-            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
-            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
-            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
             <SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
-            <StaticResource x:Key="PlayButtonForeground" ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="TextFillColorTertiaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="TextFillColorSecondaryBrush" />
-            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="ControlStrokeColorSecondaryBrush" />
-            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="ControlStrokeColorOnAccentDisabledBrush" />
+            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="#00FFFFFF" />
+            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">0</Thickness>
+            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="#00FFFFFF" />
             <StaticResource x:Key="PlayButtonBackground" ResourceKey="ControlOnImageFillColorDefaultBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
-            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
             <StaticResource x:Key="PlayButtonBackgroundDisabled" ResourceKey="ControlOnImageFillColorDisabledBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="ControlStrokeColorOnAccentDisabledBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="ControlStrokeColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" />
+            <StaticResource x:Key="PlayButtonForeground" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
+            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="TextFillColorTertiaryBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="DefaultTextForegroundThemeBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+            <SolidColorBrush x:Key="ItemHighContrastPointerOverBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <Thickness x:Key="ItemHighContrastPointerOverBorderThickness">2</Thickness>
+            <SolidColorBrush x:Key="ItemHighContrastPressedBorderBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="PlayButtonBackground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundHover" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="PlayButtonBackgroundPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrush" ResourceKey="SystemControlForegroundTransparentBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushHover" ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="PlayButtonBorderBrushPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="PlayButtonForeground" ResourceKey="SystemColorButtonTextColorBrush" />
+            <StaticResource x:Key="PlayButtonForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="PlayButtonForegroundHover" ResourceKey="SystemControlHighlightBaseHighBrush" />
+            <StaticResource x:Key="PlayButtonForegroundPressed" ResourceKey="SystemControlHighlightBaseHighBrush" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
+    <x:String x:Key="AgeGatingBlockedMessage">Your account doesn't meet the minimum age requirement to view this content.</x:String>
+    <x:String x:Key="AgeGatingContentSubtitle">Sign in to view this content</x:String>
+    <x:String x:Key="AgeGatingSignInMessage">We need to verify your age to ensure this content is age-appropriate.</x:String>
+    <x:String x:Key="SignInButton">Sign in</x:String>
     <x:String x:Key="StoreGlyphPlay">&#xE768;</x:String>
 
-    <local:BoolToVisibilityConverter x:Key="InverseVisibilityConverter" FalseValue="Visible" TrueValue="Collapsed" />
+    <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
 
     <BrushTransition x:Key="DefaultBackgroundTransition" Duration="0:0:0.083" />
+
+    <local:BoolToVisibilityConverter x:Key="InverseVisibilityConverter" FalseValue="Visible" TrueValue="Collapsed" />
 
     <Style x:Key="VideoPlayButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="{ThemeResource PlayButtonBackground}" />
@@ -170,71 +176,6 @@
     </Style>
     <Style BasedOn="{StaticResource DefaultTileImageStyle}" TargetType="local:TileImage" />
 
-    <DataTemplate x:Key="ScreenshotTileContentTemplate">
-        <Grid x:Name="TileImageRootGrid">
-            <controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
-                <controls:ConstrainedBox.Visibility>
-                    <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
-                </controls:ConstrainedBox.Visibility>
-                <local:Shimmer />
-            </controls:ConstrainedBox>
-            <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
-                <interactivity:Interaction.Behaviors>
-                    <local:ViewDisplayedBehavior />
-                </interactivity:Interaction.Behaviors>
-            </local:TileImage>
-        </Grid>
-    </DataTemplate>
-
-    <x:String x:Key="AgeGatingContentSubtitle">Sign in to view this content</x:String>
-    <x:String x:Key="AgeGatingSignInMessage">We need to verify your age to ensure this content is age-appropriate.</x:String>
-    <x:String x:Key="AgeGatingBlockedMessage">Your account doesn't meet the minimum age requirement to view this content.</x:String>
-    <x:String x:Key="SignInButton">Sign in</x:String>
-
-    <DataTemplate x:Key="AgeRestrictedDataTemplate">
-        <controls:ConstrainedBox AspectRatio="16:9">
-            <Grid>
-                <local:Shimmer x:Name="Shimmer">
-                    <local:Shimmer.Visibility>
-                        <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
-                    </local:Shimmer.Visibility>
-                </local:Shimmer>
-                <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
-                    <interactivity:Interaction.Behaviors>
-                        <local:ViewDisplayedBehavior />
-                    </interactivity:Interaction.Behaviors>
-                </local:TileImage>
-                <Border Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
-                <StackPanel Margin="8,0" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{StaticResource AgeGatingContentSubtitle}" TextAlignment="Center" />
-                    <TextBlock MaxWidth="400" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingSignInMessage}" TextAlignment="Center" TextWrapping="WrapWholeWords" />
-                    <Button MinWidth="160" Margin="0,12,0,0" HorizontalAlignment="Center" Content="{StaticResource SignInButton}" />
-                </StackPanel>
-            </Grid>
-        </controls:ConstrainedBox>
-    </DataTemplate>
-
-    <DataTemplate x:Key="AgeRestrictedBlockedDataTemplate">
-        <controls:ConstrainedBox AspectRatio="16:9">
-            <Grid>
-                <local:Shimmer x:Name="Shimmer">
-                    <local:Shimmer.Visibility>
-                        <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
-                    </local:Shimmer.Visibility>
-                </local:Shimmer>
-                <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
-                    <interactivity:Interaction.Behaviors>
-                        <local:ViewDisplayedBehavior />
-                    </interactivity:Interaction.Behaviors>
-                </local:TileImage>
-                <Border Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
-                <StackPanel Margin="8,0" VerticalAlignment="Center">
-                    <TextBlock MaxWidth="400" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingBlockedMessage}" TextAlignment="Center" TextWrapping="WrapWholeWords" />
-                </StackPanel>
-            </Grid>
-        </controls:ConstrainedBox>
-    </DataTemplate>
-
     <Style x:Key="StaticListViewStyle" TargetType="local:NoPointerWheelListView">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="IsItemClickEnabled" Value="True" />
@@ -266,8 +207,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
 
     <Style x:Key="DefaultListViewBaseItemContainerStyle" TargetType="primitives:SelectorItem">
         <Setter Property="Margin" Value="0" />
@@ -322,6 +261,66 @@
     <Style x:Key="DefaultScreenshotContainerStyle" BasedOn="{StaticResource ScreenshotListViewBaseItemContainerStyle}" TargetType="ListViewItem">
         <Setter Property="Margin" Value="12,0" />
     </Style>
+
+    <DataTemplate x:Key="AgeRestrictedBlockedDataTemplate">
+        <controls:ConstrainedBox AspectRatio="16:9">
+            <Grid>
+                <local:Shimmer x:Name="Shimmer">
+                    <local:Shimmer.Visibility>
+                        <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
+                    </local:Shimmer.Visibility>
+                </local:Shimmer>
+                <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
+                    <interactivity:Interaction.Behaviors>
+                        <local:ViewDisplayedBehavior />
+                    </interactivity:Interaction.Behaviors>
+                </local:TileImage>
+                <Border Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
+                <StackPanel Margin="8,0" VerticalAlignment="Center">
+                    <TextBlock MaxWidth="400" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingBlockedMessage}" TextAlignment="Center" TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </Grid>
+        </controls:ConstrainedBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AgeRestrictedDataTemplate">
+        <controls:ConstrainedBox AspectRatio="16:9">
+            <Grid>
+                <local:Shimmer x:Name="Shimmer">
+                    <local:Shimmer.Visibility>
+                        <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
+                    </local:Shimmer.Visibility>
+                </local:Shimmer>
+                <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
+                    <interactivity:Interaction.Behaviors>
+                        <local:ViewDisplayedBehavior />
+                    </interactivity:Interaction.Behaviors>
+                </local:TileImage>
+                <Border Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
+                <StackPanel Margin="8,0" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{StaticResource AgeGatingContentSubtitle}" TextAlignment="Center" />
+                    <TextBlock MaxWidth="400" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingSignInMessage}" TextAlignment="Center" TextWrapping="WrapWholeWords" />
+                    <Button MinWidth="160" Margin="0,12,0,0" HorizontalAlignment="Center" Content="{StaticResource SignInButton}" />
+                </StackPanel>
+            </Grid>
+        </controls:ConstrainedBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ScreenshotTileContentTemplate">
+        <Grid x:Name="TileImageRootGrid">
+            <controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
+                <controls:ConstrainedBox.Visibility>
+                    <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
+                </controls:ConstrainedBox.Visibility>
+                <local:Shimmer />
+            </controls:ConstrainedBox>
+            <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
+                <interactivity:Interaction.Behaviors>
+                    <local:ViewDisplayedBehavior />
+                </interactivity:Interaction.Behaviors>
+            </local:TileImage>
+        </Grid>
+    </DataTemplate>
 
     <Style x:Key="DefaultStoreCarousel2Style" TargetType="local:StoreCarousel2">
         <Setter Property="Background" Value="Transparent" />

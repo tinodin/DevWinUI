@@ -423,7 +423,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     }
 
     public event EventHandler Closed;
-    public event EventHandler SignInClicked;
 
     public bool IsOpen => _isOpen;
 
@@ -653,7 +652,6 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) => UpdateOverlaySize();
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Hide();
-    private void OnAgeGatingSignInClicked(object sender, RoutedEventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
     private void OnViewerKeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Escape)

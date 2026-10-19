@@ -3,7 +3,6 @@
 public sealed partial class ScreenshotsViewer : UserControl
 {
     public event EventHandler<object> ScreenshotClicked;
-    public event EventHandler Clicked;
     public event EventHandler SignInClicked;
 
     public ListViewBase TileList => ScreenshotTileList;
@@ -76,7 +75,6 @@ public sealed partial class ScreenshotsViewer : UserControl
         ScreenshotTileList.Loaded += OnTileListLoaded;
 
         ApplyAgeRestriction();
-        ScreenshotTileList.SelectedIndex = SelectedIndex;
         _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ForceUpdateVideoThumbnails);
     }
 
@@ -250,7 +248,6 @@ public sealed partial class ScreenshotsViewer : UserControl
         var index = ScreenshotTileList.Items.IndexOf(e.ClickedItem);
         if (index < 0) index = 0;
         ScreenshotClicked?.Invoke(this, e.ClickedItem ?? index);
-        Clicked?.Invoke(this, EventArgs.Empty);
 
         if (AgeRestricted)
         {
@@ -286,8 +283,6 @@ public sealed partial class ScreenshotsViewer : UserControl
 
         if (Helper != null)
         {
-            Helper.ViewModel = viewModel;
-
             if (viewModel == null)
             {
                 Helper.ListViewSource = null;
