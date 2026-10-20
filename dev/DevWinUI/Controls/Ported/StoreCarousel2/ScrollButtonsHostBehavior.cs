@@ -45,6 +45,7 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         AssociatedObject.Unloaded += OnUnloaded;
         AssociatedObject.PointerEntered += OnPointerEntered;
         AssociatedObject.PointerExited += OnPointerExited;
+        AssociatedObject.PointerCanceled += OnPointerCanceled;
     }
 
     protected override void OnDetaching()
@@ -54,6 +55,7 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         AssociatedObject.Unloaded -= OnUnloaded;
         AssociatedObject.PointerEntered -= OnPointerEntered;
         AssociatedObject.PointerExited -= OnPointerExited;
+        AssociatedObject.PointerCanceled -= OnPointerCanceled;
         DetachScrollViewer();
     }
 
@@ -84,14 +86,29 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 
     private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
     {
+        if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Touch)
+        {
+            return;
+        }
+
         _isPointerOver = true;
         UpdateButtons();
     }
 
     private void OnPointerExited(object sender, PointerRoutedEventArgs e)
     {
+        if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Touch)
+        {
+            return;
+        }
+
         _isPointerOver = false;
         UpdateButtons();
+    }
+
+    private void OnPointerCanceled(object sender, PointerRoutedEventArgs e)
+    {
+        OnPointerExited(sender, e);
     }
 
     private void AttachScrollViewer()
