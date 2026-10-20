@@ -5,17 +5,12 @@ namespace DevWinUI;
 
 public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 {
+    private ScrollViewer _scrollViewer;
+    private bool _isPointerOver;
+
     public static readonly DependencyProperty IsEnabledProperty =
         DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(ScrollButtonsHostBehavior),
             new PropertyMetadata(true, OnIsEnabledChanged));
-
-    public static readonly DependencyProperty LeftScrollButtonProperty =
-        DependencyProperty.Register(nameof(LeftScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
-            new PropertyMetadata(null, OnScrollButtonChanged));
-
-    public static readonly DependencyProperty RightScrollButtonProperty =
-        DependencyProperty.Register(nameof(RightScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
-            new PropertyMetadata(null, OnScrollButtonChanged));
 
     public bool IsEnabled
     {
@@ -23,20 +18,25 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         set => SetValue(IsEnabledProperty, value);
     }
 
+    public static readonly DependencyProperty LeftScrollButtonProperty =
+        DependencyProperty.Register(nameof(LeftScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
+            new PropertyMetadata(null, OnScrollButtonChanged));
+
     public Button LeftScrollButton
     {
         get => (Button)GetValue(LeftScrollButtonProperty);
         set => SetValue(LeftScrollButtonProperty, value);
     }
 
+    public static readonly DependencyProperty RightScrollButtonProperty =
+        DependencyProperty.Register(nameof(RightScrollButton), typeof(Button), typeof(ScrollButtonsHostBehavior),
+            new PropertyMetadata(null, OnScrollButtonChanged));
+
     public Button RightScrollButton
     {
         get => (Button)GetValue(RightScrollButtonProperty);
         set => SetValue(RightScrollButtonProperty, value);
     }
-
-    private ScrollViewer _scrollViewer;
-    private bool _isPointerOver;
 
     protected override void OnAttached()
     {

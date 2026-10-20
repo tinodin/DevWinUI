@@ -4,14 +4,14 @@ namespace DevWinUI;
 
 public partial class StoreCarousel2
 {
+    public static readonly DependencyProperty ItemsSourceProperty =
+        DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(StoreCarousel2), new PropertyMetadata(null, OnItemsSourceChanged));
+
     public IEnumerable ItemsSource
     {
         get => (IEnumerable)GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
     }
-
-    public static readonly DependencyProperty ItemsSourceProperty =
-        DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(StoreCarousel2), new PropertyMetadata(null, OnItemsSourceChanged));
 
     private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -33,14 +33,14 @@ public partial class StoreCarousel2
         }
     }
 
+    public static readonly DependencyProperty AgeRestrictedProperty =
+        DependencyProperty.Register(nameof(AgeRestricted), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(false, OnAgeRestrictedChanged));
+
     public bool AgeRestricted
     {
         get => (bool)GetValue(AgeRestrictedProperty);
         set => SetValue(AgeRestrictedProperty, value);
     }
-
-    public static readonly DependencyProperty AgeRestrictedProperty =
-        DependencyProperty.Register(nameof(AgeRestricted), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(false, OnAgeRestrictedChanged));
 
     private static void OnAgeRestrictedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -49,14 +49,14 @@ public partial class StoreCarousel2
         carousel._viewer?.AgeRestricted = (bool)e.NewValue;
     }
 
+    public static readonly DependencyProperty IsAgeBlockedProperty =
+        DependencyProperty.Register(nameof(IsAgeBlocked), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(false, OnIsAgeBlockedChanged));
+
     public bool IsAgeBlocked
     {
         get => (bool)GetValue(IsAgeBlockedProperty);
         set => SetValue(IsAgeBlockedProperty, value);
     }
-
-    public static readonly DependencyProperty IsAgeBlockedProperty =
-        DependencyProperty.Register(nameof(IsAgeBlocked), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(false, OnIsAgeBlockedChanged));
 
     private static void OnIsAgeBlockedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -65,14 +65,14 @@ public partial class StoreCarousel2
         carousel._viewer?.IsAgeBlocked = (bool)e.NewValue;
     }
 
+    public static readonly DependencyProperty IsViewerEnabledProperty =
+        DependencyProperty.Register(nameof(IsViewerEnabled), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(true, OnIsViewerEnabledChanged));
+
     public bool IsViewerEnabled
     {
         get => (bool)GetValue(IsViewerEnabledProperty);
         set => SetValue(IsViewerEnabledProperty, value);
     }
-
-    public static readonly DependencyProperty IsViewerEnabledProperty =
-        DependencyProperty.Register(nameof(IsViewerEnabled), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(true, OnIsViewerEnabledChanged));
 
     private static void OnIsViewerEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {

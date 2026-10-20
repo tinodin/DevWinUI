@@ -34,7 +34,8 @@ public partial class StoreCarousel2 : Control
             if (ItemsSource != null)
             {
                 var vm = new PreviewModuleViewModel();
-                foreach (var item in ItemsSource) vm.Items.Add(item);
+                foreach (var item in ItemsSource)
+                    vm.Items.Add(item);
                 _card.PreviewViewModel = vm;
             }
             _card.AgeRestricted = AgeRestricted;
@@ -42,6 +43,31 @@ public partial class StoreCarousel2 : Control
 
             EnsureHelper();
         }
+    }
+
+    public void OpenPreview(int index = 0)
+    {
+        if (!IsViewerEnabled || AgeRestricted || _card == null)
+        {
+            return;
+        }
+
+        EnsureHelper();
+
+        _viewer?.XamlRoot = XamlRoot;
+
+        if (_helper == null || _viewerVm == null || _viewerVm.Items.Count == 0)
+        {
+            return;
+        }
+
+        if (index < 0 || index >= _viewerVm.Items.Count)
+        {
+            index = 0;
+        }
+
+        var dataItem = _viewerVm.Items[index];
+        _helper.SetUpPreviewViewer(dataItem);
     }
 
     private void EnsureHelper()
@@ -180,11 +206,8 @@ public partial class StoreCarousel2 : Control
 
     private void UnhookPreviewViewModel()
     {
-        if (_hookedPreviewViewModel != null)
-        {
-            _hookedPreviewViewModel.PropertyChanged -= OnPreviewViewModelPropertyChanged;
-            _hookedPreviewViewModel = null;
-        }
+        _hookedPreviewViewModel?.PropertyChanged -= OnPreviewViewModelPropertyChanged;
+        _hookedPreviewViewModel = null;
     }
 
     private void OnPreviewViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -224,31 +247,6 @@ public partial class StoreCarousel2 : Control
 
         EnsureHelper();
         _viewer?.XamlRoot = XamlRoot;
-    }
-
-    public void OpenPreview(int index = 0)
-    {
-        if (!IsViewerEnabled || AgeRestricted || _card == null)
-        {
-            return;
-        }
-
-        EnsureHelper();
-
-        _viewer?.XamlRoot = XamlRoot;
-
-        if (_helper == null || _viewerVm == null || _viewerVm.Items.Count == 0)
-        {
-            return;
-        }
-
-        if (index < 0 || index >= _viewerVm.Items.Count)
-        {
-            index = 0;
-        }
-
-        var dataItem = _viewerVm.Items[index];
-        _helper.SetUpPreviewViewer(dataItem);
     }
 
     private void OnViewerClosed(object sender, EventArgs e)

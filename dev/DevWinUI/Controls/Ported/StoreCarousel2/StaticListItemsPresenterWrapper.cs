@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Input;
+﻿using Microsoft.UI.Xaml.Input;
 
 namespace DevWinUI;
 
@@ -14,14 +14,6 @@ public partial class StaticListItemsPresenterWrapper : ContentControl
         AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPointerWheelChangedInternal), handledEventsToo: true);
     }
 
-    private void OnPointerWheelChangedInternal(object sender, PointerRoutedEventArgs e)
-    {
-        if (!e.GetCurrentPoint(this).Properties.IsHorizontalMouseWheel)
-        {
-            e.Handled = true;
-        }
-    }
-
     protected override void OnPointerWheelChanged(PointerRoutedEventArgs e)
     {
         if (!e.GetCurrentPoint(this).Properties.IsHorizontalMouseWheel)
@@ -29,5 +21,13 @@ public partial class StaticListItemsPresenterWrapper : ContentControl
             e.Handled = true;
         }
         base.OnPointerWheelChanged(e);
+    }
+
+    private void OnPointerWheelChangedInternal(object sender, PointerRoutedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(this).Properties.IsHorizontalMouseWheel)
+        {
+            e.Handled = true;
+        }
     }
 }

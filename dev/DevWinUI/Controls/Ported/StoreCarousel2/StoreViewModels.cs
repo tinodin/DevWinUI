@@ -126,6 +126,9 @@ public class ScreenshotTileItem : IImageItem
 
 public class VideoPlayerSource : IImageItem
 {
+    private Windows.Media.Playback.MediaPlayer _mediaPlayer;
+    private Windows.Media.Core.MediaSource _videoSource;
+
     public object Data { get; set; }
     public Uri Source { get; set; }
     public Uri ImageUri { get; set; }
@@ -144,7 +147,6 @@ public class VideoPlayerSource : IImageItem
             return field;
         }
     }
-    private Windows.Media.Playback.MediaPlayer _mediaPlayer;
 
     public Windows.Media.Playback.MediaPlayer MediaPlayer
     {
@@ -158,8 +160,6 @@ public class VideoPlayerSource : IImageItem
             return _mediaPlayer;
         }
     }
-
-    private Windows.Media.Core.MediaSource _videoSource;
 
     public void EnsureMediaSource()
     {

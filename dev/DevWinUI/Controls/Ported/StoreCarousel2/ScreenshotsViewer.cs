@@ -2,18 +2,18 @@
 
 public sealed partial class ScreenshotsViewer : UserControl
 {
+    public ScreenshotsViewer()
+    {
+        InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
     public event EventHandler<object> ScreenshotClicked;
     public event EventHandler SignInClicked;
 
     public ListViewBase TileList => ScreenshotTileList;
 
     public PreviewViewerHelper Helper { get; set; }
-
-    public ScreenshotsViewer()
-    {
-        InitializeComponent();
-        Loaded += OnLoaded;
-    }
 
     protected override void OnApplyTemplate()
     {

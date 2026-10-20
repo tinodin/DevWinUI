@@ -25,14 +25,17 @@ public partial class TileImage
         ((TileImage)d).ApplyImageItem(e.NewValue as IImageItem);
     }
 
+    public static readonly DependencyProperty StretchProperty =
+        DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(TileImage), new PropertyMetadata(Stretch.None));
+
     public Stretch Stretch
     {
         get => (Stretch)GetValue(StretchProperty);
         set => SetValue(StretchProperty, value);
     }
 
-    public static readonly DependencyProperty StretchProperty =
-        DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(TileImage), new PropertyMetadata(Stretch.None));
+    public static readonly DependencyProperty RequestedImageWidthProperty =
+        DependencyProperty.Register(nameof(RequestedImageWidth), typeof(int), typeof(TileImage), new PropertyMetadata(0, OnSizeRequestChanged));
 
     public int RequestedImageWidth
     {
@@ -40,17 +43,14 @@ public partial class TileImage
         set => SetValue(RequestedImageWidthProperty, value);
     }
 
-    public static readonly DependencyProperty RequestedImageWidthProperty =
-        DependencyProperty.Register(nameof(RequestedImageWidth), typeof(int), typeof(TileImage), new PropertyMetadata(0, OnSizeRequestChanged));
+    public static readonly DependencyProperty RequestedImageHeightProperty =
+        DependencyProperty.Register(nameof(RequestedImageHeight), typeof(int), typeof(TileImage), new PropertyMetadata(0, OnSizeRequestChanged));
 
     public int RequestedImageHeight
     {
         get => (int)GetValue(RequestedImageHeightProperty);
         set => SetValue(RequestedImageHeightProperty, value);
     }
-
-    public static readonly DependencyProperty RequestedImageHeightProperty =
-        DependencyProperty.Register(nameof(RequestedImageHeight), typeof(int), typeof(TileImage), new PropertyMetadata(0, OnSizeRequestChanged));
 
     private static void OnSizeRequestChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -59,21 +59,21 @@ public partial class TileImage
             tile.ApplyImageItem(tile.ImageItem);
     }
 
+    public static readonly DependencyProperty ShowBackgroundColorProperty =
+        DependencyProperty.Register(nameof(ShowBackgroundColor), typeof(bool), typeof(TileImage), new PropertyMetadata(false));
+
     public bool ShowBackgroundColor
     {
         get => (bool)GetValue(ShowBackgroundColorProperty);
         set => SetValue(ShowBackgroundColorProperty, value);
     }
 
-    public static readonly DependencyProperty ShowBackgroundColorProperty =
-        DependencyProperty.Register(nameof(ShowBackgroundColor), typeof(bool), typeof(TileImage), new PropertyMetadata(false));
+    public static readonly DependencyProperty ImageProcessedProperty =
+        DependencyProperty.Register(nameof(ImageProcessed), typeof(bool), typeof(TileImage), new PropertyMetadata(false));
 
     public bool ImageProcessed
     {
         get => (bool)GetValue(ImageProcessedProperty);
         set => SetValue(ImageProcessedProperty, value);
     }
-
-    public static readonly DependencyProperty ImageProcessedProperty =
-        DependencyProperty.Register(nameof(ImageProcessed), typeof(bool), typeof(TileImage), new PropertyMetadata(false));
 }

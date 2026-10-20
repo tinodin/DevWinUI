@@ -1,7 +1,13 @@
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public sealed partial class PreviewViewerVideoItem : UserControl
 {
+    public PreviewViewerVideoItem()
+    {
+        InitializeComponent();
+        Loaded += (s, e) => UpdateSource();
+    }
+
     public static readonly DependencyProperty VideoPlayerSourceProperty =
         DependencyProperty.Register(nameof(VideoPlayerSource), typeof(VideoPlayerSource), typeof(PreviewViewerVideoItem), new PropertyMetadata(null, OnSourceChanged));
 
@@ -18,12 +24,6 @@ public sealed partial class PreviewViewerVideoItem : UserControl
     {
         get => (FrameworkElement)GetValue(ContentElementProperty);
         set => SetValue(ContentElementProperty, value);
-    }
-
-    public PreviewViewerVideoItem()
-    {
-        InitializeComponent();
-        Loaded += (s, e) => UpdateSource();
     }
 
     private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PreviewViewerVideoItem)d).UpdateSource();

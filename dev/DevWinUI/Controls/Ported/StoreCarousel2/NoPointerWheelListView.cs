@@ -5,6 +5,15 @@ namespace DevWinUI;
 
 public partial class NoPointerWheelListView : ListView
 {
+    private ScrollViewer _scrollViewer;
+    private readonly PointerEventHandler _pointerWheelHandler;
+
+    public NoPointerWheelListView()
+    {
+        _pointerWheelHandler = OnScrollViewerPointerWheelChanged;
+        Unloaded += OnUnloaded;
+    }
+
     public static readonly DependencyProperty DisposeOnUnloadedProperty =
         DependencyProperty.Register(nameof(DisposeOnUnloaded), typeof(bool), typeof(NoPointerWheelListView), new PropertyMetadata(false));
 
@@ -48,15 +57,6 @@ public partial class NoPointerWheelListView : ListView
     {
         get => (Thickness)GetValue(ScrollViewerPaddingProperty);
         set => SetValue(ScrollViewerPaddingProperty, value);
-    }
-
-    private ScrollViewer _scrollViewer;
-    private readonly PointerEventHandler _pointerWheelHandler;
-
-    public NoPointerWheelListView()
-    {
-        _pointerWheelHandler = OnScrollViewerPointerWheelChanged;
-        Unloaded += OnUnloaded;
     }
 
     protected override void OnApplyTemplate()

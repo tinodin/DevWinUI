@@ -116,7 +116,7 @@ public partial class TileImage : Control
     {
         ImageProcessed = true;
         InvalidateMeasure();
-        GoToColoredBackplate();
+        DispatcherQueue?.TryEnqueue(GoToColoredBackplate);
     }
 
     private void GoToDefaultBackplate()

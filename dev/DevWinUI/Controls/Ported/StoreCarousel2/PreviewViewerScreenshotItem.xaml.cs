@@ -2,6 +2,12 @@
 
 public sealed partial class PreviewViewerScreenshotItem : UserControl
 {
+    public PreviewViewerScreenshotItem()
+    {
+        InitializeComponent();
+        Loaded += (s, e) => UpdateImage();
+    }
+
     public static readonly DependencyProperty TileItemProperty =
         DependencyProperty.Register(nameof(TileItem), typeof(ScreenshotTileItem), typeof(PreviewViewerScreenshotItem), new PropertyMetadata(null, OnTileItemChanged));
 
@@ -18,12 +24,6 @@ public sealed partial class PreviewViewerScreenshotItem : UserControl
     {
         get => (FrameworkElement)GetValue(ContentElementProperty);
         set => SetValue(ContentElementProperty, value);
-    }
-
-    public PreviewViewerScreenshotItem()
-    {
-        InitializeComponent();
-        Loaded += (s, e) => UpdateImage();
     }
 
     private static void OnTileItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PreviewViewerScreenshotItem)d).UpdateImage();

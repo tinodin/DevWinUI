@@ -5,17 +5,12 @@ namespace DevWinUI;
 public partial class ScrollCommand : XamlUICommand
 {
     private ScrollViewer _scrollViewer;
+    private FrameworkElement _contentSizeSource;
 
     public ScrollCommand()
     {
         ExecuteRequested += OnExecuteRequested;
         CanExecuteRequested += OnCanExecuteRequested;
-    }
-
-    public ScrollDirection ScrollDirection
-    {
-        get => (ScrollDirection)GetValue(ScrollDirectionProperty);
-        set => SetValue(ScrollDirectionProperty, value);
     }
 
     public static readonly DependencyProperty ScrollDirectionProperty =
@@ -25,10 +20,21 @@ public partial class ScrollCommand : XamlUICommand
             typeof(ScrollCommand),
             new PropertyMetadata(ScrollDirection.None, OnScrollDirectionChanged));
 
-    public FrameworkElement TargetElement
+    public ScrollDirection ScrollDirection
     {
-        get => (FrameworkElement)GetValue(TargetElementProperty);
-        set => SetValue(TargetElementProperty, value);
+        get => (ScrollDirection)GetValue(ScrollDirectionProperty);
+        set => SetValue(ScrollDirectionProperty, value);
+    }
+
+    private static void OnScrollDirectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var cmd = (ScrollCommand)d;
+        if (cmd._scrollViewer != null)
+        {
+            ScrollByDirection(cmd._scrollViewer, (ScrollDirection)e.NewValue);
+        }
+
+        cmd.NotifyCanExecuteChanged();
     }
 
     public static readonly DependencyProperty TargetElementProperty =
@@ -37,6 +43,21 @@ public partial class ScrollCommand : XamlUICommand
             typeof(FrameworkElement),
             typeof(ScrollCommand),
             new PropertyMetadata(null, OnTargetElementChanged));
+
+    public FrameworkElement TargetElement
+    {
+        get => (FrameworkElement)GetValue(TargetElementProperty);
+        set => SetValue(TargetElementProperty, value);
+    }
+
+    private static void OnTargetElementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var cmd = (ScrollCommand)d;
+        cmd.DetachScrollViewer();
+        cmd._scrollViewer = ResolveScrollViewer(e.NewValue as FrameworkElement);
+        cmd.AttachScrollViewer();
+        cmd.NotifyCanExecuteChanged();
+    }
 
     private void OnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
@@ -55,28 +76,6 @@ public partial class ScrollCommand : XamlUICommand
         var sv = _scrollViewer ?? ResolveScrollViewer(TargetElement);
         args.CanExecute = sv != null && CanScroll(sv, ScrollDirection);
     }
-
-    private static void OnScrollDirectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var cmd = (ScrollCommand)d;
-        if (cmd._scrollViewer != null)
-        {
-            ScrollByDirection(cmd._scrollViewer, (ScrollDirection)e.NewValue);
-        }
-
-        cmd.NotifyCanExecuteChanged();
-    }
-
-    private static void OnTargetElementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var cmd = (ScrollCommand)d;
-        cmd.DetachScrollViewer();
-        cmd._scrollViewer = ResolveScrollViewer(e.NewValue as FrameworkElement);
-        cmd.AttachScrollViewer();
-        cmd.NotifyCanExecuteChanged();
-    }
-
-    private FrameworkElement _contentSizeSource;
 
     private void AttachScrollViewer()
     {

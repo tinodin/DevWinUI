@@ -1,15 +1,10 @@
 ﻿namespace DevWinUI;
 
-public class PreviewViewerHelperListViewSource
+public class PreviewViewerHelperListViewSource(ListViewBase listView)
 {
     private UIElement _hiddenSourceElement;
 
-    public PreviewViewerHelperListViewSource(ListViewBase listView)
-    {
-        InnerListView = listView;
-    }
-
-    public ListViewBase InnerListView { get; set; }
+    public ListViewBase InnerListView { get; set; } = listView;
 
     public void RestoreSourceVisibility()
     {
@@ -121,7 +116,21 @@ public class PreviewViewerHelperListViewSource
             return;
         }
 
-        _ = InnerListView.SmoothScrollIntoViewWithIndexAsync(index, ScrollItemPlacement.Default, disableAnimation: true);
+        var scrollViewer = InnerListView.FindDescendant<ScrollViewer>();
+        if (scrollViewer == null)
+        {
+            InnerListView.ScrollIntoView(InnerListView.Items[index]);
+            return;
+        }
+
+        if (InnerListView.ContainerFromIndex(index) is not FrameworkElement container)
+        {
+            InnerListView.ScrollIntoView(InnerListView.Items[index]);
+            _ = InnerListView.DispatcherQueue?.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => FlushItemToEdge(index, scrollViewer));
+            return;
+        }
+
+        FlushItemToEdge(index, scrollViewer, container);
     }
 
     public async Task StartBackwardConnectedAnimationAsync(object dataItem)
@@ -168,6 +177,55 @@ public class PreviewViewerHelperListViewSource
         }
 
         await Task.CompletedTask;
+    }
+
+    private void FlushItemToEdge(int index, ScrollViewer scrollViewer, FrameworkElement container = null)
+    {
+        if (scrollViewer == null || InnerListView == null)
+        {
+            return;
+        }
+
+        container ??= InnerListView.ContainerFromIndex(index) as FrameworkElement;
+        if (container == null)
+        {
+            return;
+        }
+
+        if (scrollViewer.Content is not UIElement content)
+        {
+            return;
+        }
+
+        Point origin;
+        try
+        {
+            origin = container.TransformToVisual(content).TransformPoint(new Point(0, 0));
+        }
+        catch
+        {
+            return;
+        }
+
+        double itemLeft = origin.X;
+        double itemRight = itemLeft + container.ActualWidth;
+
+        double viewportWidth = scrollViewer.ViewportWidth > 0 ? scrollViewer.ViewportWidth : scrollViewer.ActualWidth;
+        double currentOffset = scrollViewer.HorizontalOffset;
+        double viewportRight = currentOffset + viewportWidth;
+
+        const double epsilon = 1.0;
+        if (itemLeft >= currentOffset - epsilon && itemRight <= viewportRight + epsilon)
+        {
+            return;
+        }
+
+        double targetOffset = itemLeft < currentOffset ? itemLeft : itemRight - viewportWidth;
+
+        if (targetOffset < 0) targetOffset = 0;
+        if (targetOffset > scrollViewer.ScrollableWidth) targetOffset = scrollViewer.ScrollableWidth;
+
+        scrollViewer.ChangeView(targetOffset, null, null, disableAnimation: true);
     }
 
     private static bool IsVisibleWithNonZeroSize(FrameworkElement element)
