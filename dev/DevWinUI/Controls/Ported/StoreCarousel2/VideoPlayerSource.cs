@@ -6,126 +6,128 @@ namespace DevWinUI;
 
 public class VideoPlayerSource : IImageItem
 {
-	private MediaPlayer? _mediaPlayer;
-	private int _sourceVersion;
-	private bool _isSourcePending;
+    private MediaPlayer? _mediaPlayer;
+    private int _sourceVersion;
+    private bool _isSourcePending;
 
-	public object? Data { get; set; }
+    public object? Data { get; set; }
 
-	public Uri? Source { get; set; }
+    public Uri? Source { get; set; }
 
-	public Uri? ImageUri { get; set; }
+    public Uri? ImageUri { get; set; }
 
-	public string? Title { get; set; }
+    public string? Title { get; set; }
 
-	public ImageSource? ImageSource
-	{
-		get
-		{
-			if (field == null && ImageUri != null)
-				field = new BitmapImage(ImageUri)
-				{
-					CreateOptions = BitmapCreateOptions.None,
-					DecodePixelHeight = 316
-				};
-			return field;
-		}
-	}
+    public ImageSource? ImageSource
+    {
+        get
+        {
+            if (field == null && ImageUri != null)
+            {
+                field = new BitmapImage(ImageUri)
+                {
+                    CreateOptions = BitmapCreateOptions.None
+                };
+            }
 
-	public MediaPlayer MediaPlayer
-	{
-		get
-		{
-			if (_mediaPlayer == null)
-			{
-				_mediaPlayer = new MediaPlayer();
-				EnsureMediaSource();
-			}
-			return _mediaPlayer;
-		}
-	}
+            return field;
+        }
+    }
 
-	private void EnsureMediaSource()
-	{
-		if (Source == null || _isSourcePending)
-			return;
+    public MediaPlayer MediaPlayer
+    {
+        get
+        {
+            if (_mediaPlayer == null)
+            {
+                _mediaPlayer = new MediaPlayer();
+                EnsureMediaSource();
+            }
+            return _mediaPlayer;
+        }
+    }
 
-		_isSourcePending = true;
-		_ = PrepareMediaSourceAsync(Source, _sourceVersion);
-	}
+    private void EnsureMediaSource()
+    {
+        if (Source == null || _isSourcePending)
+            return;
 
-	private async Task PrepareMediaSourceAsync(Uri source, int version)
-	{
-		MediaSource? mediaSource = null;
+        _isSourcePending = true;
+        _ = PrepareMediaSourceAsync(Source, _sourceVersion);
+    }
 
-		try
-		{
-			if (source.AbsolutePath.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
-			{
-				AdaptiveMediaSourceCreationResult result = await AdaptiveMediaSource.CreateFromUriAsync(source);
-				if (version != _sourceVersion)
-					return;
+    private async Task PrepareMediaSourceAsync(Uri source, int version)
+    {
+        MediaSource? mediaSource = null;
 
-				if (result.Status == AdaptiveMediaSourceCreationStatus.Success && result.MediaSource != null)
-				{
-					if (result.MediaSource.AvailableBitrates.Count > 0)
-						result.MediaSource.InitialBitrate = result.MediaSource.AvailableBitrates.Max();
+        try
+        {
+            if (source.AbsolutePath.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
+            {
+                AdaptiveMediaSourceCreationResult result = await AdaptiveMediaSource.CreateFromUriAsync(source);
+                if (version != _sourceVersion)
+                    return;
 
-					mediaSource = MediaSource.CreateFromAdaptiveMediaSource(result.MediaSource);
-				}
-			}
+                if (result.Status == AdaptiveMediaSourceCreationStatus.Success && result.MediaSource != null)
+                {
+                    if (result.MediaSource.AvailableBitrates.Count > 0)
+                        result.MediaSource.InitialBitrate = result.MediaSource.AvailableBitrates.Max();
 
-			ApplyMediaSource(mediaSource ?? MediaSource.CreateFromUri(source), version);
-		}
-		catch
-		{
-			if (version == _sourceVersion)
-			{
-				try
-				{
-					ApplyMediaSource(MediaSource.CreateFromUri(source), version);
-				}
-				catch { }
-			}
-		}
-		finally
-		{
-			if (version == _sourceVersion)
-				_isSourcePending = false;
-		}
-	}
+                    mediaSource = MediaSource.CreateFromAdaptiveMediaSource(result.MediaSource);
+                }
+            }
 
-	private void ApplyMediaSource(MediaSource mediaSource, int version)
-	{
-		if (version != _sourceVersion || _mediaPlayer == null || _mediaPlayer.Source != null)
-			return;
+            ApplyMediaSource(mediaSource ?? MediaSource.CreateFromUri(source), version);
+        }
+        catch
+        {
+            if (version == _sourceVersion)
+            {
+                try
+                {
+                    ApplyMediaSource(MediaSource.CreateFromUri(source), version);
+                }
+                catch { }
+            }
+        }
+        finally
+        {
+            if (version == _sourceVersion)
+                _isSourcePending = false;
+        }
+    }
 
-		_mediaPlayer.Source = mediaSource;
-		if (_mediaPlayer.AutoPlay)
-			_mediaPlayer.Play();
-	}
+    private void ApplyMediaSource(MediaSource mediaSource, int version)
+    {
+        if (version != _sourceVersion || _mediaPlayer == null || _mediaPlayer.Source != null)
+            return;
 
-	public void TeardownPlayer()
-	{
-		_sourceVersion++;
-		_isSourcePending = false;
+        _mediaPlayer.Source = mediaSource;
+        if (_mediaPlayer.AutoPlay)
+            _mediaPlayer.Play();
+    }
 
-		if (_mediaPlayer != null)
-		{
-			try
-			{
-				if (_mediaPlayer.PlaybackSession?.PlaybackState != MediaPlaybackState.None)
-				{
-					_mediaPlayer.Pause();
-				}
-			}
-			catch { }
-			try
-			{
-				_mediaPlayer.Source = null!;
-			}
-			catch { }
-			_mediaPlayer = null;
-		}
-	}
+    public void TeardownPlayer()
+    {
+        _sourceVersion++;
+        _isSourcePending = false;
+
+        if (_mediaPlayer != null)
+        {
+            try
+            {
+                if (_mediaPlayer.PlaybackSession?.PlaybackState != MediaPlaybackState.None)
+                {
+                    _mediaPlayer.Pause();
+                }
+            }
+            catch { }
+            try
+            {
+                _mediaPlayer.Source = null!;
+            }
+            catch { }
+            _mediaPlayer = null;
+        }
+    }
 }
