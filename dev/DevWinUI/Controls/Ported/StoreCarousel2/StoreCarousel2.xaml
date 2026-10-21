@@ -147,35 +147,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DefaultTileImageStyle" TargetType="local:TileImage">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="local:TileImage">
-                    <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
-                        <Rectangle x:Name="BackgroundElement" Fill="{TemplateBinding Background}" IsHitTestVisible="False" Opacity="0" />
-                        <Image x:Name="MainImage" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="{TemplateBinding Stretch}" />
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="BackplateStates">
-                                <VisualState x:Name="DefaultBackplateVisualState">
-                                    <VisualState.Setters>
-                                        <Setter Target="BackgroundElement.Opacity" Value="0" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="ColoredBackplateVisualState">
-                                    <VisualState.Setters>
-                                        <Setter Target="BackgroundElement.Opacity" Value="1" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <Style BasedOn="{StaticResource DefaultTileImageStyle}" TargetType="local:TileImage" />
-
     <Style x:Key="StaticListViewStyle" TargetType="local:NoPointerWheelListView">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="IsItemClickEnabled" Value="True" />
@@ -316,7 +287,7 @@
             </controls:ConstrainedBox>
             <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
                 <interactivity:Interaction.Behaviors>
-                    <local:ViewDisplayedBehavior />
+                    <local:ViewDisplayedTrackerBehavior />
                 </interactivity:Interaction.Behaviors>
             </local:TileImage>
         </Grid>
@@ -328,7 +299,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:StoreCarousel2">
-                    <local:ScreenshotsViewer x:Name="ScreenshotsControl" Height="316" Margin="0,24" AgeRestricted="{TemplateBinding AgeRestricted}" IsAgeBlocked="{TemplateBinding IsAgeBlocked}" ItemsSource="{TemplateBinding ItemsSource}" />
+                    <local:ScreenshotsViewer x:Name="ScreenshotsControl" Height="316" Margin="0,24" AgeRestricted="{TemplateBinding AgeRestricted}" IsAgeBlocked="{TemplateBinding IsAgeBlocked}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

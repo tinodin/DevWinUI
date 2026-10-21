@@ -14,10 +14,16 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
         DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(true, OnIsEnabledChanged));
 
     public static readonly DependencyProperty IsOnScreenProperty =
-        DependencyProperty.Register(nameof(IsOnScreen), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(false));
+        DependencyProperty.Register(nameof(IsOnScreen), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(false, OnIsOnScreenPropertyChanged));
 
     public static readonly DependencyProperty VisibleRatioThresholdProperty =
         DependencyProperty.Register(nameof(VisibleRatioThreshold), typeof(double), typeof(OnScreenBehaviorBase), new PropertyMetadata(0.5, OnVisibleRatioThresholdChanged));
+
+    public static readonly DependencyProperty IsScrollPortProperty =
+        DependencyProperty.Register(nameof(IsScrollPort), typeof(bool), typeof(OnScreenBehaviorBase), new PropertyMetadata(false));
+
+    public static readonly DependencyProperty VisibleAreaProperty =
+        DependencyProperty.Register(nameof(VisibleArea), typeof(Rect), typeof(OnScreenBehaviorBase), new PropertyMetadata(default(Rect)));
 
     public bool IsEnabled
     {
@@ -35,6 +41,18 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
     {
         get => (double)GetValue(VisibleRatioThresholdProperty);
         set => SetValue(VisibleRatioThresholdProperty, value);
+    }
+
+    public bool IsScrollPort
+    {
+        get => (bool)GetValue(IsScrollPortProperty);
+        set => SetValue(IsScrollPortProperty, value);
+    }
+
+    public Rect VisibleArea
+    {
+        get => (Rect)GetValue(VisibleAreaProperty);
+        set => SetValue(VisibleAreaProperty, value);
     }
 
     protected override void OnAttached()
@@ -77,6 +95,12 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
         UpdateTrackingState();
     }
 
+    protected void RestartTracking()
+    {
+        _isTracking = true;
+        UpdateTrackingState();
+    }
+
     private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var behavior = (OnScreenBehaviorBase)d;
@@ -88,6 +112,13 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
         }
 
         behavior.UpdateTrackingState();
+    }
+
+    private static void OnIsOnScreenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var behavior = (OnScreenBehaviorBase)d;
+        behavior._isOnScreen = (bool)e.NewValue;
+        behavior.OnIsOnScreenChanged((bool)e.NewValue);
     }
 
     private static void OnVisibleRatioThresholdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((OnScreenBehaviorBase)d).Update();
@@ -192,8 +223,6 @@ public abstract class OnScreenBehaviorBase : Behavior<FrameworkElement>
             return;
         }
 
-        _isOnScreen = isOnScreen;
         SetValue(IsOnScreenProperty, isOnScreen);
-        OnIsOnScreenChanged(isOnScreen);
     }
 }

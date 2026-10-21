@@ -13,20 +13,21 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private const string BackAnimationKey = "screenshotBackAnimation";
 
     private readonly Popup _popup;
-    private Grid _viewerRoot;
-    private Button _closeButton;
-    private FlipView _flipView;
-    private ScrollViewer _scrollingHost;
-    private TextBlock _captionTextBlock;
-    private TextBlock _counterTextBlock;
-    private Run _currentIndexRun;
-    private Run _totalIndexRun;
-    private FrameworkElement _themeSource;
+    private Grid? _viewerRoot;
+    private Button? _closeButton;
+    private FlipView? _flipView;
+    private ScrollViewer? _scrollingHost;
+    private TextBlock? _captionTextBlock;
+    private TextBlock? _counterTextBlock;
+    private Run? _currentIndexRun;
+    private Run? _totalIndexRun;
+    private FrameworkElement? _themeSource;
     private int _pendingSelectedIndex;
     private int _selectionRequestVersion;
     private bool _pendingSelectionSet;
     private bool _syncingContainerSize;
     private int _videoPlayGeneration;
+    private static PreviewViewer? _currentOverlay;
 
     public PreviewViewer()
     {
@@ -37,14 +38,12 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         _popup = new Popup { IsLightDismissEnabled = false, ShouldConstrainToRootBounds = true };
 
-        _flipView.LayoutUpdated += OnFlipViewLayoutUpdated;
+        _flipView?.LayoutUpdated += OnFlipViewLayoutUpdated;
     }
 
-    public event EventHandler Closed;
+    public event EventHandler? Closed;
 
     public bool IsOpen { get; private set; }
-
-    public PreviewOverlayManager OverlayManager { get; set; } = new PreviewOverlayManager();
 
     public int SelectedIndex
     {
@@ -90,31 +89,37 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         viewer.ApplyAgeRestriction();
     }
 
-    public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(PreviewItemsViewModel), typeof(PreviewViewer), new PropertyMetadata(null, OnViewModelChanged));
+    private PreviewItemsViewModel? _viewModel;
 
-    public PreviewItemsViewModel ViewModel
+    public PreviewItemsViewModel? ViewModel
     {
-        get => (PreviewItemsViewModel)GetValue(ViewModelProperty);
-        set => SetValue(ViewModelProperty, value);
-    }
-
-    private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var c = (PreviewViewer)d;
-        if (e.OldValue is PreviewItemsViewModel oldVm)
-            oldVm.PropertyChanged -= c.OnViewModelPropertyChanged;
-        if (e.NewValue is PreviewItemsViewModel newVm)
+        get => _viewModel;
+        set
         {
-            newVm.PropertyChanged += c.OnViewModelPropertyChanged;
-
-            if (c._flipView != null)
+            if (ReferenceEquals(_viewModel, value))
             {
-                c.BindFlipViewItemsSource(newVm);
+                return;
             }
-            else
+
+            if (_viewModel != null)
             {
-                c.OnViewModelPropertyChanged(newVm, new PropertyChangedEventArgs(string.Empty));
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            }
+
+            _viewModel = value;
+
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+                if (_flipView != null)
+                {
+                    BindFlipViewItemsSource(_viewModel);
+                }
+                else
+                {
+                    OnViewModelPropertyChanged(_viewModel, new PropertyChangedEventArgs(string.Empty));
+                }
             }
         }
     }
@@ -184,7 +189,12 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         ApplySelection();
 
-        OverlayManager.ShowOverlay(this);
+        PreviewViewer? current = _currentOverlay;
+        current?.Close();
+
+        _currentOverlay = this;
+        AttachToOverlayHost();
+        Visibility = Visibility.Visible;
         IsOpen = true;
 
         FocusFlipViewProgrammatic();
@@ -205,7 +215,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     {
         if (!IsOpen) return;
 
-        var currentContainer = _flipView != null && _flipView.SelectedIndex >= 0 ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement : null;
+        FrameworkElement? currentContainer = _flipView != null && _flipView.SelectedIndex >= 0 ? SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement : null;
 
         PrepareBackAnimation(currentContainer);
 
@@ -223,7 +233,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             return;
         }
 
-        var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation(ForwardAnimationKey);
+        ConnectedAnimation? animation = ConnectedAnimationService.GetForCurrentView().GetAnimation(ForwardAnimationKey);
         if (animation == null)
         {
             FocusFlipViewProgrammatic();
@@ -232,7 +242,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
         animation.Configuration = new DirectConnectedAnimationConfiguration();
 
-        FrameworkElement container = null;
+        FrameworkElement? container = null;
         for (int attempt = 0; attempt < 6; attempt++)
         {
             await Task.Delay(15);
@@ -298,7 +308,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         Height = XamlRoot.Size.Height;
     }
 
-    private void OnFlipViewLayoutUpdated(object sender, object args)
+    private void OnFlipViewLayoutUpdated(object? sender, object args)
     {
         if (IsOpen)
         {
@@ -344,14 +354,14 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         }
     }
 
-    private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         ApplyViewModelState(e?.PropertyName);
     }
 
-    private void ApplyViewModelState(string prop)
+    private void ApplyViewModelState(string? prop)
     {
-        var vm = ViewModel;
+        PreviewItemsViewModel? vm = ViewModel;
         if (vm == null) return;
 
         bool updateAll = string.IsNullOrEmpty(prop);
@@ -378,9 +388,9 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         SyncCaptionAndIndexText(updateAll, prop);
     }
 
-    private void SyncCaptionAndIndexText(bool updateAll, string prop)
+    private void SyncCaptionAndIndexText(bool updateAll, string? prop)
     {
-        var vm = ViewModel;
+        PreviewItemsViewModel? vm = ViewModel;
         if (vm == null) return;
 
         if (updateAll || string.Equals(prop, "Caption", StringComparison.Ordinal))
@@ -581,15 +591,11 @@ public sealed partial class PreviewViewer : OverlayPopupBase
 
     private bool RemoveOverlayPopup()
     {
-        var manager = OverlayManager;
-        if (manager == null)
+        if (ReferenceEquals(_currentOverlay, this))
         {
-            return false;
-        }
-
-        if (!manager.HideOverlay(this))
-        {
-            return false;
+            Visibility = Visibility.Collapsed;
+            _currentOverlay = null;
+            DetachFromOverlayHost();
         }
 
         IsOpen = false;
@@ -597,13 +603,13 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         return true;
     }
 
-    private static void PrepareBackAnimation(FrameworkElement container)
+    private static void PrepareBackAnimation(FrameworkElement? container)
     {
         if (container == null) return;
 
         try
         {
-            var backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, container);
+            ConnectedAnimation? backAnim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(BackAnimationKey, container);
             backAnim?.Configuration = new DirectConnectedAnimationConfiguration();
         }
         catch { }
@@ -614,7 +620,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
         _flipView?.Focus(FocusState.Programmatic);
     }
 
-    private DependencyObject SafeContainerFromIndex(int index)
+    private DependencyObject? SafeContainerFromIndex(int index)
     {
         if (_flipView == null || index < 0 || _flipView.Items == null || index >= _flipView.Items.Count)
             return null;
@@ -681,16 +687,16 @@ public sealed partial class PreviewViewer : OverlayPopupBase
     private void UpdateCurrentVideoOnSelectionChanged()
     {
         if (_flipView == null) return;
-        var selectedItem = _flipView.SelectedItem;
+        object? selectedItem = _flipView.SelectedItem;
         if (selectedItem is VideoPlayerSource videoSource)
         {
-            var container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
+            FrameworkElement? container = SafeContainerFromIndex(_flipView.SelectedIndex) as FrameworkElement ?? _flipView.ContainerFromItem(selectedItem) as FrameworkElement;
             if (container != null)
             {
                 if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
                 {
                     videoItem.ApplySource();
-                    var element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
+                    MediaPlayerElement? element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
                     element?.AutoPlay = true;
                 }
             }
@@ -765,7 +771,7 @@ public sealed partial class PreviewViewer : OverlayPopupBase
             if (container.FindDescendant<PreviewViewerVideoItem>() is { } videoItem)
             {
                 videoItem.ApplySource();
-                var element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
+                MediaPlayerElement? element = videoItem.VideoPlayerItemElement ?? container.FindDescendant<MediaPlayerElement>();
                 element?.AutoPlay = true;
             }
 

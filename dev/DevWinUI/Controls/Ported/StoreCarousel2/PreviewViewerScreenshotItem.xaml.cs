@@ -17,15 +17,6 @@ public sealed partial class PreviewViewerScreenshotItem : UserControl
         set => SetValue(TileItemProperty, value);
     }
 
-    public static readonly DependencyProperty ContentElementProperty =
-        DependencyProperty.Register(nameof(ContentElement), typeof(FrameworkElement), typeof(PreviewViewerScreenshotItem), new PropertyMetadata(null));
-
-    public FrameworkElement ContentElement
-    {
-        get => (FrameworkElement)GetValue(ContentElementProperty);
-        set => SetValue(ContentElementProperty, value);
-    }
-
     private static void OnTileItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PreviewViewerScreenshotItem)d).UpdateImage();
 
     private void UpdateImage()

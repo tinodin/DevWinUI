@@ -5,7 +5,7 @@ namespace DevWinUI;
 
 public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 {
-    private ScrollViewer _scrollViewer;
+    private ScrollViewer? _scrollViewer;
     private bool _isPointerOver;
 
     public static readonly DependencyProperty IsEnabledProperty =
@@ -114,12 +114,13 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
     private void AttachScrollViewer()
     {
         DetachScrollViewer();
-        _scrollViewer = AssociatedObject?.FindDescendant<ScrollViewer>();
-        if (_scrollViewer != null)
+        ScrollViewer? scrollViewer = AssociatedObject?.FindDescendant<ScrollViewer>();
+        if (scrollViewer != null)
         {
-            _scrollViewer.ViewChanged += OnViewChanged;
-            WireScrollCommandTargets(_scrollViewer);
-            _ = AssociatedObject.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, UpdateButtons);
+            _scrollViewer = scrollViewer;
+            scrollViewer.ViewChanged += OnViewChanged;
+            WireScrollCommandTargets(scrollViewer);
+            _ = AssociatedObject?.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, UpdateButtons);
         }
     }
 
@@ -142,7 +143,7 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
         _scrollViewer = null;
     }
 
-    private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+    private void OnViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)
     {
 
         if (_isPointerOver)
@@ -153,14 +154,14 @@ public sealed partial class ScrollButtonsHostBehavior : Behavior<Grid>
 
     private void UpdateButtons()
     {
-        var left = LeftScrollButton;
-        var right = RightScrollButton;
+        Button? left = LeftScrollButton;
+        Button? right = RightScrollButton;
         if (left == null || right == null)
         {
             return;
         }
 
-        var sv = _scrollViewer ?? AssociatedObject?.FindDescendant<ScrollViewer>();
+        ScrollViewer? sv = _scrollViewer ?? AssociatedObject?.FindDescendant<ScrollViewer>();
         if (sv != null)
         {
             WireScrollCommandTargets(sv);

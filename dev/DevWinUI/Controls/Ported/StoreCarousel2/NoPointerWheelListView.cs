@@ -5,7 +5,7 @@ namespace DevWinUI;
 
 public partial class NoPointerWheelListView : ListView
 {
-    private ScrollViewer _scrollViewer;
+    private ScrollViewer? _scrollViewer;
     private readonly PointerEventHandler _pointerWheelHandler;
 
     public NoPointerWheelListView()

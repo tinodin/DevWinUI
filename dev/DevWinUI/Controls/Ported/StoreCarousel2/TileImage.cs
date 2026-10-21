@@ -1,50 +1,59 @@
-﻿namespace DevWinUI;
+﻿using Microsoft.UI.Dispatching;
 
-[TemplatePart(Name = "RootGrid", Type = typeof(Grid))]
-[TemplatePart(Name = "MainImage", Type = typeof(Image))]
-public partial class TileImage : Control
+namespace DevWinUI;
+
+public partial class TileImage : UserControl
 {
-    private Grid _rootGrid;
-    private Image _image;
-    private ImageSource _currentSource;
+    private ImageSource? _currentSource;
+    private IImageItem? _pendingImageItem;
+    private bool _commitScheduled;
 
     public TileImage()
     {
-        DefaultStyleKey = typeof(TileImage);
+        InitializeComponent();
+        MainImage.ImageOpened += OnImageOpened;
+        MainImage.ImageFailed += OnImageFailed;
+        UpdateVisualState();
     }
 
-    protected override void OnApplyTemplate()
+    internal void ApplyImageItem(IImageItem? item)
     {
-        base.OnApplyTemplate();
+        _pendingImageItem = item;
+        ImageProcessed = item == null;
+        ScheduleImageCommit();
+    }
 
-        if (_image != null)
+    private void ScheduleImageCommit()
+    {
+        if (_commitScheduled)
         {
-            _image.ImageOpened -= OnImageOpened;
-            _image.ImageFailed -= OnImageFailed;
+            return;
         }
 
-        _rootGrid = GetTemplateChild("RootGrid") as Grid;
-        _image = GetTemplateChild("MainImage") as Image;
-
-        if (_image != null)
+        DispatcherQueue? dispatcherQueue = DispatcherQueue;
+        if (dispatcherQueue == null)
         {
-            _image.ImageOpened += OnImageOpened;
-            _image.ImageFailed += OnImageFailed;
-            if (_currentSource != null)
+            CommitImage();
+            return;
+        }
+
+        _commitScheduled = true;
+
+        if (!dispatcherQueue.TryEnqueue(() =>
             {
-                _image.Source = _currentSource;
-                _image.Stretch = Stretch;
-            }
+                _commitScheduled = false;
+                CommitImage();
+            }))
+        {
+            _commitScheduled = false;
+            CommitImage();
         }
-
-        if (ImageItem != null)
-            ApplyImageItem(ImageItem);
-        else
-            UpdateVisualState();
     }
 
-    internal void ApplyImageItem(IImageItem item)
+    private void CommitImage()
     {
+        IImageItem? item = _pendingImageItem;
+
         if (item?.ImageUri != null)
         {
             var bmp = new BitmapImage(item.ImageUri)
@@ -54,19 +63,18 @@ public partial class TileImage : Control
                 DecodePixelWidth = RequestedImageWidth > 0 ? RequestedImageWidth : 0
             };
             _currentSource = bmp;
-            if (_image != null)
-            {
-                _image.Source = _currentSource;
-                _image.Stretch = Stretch;
-            }
+            MainImage.Source = _currentSource;
+            MainImage.Stretch = Stretch;
         }
         else
         {
             _currentSource = null;
-            _image?.Source = null;
+            MainImage.Source = null;
         }
 
-        _rootGrid?.Opacity = 0;
+        RootGrid.Opacity = 0;
+
+        UpdateFooterTemplate();
 
         ImageProcessed = _currentSource == null && item == null;
         InvalidateMeasure();
@@ -79,7 +87,7 @@ public partial class TileImage : Control
 
     private void UpdateVisualState()
     {
-        _rootGrid?.Opacity = 0;
+        RootGrid.Opacity = 0;
 
         ImageProcessed = _currentSource == null && ImageItem == null;
         InvalidateMeasure();
@@ -93,7 +101,7 @@ public partial class TileImage : Control
         ImageProcessed = true;
         InvalidateMeasure();
 
-        if (_rootGrid != null && _currentSource != null)
+        if (_currentSource != null)
         {
             var fadeIn = new DoubleAnimation
             {
@@ -101,7 +109,7 @@ public partial class TileImage : Control
                 To = 1,
                 Duration = new Duration(TimeSpan.FromMilliseconds(300))
             };
-            Storyboard.SetTarget(fadeIn, _rootGrid);
+            Storyboard.SetTarget(fadeIn, RootGrid);
             Storyboard.SetTargetProperty(fadeIn, "Opacity");
 
             var storyboard = new Storyboard();
@@ -117,6 +125,17 @@ public partial class TileImage : Control
         ImageProcessed = true;
         InvalidateMeasure();
         DispatcherQueue?.TryEnqueue(GoToColoredBackplate);
+    }
+
+    private void UpdateFooterTemplate()
+    {
+        if (FooterPresenter == null)
+        {
+            return;
+        }
+
+        FooterPresenter.ContentTemplate = FooterTemplate;
+        FooterPresenter.Content = FooterTemplate != null ? ImageItem : null;
     }
 
     private void GoToDefaultBackplate()

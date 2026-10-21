@@ -3,12 +3,17 @@
 public partial class ViewDisplayedBehavior : OnScreenBehaviorBase
 {
     public static readonly DependencyProperty ViewDisplayedActionProperty =
-        DependencyProperty.Register(nameof(ViewDisplayedAction), typeof(Action), typeof(ViewDisplayedBehavior), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(ViewDisplayedAction), typeof(Action), typeof(ViewDisplayedBehavior), new PropertyMetadata(null, OnViewDisplayedActionChanged));
 
     public Action ViewDisplayedAction
     {
         get => (Action)GetValue(ViewDisplayedActionProperty);
         set => SetValue(ViewDisplayedActionProperty, value);
+    }
+
+    private static void OnViewDisplayedActionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        ((ViewDisplayedBehavior)d).RestartTracking();
     }
 
     protected override void OnIsOnScreenChanged(bool isOnScreen)

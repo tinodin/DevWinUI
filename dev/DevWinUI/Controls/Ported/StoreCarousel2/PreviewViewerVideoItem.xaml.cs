@@ -17,20 +17,11 @@ public sealed partial class PreviewViewerVideoItem : UserControl
         set => SetValue(VideoPlayerSourceProperty, value);
     }
 
-    public static readonly DependencyProperty ContentElementProperty =
-        DependencyProperty.Register(nameof(ContentElement), typeof(FrameworkElement), typeof(PreviewViewerVideoItem), new PropertyMetadata(null));
-
-    public FrameworkElement ContentElement
-    {
-        get => (FrameworkElement)GetValue(ContentElementProperty);
-        set => SetValue(ContentElementProperty, value);
-    }
-
     private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PreviewViewerVideoItem)d).UpdateSource();
 
     private void UpdateSource()
     {
-        var element = VideoPlayerItemElement;
+        MediaPlayerElement? element = VideoPlayerItemElement;
         if (element == null || VideoPlayerSource == null)
             return;
 

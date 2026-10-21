@@ -3,13 +3,13 @@
 [TemplatePart(Name = "ScreenshotsControl", Type = typeof(ScreenshotsViewer))]
 public partial class StoreCarousel2 : Control
 {
-    private ScreenshotsViewer _card;
-    private PreviewViewer _viewer;
-    private PreviewViewerHelper _helper;
-    private PreviewViewerHelperListViewSource _listViewSource;
-    private PreviewItemsViewModel _viewerVm;
-    private PreviewListFacade _popupList;
-    private PreviewModuleViewModel _hookedPreviewViewModel;
+    private ScreenshotsViewer? _card;
+    private PreviewViewer? _viewer;
+    private PreviewViewerHelper? _helper;
+    private PreviewViewerHelperListViewSource? _listViewSource;
+    private PreviewItemsViewModel? _viewerVm;
+    private PreviewItemsViewModel? _hookedViewerViewModel;
+    private PreviewModuleViewModel? _hookedPreviewViewModel;
     private int _viewerTransitionVersion;
 
     public StoreCarousel2()
@@ -17,8 +17,8 @@ public partial class StoreCarousel2 : Control
         DefaultStyleKey = typeof(StoreCarousel2);
     }
 
-    public event EventHandler ScreenshotClicked;
-    public event EventHandler SignInClicked;
+    public event EventHandler? ScreenshotClicked;
+    public event EventHandler? SignInClicked;
 
     protected override void OnApplyTemplate()
     {
@@ -47,7 +47,7 @@ public partial class StoreCarousel2 : Control
 
     public void OpenPreview(int index = 0)
     {
-        if (!IsViewerEnabled || AgeRestricted || _card == null)
+        if (AgeRestricted || _card == null)
         {
             return;
         }
@@ -93,30 +93,24 @@ public partial class StoreCarousel2 : Control
 
         if (_helper == null)
         {
-            _popupList = new PreviewListFacade();
-
             _helper = new PreviewViewerHelper
             {
                 PreviewViewer = _viewer,
-                ListViewSource = _listViewSource,
-                Popup = new PreviewPopupHost
-                {
-                    List = _popupList,
-                    Items = _viewerVm.Items
-                }
+                ListViewSource = _listViewSource
             };
         }
         else
         {
             _helper.PreviewViewer = _viewer;
             _helper.ListViewSource = _listViewSource;
-            _popupList ??= new PreviewListFacade();
-            _helper.Popup ??= new PreviewPopupHost();
-            _helper.Popup.List = _popupList;
-            _helper.Popup.Items = _viewerVm.Items;
         }
 
-        _popupList.BindToViewModel(_viewerVm);
+        if (!ReferenceEquals(_hookedViewerViewModel, _viewerVm))
+        {
+            _hookedViewerViewModel?.PropertyChanged -= _helper.OnPopupPreviewSelectionChanged;
+            _hookedViewerViewModel = _viewerVm;
+            _hookedViewerViewModel?.PropertyChanged += _helper.OnPopupPreviewSelectionChanged;
+        }
 
         if (!ReferenceEquals(_viewer.ViewModel, _viewerVm))
         {
@@ -125,7 +119,7 @@ public partial class StoreCarousel2 : Control
 
         _viewer.AgeRestricted = AgeRestricted;
         _viewer.IsAgeBlocked = IsAgeBlocked;
-        _card.Helper = IsViewerEnabled ? _helper : null;
+        _card.Helper = _helper;
     }
 
     private void EnsureViewerViewModel()
@@ -145,7 +139,12 @@ public partial class StoreCarousel2 : Control
 
     private void FillViewerViewModelItems()
     {
-        var previewItems = _card?.PreviewViewModel?.PreviewItems;
+        if (_viewerVm == null)
+        {
+            return;
+        }
+
+        ObservableCollection<object>? previewItems = _card?.PreviewViewModel?.PreviewItems;
         if (previewItems != null && previewItems.Count > 0)
         {
             foreach (var item in previewItems)
@@ -177,18 +176,13 @@ public partial class StoreCarousel2 : Control
         _viewerVm ??= new PreviewItemsViewModel();
         _viewerVm.Items.Clear();
         FillViewerViewModelItems();
-        _popupList?.BindToViewModel(_viewerVm);
-        if (_helper?.Popup != null)
-        {
-            _helper.Popup.Items = _viewerVm.Items;
-        }
 
         _viewer?.ViewModel = _viewerVm;
     }
 
     private void HookPreviewViewModel()
     {
-        var viewModel = _card?.PreviewViewModel;
+        PreviewModuleViewModel? viewModel = _card?.PreviewViewModel;
         if (ReferenceEquals(_hookedPreviewViewModel, viewModel))
         {
             return;
@@ -198,10 +192,7 @@ public partial class StoreCarousel2 : Control
 
         _hookedPreviewViewModel = viewModel;
 
-        if (_hookedPreviewViewModel != null)
-        {
-            _hookedPreviewViewModel.PropertyChanged += OnPreviewViewModelPropertyChanged;
-        }
+        _hookedPreviewViewModel?.PropertyChanged += OnPreviewViewModelPropertyChanged;
     }
 
     private void UnhookPreviewViewModel()
@@ -210,7 +201,7 @@ public partial class StoreCarousel2 : Control
         _hookedPreviewViewModel = null;
     }
 
-    private void OnPreviewViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void OnPreviewViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (string.Equals(e?.PropertyName, nameof(PreviewModuleViewModel.PreviewItems), StringComparison.Ordinal))
         {
@@ -231,25 +222,18 @@ public partial class StoreCarousel2 : Control
         UnhookPreviewViewModel();
     }
 
-    private void OnSignInClicked(object sender, EventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
+    private void OnSignInClicked(object? sender, EventArgs e) => SignInClicked?.Invoke(this, EventArgs.Empty);
 
-    private void OnScreenshotClicked(object sender, object e)
+    private void OnScreenshotClicked(object? sender, object e)
     {
 
         ScreenshotClicked?.Invoke(this, EventArgs.Empty);
-
-        if (!IsViewerEnabled)
-        {
-            _card?.Helper = null;
-
-            return;
-        }
 
         EnsureHelper();
         _viewer?.XamlRoot = XamlRoot;
     }
 
-    private void OnViewerClosed(object sender, EventArgs e)
+    private void OnViewerClosed(object? sender, EventArgs e)
     {
         if (_viewer == null || _card == null)
         {
@@ -275,7 +259,7 @@ public partial class StoreCarousel2 : Control
                     return;
                 }
 
-                object item = (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count) ? _card.TileList.Items[finalIndex] : null;
+                object? item = (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count) ? _card.TileList.Items[finalIndex] : null;
 
                 if (_listViewSource != null && item != null)
                 {
@@ -283,7 +267,7 @@ public partial class StoreCarousel2 : Control
                 }
                 else
                 {
-                    UIElement target = null;
+                    UIElement? target = null;
                     try
                     {
                         if (finalIndex >= 0 && finalIndex < _card.TileList.Items.Count && _card.TileList.ContainerFromIndex(finalIndex) is FrameworkElement container)
@@ -298,7 +282,7 @@ public partial class StoreCarousel2 : Control
                     {
                         try
                         {
-                            var backAnim = ConnectedAnimationService.GetForCurrentView().GetAnimation("screenshotBackAnimation");
+                            ConnectedAnimation? backAnim = ConnectedAnimationService.GetForCurrentView().GetAnimation("screenshotBackAnimation");
                             if (backAnim != null)
                             {
                                 backAnim.Configuration = new DirectConnectedAnimationConfiguration();

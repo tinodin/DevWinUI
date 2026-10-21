@@ -2,7 +2,7 @@
 
 public class PreviewViewerHelperListViewSource(ListViewBase listView)
 {
-    private UIElement _hiddenSourceElement;
+    private UIElement? _hiddenSourceElement;
 
     public ListViewBase InnerListView { get; set; } = listView;
 
@@ -14,7 +14,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
 
     public static bool GetAnimationSourceElementName(object item, out string name)
     {
-        name = null;
+        name = string.Empty;
         if (item is ScreenshotTileItem)
         {
             name = "TileImageRootGrid";
@@ -22,10 +22,6 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
         else if (item is VideoPlayerSource)
         {
             name = "VideoPreviewImage";
-        }
-        else
-        {
-            name = string.Empty;
         }
 
         return !string.IsNullOrEmpty(name);
@@ -78,7 +74,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
             }
         }
 
-        ConnectedAnimation anim = null;
+        ConnectedAnimation? anim = null;
 
         try
         {
@@ -92,10 +88,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
             anim = service.PrepareToAnimate("screenshotForwardAnimation", source);
         }
 
-        if (anim != null)
-        {
-            anim.Configuration = new DirectConnectedAnimationConfiguration();
-        }
+        anim?.Configuration = new DirectConnectedAnimationConfiguration();
 
         if (source != null)
         {
@@ -116,7 +109,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
             return;
         }
 
-        var scrollViewer = InnerListView.FindDescendant<ScrollViewer>();
+        ScrollViewer? scrollViewer = InnerListView.FindDescendant<ScrollViewer>();
         if (scrollViewer == null)
         {
             InnerListView.ScrollIntoView(InnerListView.Items[index]);
@@ -140,7 +133,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
             return;
         }
 
-        var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("screenshotBackAnimation");
+        ConnectedAnimation? animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("screenshotBackAnimation");
         if (animation == null || InnerListView == null)
         {
             return;
@@ -179,7 +172,7 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
         await Task.CompletedTask;
     }
 
-    private void FlushItemToEdge(int index, ScrollViewer scrollViewer, FrameworkElement container = null)
+    private void FlushItemToEdge(int index, ScrollViewer scrollViewer, FrameworkElement? container = null)
     {
         if (scrollViewer == null || InnerListView == null)
         {
@@ -233,5 +226,4 @@ public class PreviewViewerHelperListViewSource(ListViewBase listView)
         if (element == null) return false;
         return element.Visibility == Visibility.Visible && element.ActualWidth > 0 && element.ActualHeight > 0;
     }
-
 }

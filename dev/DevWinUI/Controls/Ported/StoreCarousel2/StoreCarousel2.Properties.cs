@@ -64,31 +64,4 @@ public partial class StoreCarousel2
         carousel._card?.IsAgeBlocked = (bool)e.NewValue;
         carousel._viewer?.IsAgeBlocked = (bool)e.NewValue;
     }
-
-    public static readonly DependencyProperty IsViewerEnabledProperty =
-        DependencyProperty.Register(nameof(IsViewerEnabled), typeof(bool), typeof(StoreCarousel2), new PropertyMetadata(true, OnIsViewerEnabledChanged));
-
-    public bool IsViewerEnabled
-    {
-        get => (bool)GetValue(IsViewerEnabledProperty);
-        set => SetValue(IsViewerEnabledProperty, value);
-    }
-
-    private static void OnIsViewerEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var c = (StoreCarousel2)d;
-        if (c._card == null)
-        {
-            return;
-        }
-
-        if ((bool)e.NewValue)
-        {
-            c.EnsureHelper();
-        }
-        else
-        {
-            c._card.Helper = null;
-        }
-    }
 }

@@ -2,13 +2,13 @@
 
 public partial class ScreenshotDataTemplateSelector : DataTemplateSelector
 {
-    public DataTemplate AgeRestrictedDataTemplate { get; set; }
-    public DataTemplate AgeRestrictedBlockedDataTemplate { get; set; }
-    public DataTemplate ScreenshotDataTemplate { get; set; }
-    public DataTemplate VideoItemDataTemplate { get; set; }
-    public DataTemplate VideoPlayerTemplate { get; set; }
+    public DataTemplate? AgeRestrictedDataTemplate { get; set; }
+    public DataTemplate? AgeRestrictedBlockedDataTemplate { get; set; }
+    public DataTemplate? ScreenshotDataTemplate { get; set; }
+    public DataTemplate? VideoItemDataTemplate { get; set; }
+    public DataTemplate? VideoPlayerTemplate { get; set; }
 
-    protected override DataTemplate SelectTemplateCore(object item)
+    protected override DataTemplate? SelectTemplateCore(object item)
     {
         if (item is AgeRestrictedTileItem ageRestricted)
             return ageRestricted.IsAgeBlocked ? AgeRestrictedBlockedDataTemplate ?? AgeRestrictedDataTemplate : AgeRestrictedDataTemplate;
@@ -19,5 +19,5 @@ public partial class ScreenshotDataTemplateSelector : DataTemplateSelector
         return ScreenshotDataTemplate;
     }
 
-    protected override DataTemplate SelectTemplateCore(object item, DependencyObject container) => SelectTemplateCore(item);
+    protected override DataTemplate? SelectTemplateCore(object item, DependencyObject container) => SelectTemplateCore(item);
 }

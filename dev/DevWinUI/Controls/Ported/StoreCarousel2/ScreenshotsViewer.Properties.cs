@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace DevWinUI;
+﻿namespace DevWinUI;
 
 public sealed partial class ScreenshotsViewer
 {
@@ -87,23 +85,5 @@ public sealed partial class ScreenshotsViewer
     {
         var viewer = (ScreenshotsViewer)d;
         viewer.ApplyAgeRestriction();
-    }
-
-    public static readonly DependencyProperty ItemsSourceProperty =
-        DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(ScreenshotsViewer), new PropertyMetadata(null, OnItemsSourceChanged));
-
-    public IEnumerable ItemsSource
-    {
-        get => (IEnumerable)GetValue(ItemsSourceProperty);
-        set => SetValue(ItemsSourceProperty, value);
-    }
-
-    private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var c = (ScreenshotsViewer)d;
-        var vm = new PreviewModuleViewModel();
-        if (e.NewValue is IEnumerable items)
-            foreach (var item in items) vm.Items.Add(item);
-        c.PreviewViewModel = vm;
     }
 }

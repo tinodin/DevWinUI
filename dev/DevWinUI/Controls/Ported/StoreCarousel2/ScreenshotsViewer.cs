@@ -8,12 +8,12 @@ public sealed partial class ScreenshotsViewer : UserControl
         Loaded += OnLoaded;
     }
 
-    public event EventHandler<object> ScreenshotClicked;
-    public event EventHandler SignInClicked;
+    public event EventHandler<object>? ScreenshotClicked;
+    public event EventHandler? SignInClicked;
 
     public ListViewBase TileList => ScreenshotTileList;
 
-    public PreviewViewerHelper Helper { get; set; }
+    public PreviewViewerHelper? Helper { get; set; }
 
     protected override void OnApplyTemplate()
     {
@@ -54,7 +54,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     private void UpdateScrollingState()
     {
-        var scrollViewer = ScreenshotTileList.FindDescendant<ScrollViewer>();
+        ScrollViewer? scrollViewer = ScreenshotTileList.FindDescendant<ScrollViewer>();
         if (scrollViewer == null)
         {
             return;
@@ -97,37 +97,24 @@ public sealed partial class ScreenshotsViewer : UserControl
             DependencyObject searchRoot = container;
             if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
                 searchRoot = lviRoot;
-            var image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
+            Image? image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
             if (image == null)
                 continue;
-            if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
-                continue;
-            try
-            {
-                image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
-            }
-            catch { }
-            var behaviors = Microsoft.Xaml.Interactivity.Interaction.GetBehaviors(image);
-            foreach (var b in behaviors)
-            {
-                if (b is ViewDisplayedBehavior vdb && vdb.ViewDisplayedAction == null)
-                {
-                    var capturedImage = image;
-                    var capturedUri = videoItem.ImageUri;
-                    vdb.ViewDisplayedAction = () =>
-                    {
-                        if (capturedImage.Source != null)
-                            return;
-                        try
-                        {
-                            capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
-                        }
-                        catch { }
-                    };
-                    break;
-                }
-            }
+
+            LoadVideoThumbnail(image, videoItem.ImageUri);
         }
+    }
+
+    private static void LoadVideoThumbnail(Image image, Uri uri)
+    {
+        if (image.Source is BitmapImage existing && existing.UriSource?.ToString() == uri.ToString())
+            return;
+
+        try
+        {
+            image.Source = new BitmapImage(uri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
+        }
+        catch { }
     }
 
     private bool HookAgeGateSignInButton(FrameworkElement container)
@@ -141,7 +128,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (container is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
             searchRoot = lviRoot;
 
-        var button = searchRoot.FindDescendant<Button>() ?? container.FindDescendant<Button>();
+        Button? button = searchRoot.FindDescendant<Button>() ?? container.FindDescendant<Button>();
         if (button == null)
         {
             return false;
@@ -174,7 +161,7 @@ public sealed partial class ScreenshotsViewer : UserControl
     {
         if (args.InRecycleQueue) return;
 
-        if (AgeRestricted && !HookAgeGateSignInButton(args.ItemContainer as FrameworkElement) && args.Phase < 3)
+        if (AgeRestricted && !HookAgeGateSignInButton(args.ItemContainer) && args.Phase < 3)
         {
             args.RegisterUpdateCallback(OnContainerContentChanging);
             return;
@@ -200,7 +187,7 @@ public sealed partial class ScreenshotsViewer : UserControl
         if (args.ItemContainer is ListViewItem lvi && lvi.ContentTemplateRoot is DependencyObject lviRoot)
             searchRoot = lviRoot;
 
-        var image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
+        Image? image = searchRoot.FindDescendant<Image>() ?? container.FindDescendant<Image>();
         if (image == null)
         {
             if (args.Phase < 3)
@@ -208,39 +195,7 @@ public sealed partial class ScreenshotsViewer : UserControl
             return;
         }
 
-        var behaviors = Microsoft.Xaml.Interactivity.Interaction.GetBehaviors(image);
-        ViewDisplayedBehavior targetVdb = null;
-        foreach (var b in behaviors)
-            if (b is ViewDisplayedBehavior vdb) { targetVdb = vdb; break; }
-
-        bool needsLoad = true;
-        if (image.Source is BitmapImage existingBmp && existingBmp.UriSource?.ToString() == videoItem.ImageUri.ToString())
-            needsLoad = false;
-
-        if (needsLoad)
-        {
-            try
-            {
-                image.Source = new BitmapImage(videoItem.ImageUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
-            }
-            catch { }
-        }
-
-        if (targetVdb != null && targetVdb.ViewDisplayedAction == null)
-        {
-            var capturedImage = image;
-            var capturedUri = videoItem.ImageUri;
-            targetVdb.ViewDisplayedAction = () =>
-            {
-                if (capturedImage.Source != null)
-                    return;
-                try
-                {
-                    capturedImage.Source = new BitmapImage(capturedUri) { CreateOptions = BitmapCreateOptions.None, DecodePixelHeight = 316 };
-                }
-                catch { }
-            };
-        }
+        LoadVideoThumbnail(image, videoItem.ImageUri);
     }
 
     private void OnTileListClick(object sender, ItemClickEventArgs e)
@@ -266,7 +221,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     internal void OnPreviewModeChanged()
     {
-        var helper = Helper;
+        PreviewViewerHelper? helper = Helper;
         if (helper != null && helper.PreviewMode != PreviewMode)
         {
             helper.PreviewMode = PreviewMode;
@@ -277,7 +232,7 @@ public sealed partial class ScreenshotsViewer : UserControl
 
     internal void OnPreviewViewModelChanged()
     {
-        var viewModel = PreviewViewModel;
+        PreviewModuleViewModel? viewModel = PreviewViewModel;
         viewModel?.PreviewMode = PreviewMode;
         viewModel?.RebuildPreviewItems();
 
