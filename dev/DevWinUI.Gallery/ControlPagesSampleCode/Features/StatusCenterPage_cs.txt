@@ -1,0 +1,17 @@
+var item = StatusCenterHelper.AddCard_Copy(
+    ReturnResult.InProgress,
+    sourceItems,
+    destinationPaths,
+    itemsCount: sourceItems.Count(),
+    totalSize: totalSize);
+
+item.Progress.Report(50);
+
+StatusCenterHelper.AddCard_Copy(
+    ReturnResult.Success,
+    sourceItems,
+    destinationPaths,
+    itemsCount: sourceItems.Count(),
+    totalSize: totalSize);
+
+StatusCenterViewModel.Instance.RemoveItem(item);

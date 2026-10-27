@@ -271,6 +271,13 @@
           "ImagePath": "ms-appx:///Assets/Fluent/Image.png"
         },
         {
+          "UniqueId": "DevWinUIGallery.Views.StatusCenterPage",
+          "Title": "Status Center",
+          "Subtitle": "A status center button and panel that display the progress of operations.",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/ProgressRing.png"
+        },
+        {
           "UniqueId": "DevWinUIGallery.Views.SamplePanelPage",
           "Title": "Sample Panel",
           "Subtitle": "Sample panel with 2 Side.",

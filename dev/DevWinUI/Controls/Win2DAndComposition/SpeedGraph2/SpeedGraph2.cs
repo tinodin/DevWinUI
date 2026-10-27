@@ -4,7 +4,6 @@ namespace DevWinUI;
 
 public sealed partial class SpeedGraph2 : Control
 {
-	private const string accentColor = "SystemAccentColor";
 	private const string successColor = "SystemFillColorSuccess";
 	private const string criticalColor = "SystemFillColorCritical";
 	private const string cautionColor = "SystemFillColorCaution";
@@ -261,7 +260,7 @@ public sealed partial class SpeedGraph2 : Control
 
     public void SetGraphNormal()
     {
-        SetGraphColors(accentColor);
+        SetGraphColors(GetNormalAccentColor());
         graphState = GraphState.Normal;
     }
     public void SetGraphSuccess()
@@ -286,10 +285,23 @@ public sealed partial class SpeedGraph2 : Control
         graphState = GraphState.Custom;
     }
 
+	private Color GetNormalAccentColor()
+	{
+		return ActualTheme switch
+		{
+			ElementTheme.Light => (Color)Application.Current.Resources["SystemAccentColorDark1"],
+			ElementTheme.Dark => (Color)Application.Current.Resources["SystemAccentColorLight2"],
+			ElementTheme.Default or _ => (Application.Current.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush)!.Color
+		};
+	}
+
 	private void SetGraphColors(string colorResourceKey)
 	{
-		var accentColor = (Color)Application.Current.Resources[colorResourceKey];
+		SetGraphColors((Color)Application.Current.Resources[colorResourceKey]);
+	}
 
+	private void SetGraphColors(Color accentColor)
+	{
 		var veryLightColor = accentColor with { A = 0x0f };
 
 		var slightlyDarkerColor = this.ActualTheme switch
