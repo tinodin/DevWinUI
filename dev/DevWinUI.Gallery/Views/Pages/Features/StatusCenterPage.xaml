@@ -3,7 +3,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="10" dev:PanelAttach.ChildrenTransitions="Default" Spacing="10">
-            <local:ControlExample CSharpSource="Features/StatusCenterPage_cs.txt" HeaderText="Status Center">
+            <local:ControlExample CSharpSource="Features/StatusCenterPage_cs.txt" HeaderText="Status center">
                 <local:ControlExample.Xaml>
                     <x:String>&lt;dev:StatusCenterButton /&gt;</x:String>
                 </local:ControlExample.Xaml>
@@ -39,11 +39,11 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <Button HorizontalAlignment="Stretch" Click="CopyInProgress_Click" Content="Copy" />
+                            <Button HorizontalAlignment="Stretch" Click="Copy_Click" Content="Copy" />
                             <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="Move_Click" Content="Move" />
                             <Button Grid.Row="1" HorizontalAlignment="Stretch" Click="Delete_Click" Content="Delete" />
                             <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Click="Recycle_Click" Content="Recycle" />
-                            <Button Grid.Row="2" HorizontalAlignment="Stretch" Click="CompressInProgress_Click" Content="Compress" />
+                            <Button Grid.Row="2" HorizontalAlignment="Stretch" Click="Compress_Click" Content="Compress" />
                             <Button Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Click="Extract_Click" Content="Extract" />
                             <Button Grid.Row="3" HorizontalAlignment="Stretch" Click="InstallFont_Click" Content="Install font" />
                             <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Click="EmptyRecycleBin_Click" Content="Recycle bin" />

@@ -67,7 +67,7 @@
                                 <Border x:Name="SeverityBackgroundBorder" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Bind ItemKind, Converter={StaticResource StatusCenterStateToBrushConverter}, ConverterParameter=True, Mode=OneWay}" CornerRadius="16" Opacity="{x:Bind IconBackgroundCircleBorderOpacity, Mode=OneWay}" />
 
                                 <!--  State Icon 16x16  -->
-                                <PathIcon x:Name="SeverityForegroundPathIcon" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{x:Bind ItemIconKind, Converter={StaticResource StatusCenterStateToStateIconConverter}, Mode=OneWay}" Foreground="{x:Bind ItemKind, Converter={StaticResource StatusCenterStateToBrushConverter}, Mode=OneWay}" />
+                                <PathIcon x:Name="SeverityForegroundPathIcon" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{x:Bind IconData, Mode=OneWay}" Foreground="{x:Bind ItemKind, Converter={StaticResource StatusCenterStateToBrushConverter}, Mode=OneWay}" />
 
                             </Grid>
 

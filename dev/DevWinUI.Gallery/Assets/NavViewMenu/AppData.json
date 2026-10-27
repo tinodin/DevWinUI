@@ -271,13 +271,6 @@
           "ImagePath": "ms-appx:///Assets/Fluent/Image.png"
         },
         {
-          "UniqueId": "DevWinUIGallery.Views.StatusCenterPage",
-          "Title": "Status Center",
-          "Subtitle": "A status center button and panel that display the progress of operations.",
-          "IsNew": true,
-          "ImagePath": "ms-appx:///Assets/Fluent/ProgressRing.png"
-        },
-        {
           "UniqueId": "DevWinUIGallery.Views.SamplePanelPage",
           "Title": "Sample Panel",
           "Subtitle": "Sample panel with 2 Side.",
@@ -288,6 +281,13 @@
           "Title": "Spectrum Analyzer",
           "Subtitle": "Displays audio level and frequency data.",
           "ImagePath": "ms-appx:///Assets/Fluent/AudioWave2.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.StatusCenterPage",
+          "Title": "Status Center",
+          "Subtitle": "A status center that displays the progress of operations.",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/ProgressRing.png"
         },
         {
           "UniqueId": "DevWinUIGallery.Views.WaveformTimelinePage",

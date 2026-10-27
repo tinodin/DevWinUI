@@ -84,7 +84,13 @@ namespace DevWinUI
 
 		public StatusCenterViewModel()
 		{
-			StatusCenterItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasAnyItem));
+			StatusCenterItems.CollectionChanged += (s, e) =>
+			{
+				OnPropertyChanged(nameof(HasAnyItem));
+
+				if (StatusCenterItems.Count is 0)
+					ShowProgressRing = false;
+			};
 		}
 
 		public void OnStatusCenterFlyoutOpened()
@@ -93,10 +99,9 @@ namespace DevWinUI
 		}
 
 		public StatusCenterItem AddItem(
-			string headerResource,
-			string subHeaderResource,
+			string header,
+			string subHeader,
 			ReturnResult status,
-			FileOperationType operation,
 			IEnumerable<string>? source,
 			IEnumerable<string>? destination,
 			bool canProvideProgress = true,
@@ -105,10 +110,9 @@ namespace DevWinUI
 			CancellationTokenSource? cancellationTokenSource = null)
 		{
 			var banner = new StatusCenterItem(
-				headerResource,
-				subHeaderResource,
+				header,
+				subHeader,
 				status,
-				operation,
 				source,
 				destination,
 				canProvideProgress,

@@ -3,6 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Markup;
 using System.Windows.Input;
 using WinRT;
 
@@ -134,31 +135,50 @@ namespace DevWinUI
 			set => SetProperty(ref _Progress, value);
 		}
 
-		public ReturnResult FileSystemOperationReturnResult { get; private set; }
+		public ReturnResult FileSystemOperationReturnResult { get; set; }
 
-		public FileOperationType Operation { get; private set; }
+		private StatusCenterItemKind _ItemKind;
+		public StatusCenterItemKind ItemKind
+		{
+			get => _ItemKind;
+			set => SetProperty(ref _ItemKind, value);
+		}
 
-		public StatusCenterItemKind ItemKind { get; private set; }
+		private StatusCenterItemIconKind _ItemIconKind;
+		public StatusCenterItemIconKind ItemIconKind
+		{
+			get => _ItemIconKind;
+			set
+			{
+				SetProperty(ref _ItemIconKind, value);
 
-		public StatusCenterItemIconKind ItemIconKind { get; private set; }
+				IconData = ConvertIconKind(value);
+			}
+		}
 
-		public long TotalSize { get; private set; }
+		private Geometry? _IconData;
+		public Geometry? IconData
+		{
+			get => _IconData;
+			set => SetProperty(ref _IconData, value);
+		}
 
-		public long TotalItemsCount { get; private set; }
+		public long TotalSize { get; set; }
 
-		public bool IsInProgress { get; private set; }
+		public long TotalItemsCount { get; set; }
 
-		public bool IsDiscovering { get; private set; } = true;
+		public bool IsInProgress { get; set; }
 
-		public IEnumerable<string>? Source { get; private set; }
+		public IEnumerable<string>? Source { get; set; }
 
-		public IEnumerable<string>? Destination { get; private set; }
+		public IEnumerable<string>? Destination { get; set; }
 
-		public string? HeaderStringResource { get; private set; }
-
-		public string? SubHeaderStringResource { get; private set; }
-
-		public double IconBackgroundCircleBorderOpacity { get; private set; }
+		private double _IconBackgroundCircleBorderOpacity;
+		public double IconBackgroundCircleBorderOpacity
+		{
+			get => _IconBackgroundCircleBorderOpacity;
+			set => SetProperty(ref _IconBackgroundCircleBorderOpacity, value);
+		}
 
 		public CancellationToken CancellationToken
 			=> _operationCancellationToken?.Token ?? default;
@@ -176,10 +196,9 @@ namespace DevWinUI
 
 		[DynamicWindowsRuntimeCast(typeof(SolidColorBrush))]
 		public StatusCenterItem(
-			string headerResource,
-			string subHeaderResource,
+			string header,
+			string subHeader,
 			ReturnResult status,
-			FileOperationType operation,
 			IEnumerable<string>? source,
 			IEnumerable<string>? destination,
 			bool canProvideProgress = false,
@@ -188,12 +207,9 @@ namespace DevWinUI
 			CancellationTokenSource? operationCancellationToken = default)
 		{
 			_operationCancellationToken = operationCancellationToken;
-			Header = headerResource == string.Empty ? headerResource : headerResource.GetStatusCenterResource();
-			HeaderStringResource = headerResource;
-			SubHeader = subHeaderResource == string.Empty ? subHeaderResource : subHeaderResource.GetStatusCenterResource();
-			SubHeaderStringResource = subHeaderResource;
+			Header = header;
+			SubHeader = subHeader;
 			FileSystemOperationReturnResult = status;
-			Operation = operation;
 			ProgressEventSource = new Progress<StatusCenterItemProgressModel>(ReportProgress);
 			Progress = new(ProgressEventSource, status: FileSystemStatusCode.InProgress);
 			IsCancelable = _operationCancellationToken is not null;
@@ -203,46 +219,22 @@ namespace DevWinUI
 			AnimatedIconState = "NormalOff";
 			SpeedGraphValues = [];
 			CancelCommand = new RelayCommand(ExecuteCancelCommand);
-			Message = Strings.DiscoveringItems.GetStatusCenterResource();
 			Source = source;
 			Destination = destination;
-
-			if (Operation is FileOperationType.Git)
-			{
-				Message = Strings.StatusCenter_GitOperationProgress.GetStatusCenterFormatResource(0);
-				IsDiscovering = false;
-			}
 
 			// Get the graph color
 			if (Application.Current.Resources["App.Theme.FillColorAttentionBrush"] is not SolidColorBrush accentBrush)
 				return;
 
-			// Set icon and initialize string resources
 			switch (FileSystemOperationReturnResult)
 			{
 				case ReturnResult.InProgress:
 					{
-						IsSpeedAndProgressAvailable = canProvideProgress && Operation is not FileOperationType.Git;
+						IsSpeedAndProgressAvailable = canProvideProgress;
 						IsInProgress = true;
 						IsIndeterminateProgress = !canProvideProgress;
 						IconBackgroundCircleBorderOpacity = 0.1d;
-
-						if (Operation is FileOperationType.Prepare)
-							Header = "StatusCenter_PrepareInProgress".GetStatusCenterResource();
-
 						ItemKind = StatusCenterItemKind.InProgress;
-						ItemIconKind = Operation switch
-						{
-							FileOperationType.Extract => StatusCenterItemIconKind.Extract,
-							FileOperationType.Copy => StatusCenterItemIconKind.Copy,
-							FileOperationType.Move => StatusCenterItemIconKind.Move,
-							FileOperationType.Delete => StatusCenterItemIconKind.Delete,
-							FileOperationType.Recycle => StatusCenterItemIconKind.Recycle,
-							FileOperationType.Compressed => StatusCenterItemIconKind.Compress,
-							FileOperationType.Git => StatusCenterItemIconKind.Git,
-							FileOperationType.InstallFont => StatusCenterItemIconKind.InstallFont,
-							_ => StatusCenterItemIconKind.Delete,
-						};
 
 						break;
 					}
@@ -263,27 +255,36 @@ namespace DevWinUI
 				case ReturnResult.Cancelled:
 					{
 						IconBackgroundCircleBorderOpacity = 0.1d;
-
 						ItemKind = StatusCenterItemKind.Canceled;
-						ItemIconKind = Operation switch
-						{
-							FileOperationType.Extract => StatusCenterItemIconKind.Extract,
-							FileOperationType.Copy => StatusCenterItemIconKind.Copy,
-							FileOperationType.Move => StatusCenterItemIconKind.Move,
-							FileOperationType.Delete => StatusCenterItemIconKind.Delete,
-							FileOperationType.Recycle => StatusCenterItemIconKind.Recycle,
-							FileOperationType.Compressed => StatusCenterItemIconKind.Compress,
-							FileOperationType.Git => StatusCenterItemIconKind.Git,
-							FileOperationType.InstallFont => StatusCenterItemIconKind.InstallFont,
-							_ => StatusCenterItemIconKind.Delete,
-						};
 
 						break;
 					}
 			}
 
-			StatusCenterHelper.UpdateCardStrings(this);
 			OnPropertyChanged(nameof(HeaderTooltip));
+		}
+
+		private static Geometry? ConvertIconKind(StatusCenterItemIconKind iconKind)
+		{
+			var pathMarkup = iconKind switch
+			{
+				StatusCenterItemIconKind.Copy => Application.Current.Resources["App.Theme.PathIcon.ActionCopy"] as string,
+				StatusCenterItemIconKind.Move => Application.Current.Resources["App.Theme.PathIcon.ActionMove"] as string,
+				StatusCenterItemIconKind.Delete => Application.Current.Resources["App.Theme.PathIcon.ActionDelete"] as string,
+				StatusCenterItemIconKind.Recycle => Application.Current.Resources["App.Theme.PathIcon.ActionDelete"] as string,
+				StatusCenterItemIconKind.Extract => Application.Current.Resources["App.Theme.PathIcon.ActionExtract"] as string,
+				StatusCenterItemIconKind.Compress => Application.Current.Resources["App.Theme.PathIcon.ActionExtract"] as string,
+				StatusCenterItemIconKind.Successful => Application.Current.Resources["App.Theme.PathIcon.ActionSuccess"] as string,
+				StatusCenterItemIconKind.Error => Application.Current.Resources["App.Theme.PathIcon.ActionInfo"] as string,
+				StatusCenterItemIconKind.Git => Application.Current.Resources["App.Theme.PathIcon.ActionGit"] as string,
+				StatusCenterItemIconKind.InstallFont => Application.Current.Resources["App.Theme.PathIcon.ActionInstallFont"] as string,
+				_ => string.Empty,
+			};
+
+			if (string.IsNullOrEmpty(pathMarkup))
+				return null;
+
+			return XamlBindingHelper.ConvertValue(typeof(Geometry), pathMarkup) as Geometry;
 		}
 
 		private void ReportProgress(StatusCenterItemProgressModel value)
@@ -297,34 +298,11 @@ namespace DevWinUI
 			if (value.Status is FileSystemStatusCode status)
 				FileSystemOperationReturnResult = status.ToStatus();
 
-			// Update the footer message, percentage, processing item name
+			// Update the percentage and processing item name
 			if (value.Percentage is double p)
 			{
 				if (ProgressPercentage != value.Percentage)
-				{
 					ProgressPercentage = (int)p;
-
-					if (Operation == FileOperationType.Git)
-					{
-						Message = Strings.StatusCenter_GitOperationProgress.GetStatusCenterFormatResource((int)p);
-					}
-					else if (Operation == FileOperationType.Recycle ||
-						Operation == FileOperationType.Delete ||
-						Operation == FileOperationType.Compressed)
-					{
-						Message = string.Format(
-							Strings.StatusCenter_ProcessedItems_Header.GetStatusCenterFormatResource(value.ProcessedItemsCount, value.ItemsCount),
-							value.ProcessedItemsCount,
-							value.ItemsCount);
-					}
-					else
-					{
-						Message = string.Format(
-							Strings.StatusCenter_ProcessedSize_Header.GetStatusCenterResource(),
-							value.ProcessedSize.ToSizeString(),
-							value.TotalSize.ToSizeString());
-					}
-				}
 
 				if (CurrentProcessingItemName != value.FileName)
 					CurrentProcessingItemName = value.FileName;
@@ -338,17 +316,9 @@ namespace DevWinUI
 			if (TotalSize < value.TotalSize)
 				TotalSize = value.TotalSize;
 
-			if (value.EnumerationCompleted && IsDiscovering)
-			{
-				IsDiscovering = false;
-				Message = Strings.ProcessingItems.GetStatusCenterResource();
-			}
-
-			// Update UI for strings
-			StatusCenterHelper.UpdateCardStrings(this, value);
 			OnPropertyChanged(nameof(HeaderTooltip));
 
-			if (Operation is FileOperationType.Git)
+			if (!IsSpeedAndProgressAvailable)
 			{
 				if (!IsIndeterminateProgress && value.EnumerationCompleted)
 					Header = $"{Header} ({ProgressPercentage}%)";
@@ -424,7 +394,6 @@ namespace DevWinUI
 				IsCancelable = false;
 				IsExpanded = false;
 				IsSpeedAndProgressAvailable = false;
-				Header = $"{Strings.Canceling.GetStatusCenterResource()} - {Header}";
 			}
 		}
 	}

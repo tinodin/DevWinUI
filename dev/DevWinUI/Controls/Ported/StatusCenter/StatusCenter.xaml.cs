@@ -29,19 +29,5 @@ namespace DevWinUI
 			if (sender is Button button && button.DataContext is StatusCenterItem item)
 				ViewModel.RemoveItem(item);
 		}
-
-		[DynamicWindowsRuntimeCast(typeof(Button))]
-		private void ExpandCollapseChevronItemButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (sender is Button button && button.DataContext is StatusCenterItem item)
-			{
-				var buttonAnimatedIcon = button.FindDescendant<AnimatedIcon>();
-
-				if (buttonAnimatedIcon is not null)
-					AnimatedIcon.SetState(buttonAnimatedIcon, item.IsExpanded ? "NormalOff" : "NormalOn");
-
-				item.IsExpanded = !item.IsExpanded;
-			}
-		}
 	}
 }

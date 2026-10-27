@@ -1,17 +1,69 @@
-var item = StatusCenterHelper.AddCard_Copy(
-    ReturnResult.InProgress,
-    sourceItems,
-    destinationPaths,
-    itemsCount: sourceItems.Count(),
-    totalSize: totalSize);
+private void CopyFiles_Click(object sender, RoutedEventArgs e)
+{
+    const string sourceFolder = @"C:\Users\Public\Documents";
+    const string destinationFolder = @"C:\Users\Public\Downloads";
 
-item.Progress.Report(50);
+    string[] source = [$@"{sourceFolder}\File 1.txt", $@"{sourceFolder}\File 2.txt"];
+    string[] destination = [$@"{destinationFolder}\File 1.txt", $@"{destinationFolder}\File 2.txt"];
 
-StatusCenterHelper.AddCard_Copy(
-    ReturnResult.Success,
-    sourceItems,
-    destinationPaths,
-    itemsCount: sourceItems.Count(),
-    totalSize: totalSize);
+    var cts = new CancellationTokenSource();
 
-StatusCenterViewModel.Instance.RemoveItem(item);
+    var item = StatusCenterViewModel.Instance.AddItem(
+        $"Copying {source.Length} items to \"Downloads\"",
+        $"Copying {source.Length} items from \"Documents\" to \"Downloads\"",
+        ReturnResult.InProgress,
+        source,
+        destination,
+        itemsCount: source.Length,
+        cancellationTokenSource: cts);
+
+    item.ItemIconKind = StatusCenterItemIconKind.Copy;
+    item.Progress.ItemsCount = source.Length;
+    item.Progress.EnumerationCompleted = true;
+
+    item.Progress.PropertyChanged += (_, _) =>
+        item.Header = $"Copying {item.Progress.ProcessedItemsCount} of {item.Progress.ItemsCount} items to \"Downloads\"";
+
+    var timer = DispatcherQueue.CreateTimer();
+    timer.Interval = TimeSpan.FromSeconds(1);
+
+    timer.Tick += (t, _) =>
+    {
+        if (item.CancellationToken.IsCancellationRequested)
+        {
+            t.Stop();
+            ShowResult(ReturnResult.Cancelled);
+            return;
+        }
+
+        item.Progress.AddProcessedItemsCount(1);
+        item.Progress.Report();
+
+        if (item.Progress.ProcessedItemsCount < item.Progress.ItemsCount)
+            return;
+
+        t.Stop();
+        ShowResult(ReturnResult.Success);
+    };
+
+    timer.Start();
+
+    void ShowResult(ReturnResult result)
+    {
+        var verb = result is ReturnResult.Cancelled ? "Canceled copying" : "Copied";
+
+        StatusCenterViewModel.Instance.RemoveItem(item);
+
+        var completedItem = StatusCenterViewModel.Instance.AddItem(
+            $"{verb} {source.Length} items to \"Downloads\"",
+            $"{verb} {source.Length} items from \"Documents\" to \"Downloads\"",
+            result,
+            source,
+            destination,
+            canProvideProgress: false,
+            itemsCount: source.Length);
+
+        if (result is ReturnResult.Cancelled)
+            completedItem.ItemIconKind = StatusCenterItemIconKind.Copy;
+    }
+}
