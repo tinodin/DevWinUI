@@ -46,6 +46,9 @@ internal sealed class BreadcrumbPageMappingGenerator : IIncrementalGenerator
 
     private void Execute(SourceProductionContext ctx, ImmutableArray<AdditionalText> files, Compilation compilation, string @namespace, string projectDir, string rootNamespace)
     {
+        if (compilation.GetTypeByMetadataName("DevWinUI.BreadcrumbPageConfig") is null)
+            return;
+
         var entries = new List<string>();
         var fileNamesStringBuilder = new StringBuilder();
 
@@ -113,6 +116,7 @@ internal sealed class BreadcrumbPageMappingGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Collections.Generic;");
+        sb.AppendLine("using DevWinUI;");
         sb.AppendLine();
         sb.AppendLine($"namespace {projectNamespace};");
         sb.AppendLine("public partial class BreadcrumbPageMappings");

@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevWinUI;
+
 public partial class JsonNavigationService
 {
     private void AddNavigationMenuItems()
@@ -16,6 +17,12 @@ public partial class JsonNavigationService
 
         foreach (var group in GetOrderedDataGroups(orderItems).Where(i => !i.IsSpecialSection && !i.HideGroup))
         {
+            if (group.IsSeparator)
+            {
+                (group.IsFooterNavigationViewItem ? footerItems : menuItems).Add(new NavigationViewItemSeparator());
+                continue;
+            }
+
             var itemGroup = new NavigationViewItem()
             {
                 Content = group.Title,
@@ -24,10 +31,13 @@ public partial class JsonNavigationService
                 DataContext = group,
                 InfoBadge = GetInfoBadge(group, null, group.DefaultBuiltInNavigationViewInfoBadgeStyle, group.UseBuiltInNavigationViewInfoBadgeStyle)
             };
-            var icon = GetIcon(group.ImagePath, group.IconGlyph);
-            if (icon != null && !group.HideNavigationViewItemIcon)
+            if (!group.HideNavigationViewItemIcon)
             {
-                itemGroup.Icon = icon;
+                var icon = GetIcon(group.ImagePath, group.IconGlyph);
+                if (icon != null)
+                {
+                    itemGroup.Icon = icon;
+                }
             }
 
             AutomationProperties.SetName(itemGroup, group.Title);
@@ -36,6 +46,19 @@ public partial class JsonNavigationService
 
             foreach (var item in GetOrderedDataItems(group.Items, orderItems).Where(i => !i.HideNavigationViewItem))
             {
+                if (item.IsSeparator)
+                {
+                    if (group.ShowItemsWithoutGroup)
+                    {
+                        (group.IsFooterNavigationViewItem ? footerItems : menuItems).Add(new NavigationViewItemSeparator());
+                    }
+                    else
+                    {
+                        itemGroup.MenuItems.Add(new NavigationViewItemSeparator());
+                    }
+                    continue;
+                }
+
                 var itemInGroup = new NavigationViewItem()
                 {
                     IsEnabled = item.IncludedInBuild,
@@ -45,10 +68,13 @@ public partial class JsonNavigationService
                     InfoBadge = GetInfoBadge(item, item.BadgeString, group.DefaultBuiltInNavigationViewInfoBadgeStyle, group.UseBuiltInNavigationViewInfoBadgeStyle)
                 };
 
-                var iconInGroup = GetIcon(item.ImagePath, item.IconGlyph);
-                if (iconInGroup != null && !item.HideNavigationViewItemIcon)
+                if (!item.HideNavigationViewItemIcon)
                 {
-                    itemInGroup.Icon = iconInGroup;
+                    var iconInGroup = GetIcon(item.ImagePath, item.IconGlyph);
+                    if (iconInGroup != null)
+                    {
+                        itemInGroup.Icon = iconInGroup;
+                    }
                 }
 
                 AutomationProperties.SetName(itemInGroup, item.Title);
@@ -108,39 +134,88 @@ public partial class JsonNavigationService
             _navigationView.FooterMenuItems.Add(item);
         }
 
-        EnsureNavigationSelection(_defaultPage?.ToString());
+        var defaultPageId = _defaultPage?.ToString();
+        var currentPage = Frame?.Content as Page;
+        if (_defaultPage != null && (currentPage == null || currentPage.GetType() == _defaultPage))
+        {
+            var wasSelectionSuppressed = _suppressSelectionNavigation;
+            _suppressSelectionNavigation = true;
+            try
+            {
+                EnsureNavigationSelection(defaultPageId);
+            }
+            finally
+            {
+                _suppressSelectionNavigation = wasSelectionSuppressed;
+            }
+
+            if (currentPage == null)
+            {
+                NavigateTo(_defaultPage);
+            }
+        }
+        else
+        {
+            EnsureNavigationSelection(defaultPageId);
+        }
     }
 
     private IEnumerable<DataGroup> GetOrderedDataGroups(OrderItemsType orderItems)
     {
+        var groups = DataSource.Instance.Groups;
         switch (orderItems)
         {
-            case OrderItemsType.None:
-                return DataSource.Instance.Groups;
             case OrderItemsType.AscendingBoth:
             case OrderItemsType.AscendingTopLevel:
-                return DataSource.Instance.Groups.OrderBy(i => i.Title);
+                return OrderBetweenSeparators(groups, segment => segment.OrderBy(i => i.Title));
             case OrderItemsType.DescendingBoth:
             case OrderItemsType.DescendingTopLevel:
-                return DataSource.Instance.Groups.OrderByDescending(i => i.Title);
+                return OrderBetweenSeparators(groups, segment => segment.OrderByDescending(i => i.Title));
             default:
-                return DataSource.Instance.Groups;
+                return groups;
         }
     }
+
     private IEnumerable<DataItem> GetOrderedDataItems(IEnumerable<DataItem> dataItems, OrderItemsType orderItems)
     {
         switch (orderItems)
         {
-            case OrderItemsType.None:
-                return dataItems;
             case OrderItemsType.AscendingBoth:
             case OrderItemsType.AscendingSubLevel:
-                return dataItems.OrderBy(i => i.Title);
+                return OrderBetweenSeparators(dataItems, segment => segment.OrderBy(i => i.Title));
             case OrderItemsType.DescendingBoth:
             case OrderItemsType.DescendingSubLevel:
-                return dataItems.OrderByDescending(i => i.Title);
+                return OrderBetweenSeparators(dataItems, segment => segment.OrderByDescending(i => i.Title));
             default:
                 return dataItems;
+        }
+    }
+
+    // Separators keep their position; only the entries between them are ordered
+    private static IEnumerable<T> OrderBetweenSeparators<T>(IEnumerable<T> source, Func<IEnumerable<T>, IEnumerable<T>> order) where T : BaseDataInfo
+    {
+        var segment = new List<T>();
+        foreach (var entry in source)
+        {
+            if (entry.IsSeparator)
+            {
+                foreach (var ordered in order(segment))
+                {
+                    yield return ordered;
+                }
+
+                segment.Clear();
+                yield return entry;
+            }
+            else
+            {
+                segment.Add(entry);
+            }
+        }
+
+        foreach (var ordered in order(segment))
+        {
+            yield return ordered;
         }
     }
 
@@ -159,7 +234,7 @@ public partial class JsonNavigationService
 
                 if (string.IsNullOrEmpty(item.DataInfoBadge.InfoBadgeValue))
                 {
-                    item.DataInfoBadge.InfoBadgeValue = badgeString.ToUpper();
+                    item.DataInfoBadge.InfoBadgeValue = badgeString.ToUpperInvariant();
                 }
             }
         }
@@ -191,13 +266,15 @@ public partial class JsonNavigationService
 
         if (!string.IsNullOrEmpty(imagePath))
         {
-            return new ImageIcon() { Source = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute))};
+            return new ImageIcon() { Source = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute)) };
         }
 
         return null;
     }
 
     private FontFamily? _glyphFontFamily;
+    private readonly Dictionary<string, string> _glyphCache = new(StringComparer.Ordinal);
+
     private FontIcon GetFontIcon(string glyph)
     {
         var fontIcon = new FontIcon();
@@ -205,16 +282,17 @@ public partial class JsonNavigationService
         {
             fontIcon.FontFamily = _glyphFontFamily ??= new FontFamily(_fontFamilyForGlyph);
         }
-        var _glyph = GeneralHelper.GetGlyph(glyph);
-        if (!string.IsNullOrEmpty(_glyph))
+
+        if (!_glyphCache.TryGetValue(glyph, out var resolvedGlyph))
         {
-            fontIcon.Glyph = _glyph; // Set the Glyph property
-        }
-        else
-        {
-            fontIcon.Glyph = glyph;
+            resolvedGlyph = GeneralHelper.GetGlyph(glyph);
+            if (resolvedGlyph != null)
+            {
+                _glyphCache[glyph] = resolvedGlyph;
+            }
         }
 
+        fontIcon.Glyph = resolvedGlyph ?? glyph;
         return fontIcon;
     }
 }
