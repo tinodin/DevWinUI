@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="DevWinUIGallery.Views.RoadmapPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:dev="using:DevWinUI"
+      xmlns:local="using:DevWinUIGallery"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel Padding="24" Spacing="16">
+            <local:ControlExample Title="Roadmap" Doc="controls/roadmap">
+                <local:ControlExample.OptionGroups>
+                    <local:OptionGroup Title="Modes and placement">
+                        <local:OptionPanel>
+                            <local:ChoiceOption x:Name="CmbMode" Header="Mode" Value="{x:Bind dev:RoadmapMode.Simple}" />
+                            <local:ChoiceOption x:Name="CmbPlacement" Header="First item placement" Value="{x:Bind dev:RoadmapPlacement.Above}" />
+                            <ToggleSwitch x:Name="TglAlternate" Header="Alternate placement" IsOn="True" />
+                        </local:OptionPanel>
+                    </local:OptionGroup>
+                    <local:OptionGroup Title="Status and progress">
+                        <local:OptionPanel>
+                            <local:ChoiceOption x:Name="CmbStatus" Header="Status of 'Build'" Value="{x:Bind dev:RoadmapItemStatus.Active}" />
+                            <ToggleSwitch x:Name="TglAnimateActive" Header="Animate active item" IsOn="True" />
+                        </local:OptionPanel>
+                    </local:OptionGroup>
+                    <local:OptionGroup Title="Neon and sci-fi effects">
+                        <local:OptionPanel>
+                            <Slider x:Name="SliderGlow" Header="Glow radius" Maximum="20" Minimum="0" Value="6" />
+                            <local:ChoiceOption x:Name="CmbScanlines" Header="Scanlines" Value="{x:Bind dev:RoadmapToggle.Auto}" />
+                            <local:ChoiceOption x:Name="CmbGrid" Header="Grid backdrop" Value="{x:Bind dev:RoadmapToggle.Auto}" />
+                            <local:ChoiceOption x:Name="CmbAxisFlow" Header="Axis flow" Value="{x:Bind dev:RoadmapToggle.Auto}" />
+                            <local:ChoiceOption x:Name="CmbScanBeam" Header="Scan beam" Value="{x:Bind dev:RoadmapToggle.On}" />
+                            <local:ChoiceOption x:Name="CmbFlicker" Header="Flicker" Value="{x:Bind dev:RoadmapToggle.Auto}" />
+                            <Button Click="OnReplayBootClick" Content="Replay boot animation" />
+                        </local:OptionPanel>
+                    </local:OptionGroup>
+                </local:ControlExample.OptionGroups>
+                <local:ControlExample.Samples>
+                    <local:Sample Title="Modes and placement" Xaml="Win2d/Roadmap/RoadmapModes_xaml.txt">
+                        <ScrollViewer Height="420" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <dev:Roadmap AlternatePlacement="{x:Bind TglAlternate.IsOn, Mode=OneWay}" FirstItemPlacement="{x:Bind ((dev:RoadmapPlacement)CmbPlacement.Value), Mode=OneWay}" Mode="{x:Bind ((dev:RoadmapMode)CmbMode.Value), Mode=OneWay}">
+                                <dev:RoadmapItem Accent="#F4623A" Content="Project started and the first prototype was built." Glyph="&#xE734;" Header="Kickoff" Label="2022" />
+                                <dev:RoadmapItem Accent="#F5A623" Content="First public preview with early feedback." Glyph="&#xE713;" Header="Preview" Label="2023" />
+                                <dev:RoadmapItem Accent="#6FA35B" Content="Feature complete and ready for testing." Glyph="&#xE73E;" Header="Beta" Label="2024" />
+                                <dev:RoadmapItem Accent="#35BDE4" Content="Stable release with long-term support." Glyph="&#xE716;" Header="Release" Label="2025" />
+                                <dev:RoadmapItem Accent="#7C4DFF" Content="Next generation built on what we learned." Glyph="&#xE774;" Header="Next" Label="2026" />
+                            </dev:Roadmap>
+                        </ScrollViewer>
+                    </local:Sample>
+                    <local:Sample Title="Status and progress" Xaml="Win2d/Roadmap/RoadmapStatus_xaml.txt">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <dev:Roadmap AnimateActive="{x:Bind TglAnimateActive.IsOn, Mode=OneWay}" Mode="Simple">
+                                <dev:RoadmapItem Accent="#35BDE4" Content="Wireframes and visual design approved." Header="Design" Label="Q1" Status="Completed" />
+                                <dev:RoadmapItem Accent="#F5A623" Content="Implementation is in progress." Header="Build" Label="Q2" Status="{x:Bind ((dev:RoadmapItemStatus)CmbStatus.Value), Mode=OneWay}" />
+                                <dev:RoadmapItem Accent="#6FA35B" Content="Public launch and announcement." Header="Launch" Label="Q3" Status="Planned" />
+                                <dev:RoadmapItem Accent="#7C4DFF" Content="Gather feedback and plan the next cycle." Header="Review" Label="Q4" Status="Planned" />
+                            </dev:Roadmap>
+                        </ScrollViewer>
+                    </local:Sample>
+                    <local:Sample Title="Neon and sci-fi effects" Xaml="Win2d/Roadmap/RoadmapNeon_xaml.txt">
+                        <Border Padding="24" Background="#0B1020" CornerRadius="8" RequestedTheme="Dark">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <dev:Roadmap x:Name="NeonRoadmap" AxisFlow="{x:Bind ((dev:RoadmapToggle)CmbAxisFlow.Value), Mode=OneWay}" Flicker="{x:Bind ((dev:RoadmapToggle)CmbFlicker.Value), Mode=OneWay}" GlowRadius="{x:Bind SliderGlow.Value, Mode=OneWay}" GridBackdrop="{x:Bind ((dev:RoadmapToggle)CmbGrid.Value), Mode=OneWay}" Mode="Neon" ScanBeam="{x:Bind ((dev:RoadmapToggle)CmbScanBeam.Value), Mode=OneWay}" Scanlines="{x:Bind ((dev:RoadmapToggle)CmbScanlines.Value), Mode=OneWay}">
+                                    <dev:RoadmapItem Accent="#00E5FF" Content="Station construction and crew certification complete." Header="Orbital Assembly" Label="T-120" Status="Completed" />
+                                    <dev:RoadmapItem Accent="#7C4DFF" Content="Fuel loaded, systems verified, window confirmed." Header="Launch" Label="T-0" Status="Completed" />
+                                    <dev:RoadmapItem Accent="#FF4081" Content="Seven-month burn toward the red planet." Header="Transit" Label="T+7 mo" Status="Active" />
+                                    <dev:RoadmapItem Accent="#00E5FF" Content="Descent, touchdown and first surface survey." Header="Landing" Label="T+8 mo" Status="Planned" />
+                                    <dev:RoadmapItem Accent="#69F0AE" Content="Pressurised habitat online with a permanent crew." Header="First Habitat" Label="T+14 mo" Status="Planned" />
+                                </dev:Roadmap>
+                            </ScrollViewer>
+                        </Border>
+                    </local:Sample>
+                </local:ControlExample.Samples>
+            </local:ControlExample>
+            <local:ControlExample Title="Roadmap Lanes and Icons" Doc="controls/roadmap">
+                <local:ControlExample.Samples>
+                    <local:Sample Title="Proportional spacing with lanes" Xaml="Win2d/Roadmap/RoadmapProportional_xaml.txt">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <dev:Roadmap Distribution="Proportional" LaneHeaderWidth="130" Mode="Boxed">
+                                <dev:RoadmapItem Content="First internal build" Header="Alpha" Label="Jan" Value="0" />
+                                <dev:RoadmapItem Content="Early adopters join" Header="Beta 1" Label="Mar" Value="2" />
+                                <dev:RoadmapItem Content="Stability and polish" Header="Beta 2" Label="Jun" Value="5" />
+                                <dev:RoadmapItem Content="Release candidate" Header="RC" Label="Sep" Value="8" />
+                                <dev:RoadmapItem Content="General availability" Header="1.0" Label="Oct" Value="9" />
+                                <dev:RoadmapItem Content="Fixes and new features" Header="1.1" Label="Feb" Value="13" />
+                                <dev:Roadmap.Lanes>
+                                    <dev:RoadmapLane Header="Stable channel">
+                                        <dev:RoadmapSegment Content="Feature" Tone="Success" />
+                                        <dev:RoadmapSegment Content="Feature" Tone="Success" />
+                                        <dev:RoadmapSegment Content="Feature" Tone="Success" />
+                                    </dev:RoadmapLane>
+                                    <dev:RoadmapLane Header="Preview channel">
+                                        <dev:RoadmapSegment Content="Feature" Tone="Success" />
+                                        <dev:RoadmapSegment Content="Preview" Tone="Caution" />
+                                        <dev:RoadmapSegment Content="Preview" Tone="Caution" />
+                                        <dev:RoadmapSegment Content="Blocked" Tone="Critical" />
+                                    </dev:RoadmapLane>
+                                </dev:Roadmap.Lanes>
+                            </dev:Roadmap>
+                        </ScrollViewer>
+                    </local:Sample>
+                    <local:Sample Title="Icon mode with glow and axis flow" Xaml="Win2d/Roadmap/RoadmapIcon_xaml.txt">
+                        <Border Padding="24" Background="#0B1020" CornerRadius="8" RequestedTheme="Dark">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <dev:Roadmap AxisFlow="On" GlowRadius="5" Mode="Icon">
+                                    <dev:RoadmapItem Accent="#00E5FF" Glyph="&#xE734;" Header="Signal acquired" Label="Cycle 1" />
+                                    <dev:RoadmapItem Accent="#7C4DFF" Glyph="&#xE713;" Header="Handshake complete" Label="Cycle 2" Status="Active" />
+                                    <dev:RoadmapItem Accent="#FF4081" Glyph="&#xE774;" Header="Network online" Label="Cycle 3" Status="Planned" />
+                                </dev:Roadmap>
+                            </ScrollViewer>
+                        </Border>
+                    </local:Sample>
+                </local:ControlExample.Samples>
+            </local:ControlExample>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

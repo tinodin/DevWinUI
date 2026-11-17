@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="DevWinUIGallery.Views.Timeline2Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:dev="using:DevWinUI"
+      xmlns:local="using:DevWinUIGallery"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:views="using:DevWinUIGallery.Views"
+      mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel Padding="24" Spacing="16">
+            <local:ControlExample Title="Timeline2" Doc="controls/timeline2">
+                <local:ControlExample.Options>
+                    <local:OptionPanel>
+                        <Slider x:Name="SliderActive" Header="Active Index" Maximum="3" Minimum="-1" StepFrequency="1" TickFrequency="1" TickPlacement="Outside" Value="2" />
+                        <local:ChoiceOption x:Name="CmbSize" Header="Size" Value="{x:Bind dev:Timeline2Size.MD}" />
+                        <local:ChoiceOption x:Name="CmbColor" Header="Color" Value="{x:Bind dev:Timeline2Color.Primary}" />
+                        <local:ChoiceOption x:Name="CmbKind" Header="Kind" Value="{x:Bind dev:Timeline2Kind.Solid}" />
+                        <local:ChoiceOption x:Name="CmbMarkerShape" Header="Marker Shape" Value="{x:Bind dev:Timeline2MarkerShape.Circle}" />
+                        <local:ChoiceOption x:Name="CmbAlign" Header="Align" Value="{x:Bind dev:Timeline2Align.Alternate}" />
+                        <local:ChoiceOption x:Name="CmbDatePlacement" Header="Date Placement" Value="{x:Bind dev:Timeline2DatePlacement.Opposite}" />
+                        <ToggleSwitch x:Name="TglReverse" Header="Reverse" />
+                    </local:OptionPanel>
+                </local:ControlExample.Options>
+                <local:ControlExample.Samples>
+                    <local:Sample Title="Timeline2">
+                        <local:Sample.XamlCode>
+                            <x:String>
+                                &lt;dev:Timeline2 Width="384" ActiveIndex="2" ItemsSource="{x:Bind Entries}" /&gt;
+                            </x:String>
+                        </local:Sample.XamlCode>
+                        <dev:Timeline2 Width="384" HorizontalAlignment="Left" ActiveIndex="{x:Bind (x:Int32)SliderActive.Value, Mode=OneWay}" Align="{x:Bind ((dev:Timeline2Align)CmbAlign.Value), Mode=OneWay}" DatePlacement="{x:Bind ((dev:Timeline2DatePlacement)CmbDatePlacement.Value), Mode=OneWay}" ItemsSource="{x:Bind Entries}" Kind="{x:Bind ((dev:Timeline2Kind)CmbKind.Value), Mode=OneWay}" MarkerShape="{x:Bind ((dev:Timeline2MarkerShape)CmbMarkerShape.Value), Mode=OneWay}" Reverse="{x:Bind TglReverse.IsOn, Mode=OneWay}" Size="{x:Bind ((dev:Timeline2Size)CmbSize.Value), Mode=OneWay}" Color="{x:Bind ((dev:Timeline2Color)CmbColor.Value), Mode=OneWay}" />
+                    </local:Sample>
+                    <local:Sample Title="Horizontal">
+                        <local:Sample.XamlCode>
+                            <x:String>
+                                &lt;dev:Timeline2 ActiveIndex="2" ItemsSource="{x:Bind Entries}" Orientation="Horizontal" /&gt;
+                            </x:String>
+                        </local:Sample.XamlCode>
+                        <StackPanel Spacing="32">
+                            <dev:Timeline2 ActiveIndex="2" ItemsSource="{x:Bind Entries}" Orientation="Horizontal" />
+                            <dev:Timeline2 ActiveIndex="2" Align="Alternate" DatePlacement="Opposite" ItemsSource="{x:Bind Entries}" Orientation="Horizontal" />
+                        </StackPanel>
+                    </local:Sample>
+                    <local:Sample Title="Custom Templates" Xaml="Features/Others/Timeline2CustomTemplates_xaml.txt">
+                        <dev:Timeline2 Align="End" ItemsSource="{x:Bind Orders}">
+                            <dev:Timeline2.MarkerTemplate>
+                                <DataTemplate x:DataType="views:Timeline2OrderEvent">
+                                    <Grid Width="32" Height="32" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="16">
+                                        <FontIcon FontSize="14" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" Glyph="{x:Bind Icon}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </dev:Timeline2.MarkerTemplate>
+                            <dev:Timeline2.OppositeTemplate>
+                                <DataTemplate x:DataType="views:Timeline2OrderEvent">
+                                    <TextBlock Text="{x:Bind Date}" />
+                                </DataTemplate>
+                            </dev:Timeline2.OppositeTemplate>
+                            <dev:Timeline2.ItemTemplate>
+                                <DataTemplate x:DataType="views:Timeline2OrderEvent">
+                                    <TextBlock FontWeight="Medium" Text="{x:Bind Status}" />
+                                </DataTemplate>
+                            </dev:Timeline2.ItemTemplate>
+                        </dev:Timeline2>
+                    </local:Sample>
+                    <local:Sample Title="Clickable">
+                        <local:Sample.XamlCode>
+                            <x:String>
+                                &lt;dev:Timeline2 Width="384" ActivateOnClick="True" ActiveValue="kickoff" IsItemClickEnabled="True" ItemClick="OnItemClick" ItemsSource="{x:Bind Entries}" /&gt;
+                            </x:String>
+                        </local:Sample.XamlCode>
+                        <StackPanel Spacing="12">
+                            <dev:Timeline2 Width="384" HorizontalAlignment="Left" ActivateOnClick="True" ActiveValue="kickoff" IsItemClickEnabled="True" ItemClick="OnItemClick" ItemsSource="{x:Bind Entries}" />
+                            <TextBlock x:Name="SelectionText" Text="Select an item" />
+                        </StackPanel>
+                    </local:Sample>
+                </local:ControlExample.Samples>
+            </local:ControlExample>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

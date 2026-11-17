@@ -209,6 +209,48 @@
       "IsSpecialSection": false,
       "Items": [
         {
+          "UniqueId": "DevWinUIGallery.Views.DiagramPage",
+          "Title": "Diagram",
+          "Subtitle": "Interactive diagrams with hierarchical and freeform layouts, typed pin connections, conflict diagnostics, selection, zoom, minimap and adjustable options.",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Graph.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.Timeline2Page",
+          "Title": "Timeline2",
+          "Subtitle": "A vertical or horizontal event timeline with progress state, icon or avatar markers, and templated content.",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Line.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.TypeFlowPage",
+          "Title": "Type Flow",
+          "Subtitle": "Types text out character by character with a natural, slightly random rhythm",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/TextBlock.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.VisualStepperPage",
+          "Title": "Visual Stepper",
+          "Subtitle": "A vertical step list with an animated progress rail and a crossfading detail card",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Line.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.ProgressStepperPage",
+          "Title": "Progress Stepper",
+          "Subtitle": "A vertical step indicator with animated status markers and expandable sub-steps",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Line.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.SearchBoxPage",
+          "Title": "SearchBox",
+          "Subtitle": "SearchBox",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/AutoSuggestBox.png"
+        },
+        {
           "UniqueId": "DevWinUIGallery.Views.SegmentedMeterPage",
           "Title": "Segmented Meter",
           "Subtitle": "A horizontal or vertical meter that splits a whole into labeled, themed segments",
@@ -489,12 +531,6 @@
           "ImagePath": "ms-appx:///Assets/Fluent/ProgressRing.png"
         },
         {
-          "UniqueId": "DevWinUIGallery.Views.IndeterminateProgressBarPage",
-          "Title": "Indeterminate ProgressBar",
-          "Subtitle": "An animated bar where dots move from left to right to indicate ongoing, indeterminate progress.",
-          "ImagePath": "ms-appx:///Assets/Fluent/ProgressBar.png"
-        },
-        {
           "UniqueId": "DevWinUIGallery.Views.HaloPage",
           "Title": "Halo",
           "Subtitle": "The Halo is a set of interconnected UI components for circular or arc-based interfaces.",
@@ -645,6 +681,13 @@
           "Subtitle": "A collapsible tree menu with animated branch lines and a sliding selection marker",
           "IsNew": true,
           "ImagePath": "ms-appx:///Assets/Fluent/ListBox.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.MagicKeyboardPage",
+          "Title": "Magic Keyboard",
+          "Subtitle": "An on-screen keyboard that mirrors physical key presses with themeable skins",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/keyboardManager.png"
         },
         {
           "UniqueId": "DevWinUIGallery.Views.DropdownColorPickerPage",
@@ -871,12 +914,6 @@
           "ImagePath": "ms-appx:///Assets/Fluent/Acrylic.png"
         },
         {
-          "UniqueId": "DevWinUIGallery.Views.ProgressRingPage",
-          "Title": "Progress Ring",
-          "Subtitle": "Represents a control that indicates the progress of an operation",
-          "ImagePath": "ms-appx:///Assets/Fluent/ProgressRing.png"
-        },
-        {
           "UniqueId": "DevWinUIGallery.Views.DividerPage",
           "Title": "Divider",
           "Subtitle": "A visual element used to separate content or sections",
@@ -898,6 +935,7 @@
           "UniqueId": "DevWinUIGallery.Views.GrowlPage",
           "Title": "Growl",
           "Subtitle": "Growl",
+          "IsUpdated": true,
           "ImagePath": "ms-appx:///Assets/Fluent/InfoBar.png"
         },
         {
@@ -1141,6 +1179,27 @@
       "ImagePath": "ms-appx:///Assets/Fluent/Canvas.png",
       "Items": [
         {
+          "UniqueId": "DevWinUIGallery.Views.RoadmapPage",
+          "Title": "Roadmap",
+          "Subtitle": "A horizontal timeline with status tracking, lanes and sci-fi effects",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Graph.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.AntigravityPage",
+          "Title": "Antigravity",
+          "Subtitle": "An interactive particle field that lifts into a glowing ring around the pointer",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Particle.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.MotionPage",
+          "Title": "Motion Wall",
+          "Subtitle": "A perspective wall of moving lanes of image and text tiles",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/ItemsRepeater.png"
+        },
+        {
           "UniqueId": "DevWinUIGallery.Views.RadarPage",
           "Title": "Radar",
           "Subtitle": "A radar display with sweep and pulse modes, moving blips, scan-only visibility, zones, jammed sectors and phosphor afterglow",
@@ -1148,12 +1207,26 @@
           "ImagePath": "ms-appx:///Assets/Fluent/Circle.png"
         },
         {
+          "UniqueId": "DevWinUIGallery.Views.ParticleGlobePage",
+          "Title": "Particle Globe",
+          "Subtitle": "An interactive particle globe with selectable countries, animated events, themes and adjustable rendering quality",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Particle.png"
+        },
+        {
+          "UniqueId": "DevWinUIGallery.Views.WorldMapPage",
+          "Title": "World Map",
+          "Subtitle": "An interactive Win2D world map with country selection, hover tooltips, pan, zoom and customizable borders",
+          "IsNew": true,
+          "ImagePath": "ms-appx:///Assets/Fluent/Canvas.png"
+        },
+        {
           "UniqueId": "DevWinUIGallery.Views.FlightStatusCardPage",
           "Title": "Flight Status Card",
           "Subtitle": "A flight progress card with dot-matrix airport codes, an animated progress track and a layout that adapts to its size",
           "IsNew": true,
           "ImagePath": "ms-appx:///Assets/Fluent/ProgressBar.png"
-        },        
+        },
         {
           "UniqueId": "DevWinUIGallery.Views.PlayStationParticlesPage",
           "Title": "PlayStation Particles",

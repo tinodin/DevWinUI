@@ -44,13 +44,14 @@
 
 ##
 
-DevWinUI is a comprehensive collection of libraries, components, styles, shaders, and tools designed to help you build powerful WinUI 3 applications quickly and efficiently. Whether you’re creating modern desktop experiences for Windows 10, Windows 11, or future versions, DevWinUI brings together everything you need to accelerate development and deliver exceptional results.
-- **DevWinUI is built around WinUI 3:** Microsoft’s modern native UI framework that embraces Fluent Design principles. It enables beautiful, intuitive, and accessible interfaces with the latest patterns and controls.
+DevWinUI is a comprehensive collection of libraries, components, styles, shaders, and tools designed to help you build powerful WinUI applications quickly and efficiently. Whether you’re creating modern desktop experiences for Windows 10, Windows 11, or future versions, DevWinUI brings together everything you need to accelerate development and deliver exceptional results.
+- **DevWinUI is built around WinUI:** Microsoft’s modern native UI framework that embraces Fluent Design principles. It enables beautiful, intuitive, and accessible interfaces with the latest patterns and controls.
 - **Accelerated development:** Leverage pre-built templates, scaffolding tools, and ready-to-use helper classes to streamline common tasks such as navigation, theming, and app lifecycle management. Get your project up and running in minutes while maintaining flexibility and control over your design.
 - **Optimized performance:** All components are purpose-built for high performance and reliability, ensuring smooth, responsive, and scalable applications that shine across devices and environments.
 - **Native AOT Compatible:** 99% full compatible with Native AOT. DevWinUI adapts to system capabilities to ensure consistent functionality and a great user experience wherever your app runs.
 - **Designed for developers:** Whether you’re an experienced professional or just starting out, DevWinUI provides a unified and productive foundation to help you transform your ideas into powerful applications.
 - **Build faster:** Create smarter. Deliver extraordinary experiences.
+- **270+ controls** for WinUI
 
 ## 📚 Getting started with DevWinUI
 * [Developer documentation](https://Ghost1372.github.io/DevWinUI/)
@@ -148,24 +149,76 @@ dotnet add package DevWinUI.Shader
 
 ## 🕰️ History
 
+### Diagram
+![Diagram](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Diagram.gif)
+
+![Diagram](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Diagram2.gif)
+
+
+### ParticleGlobe
+![ParticleGlobe](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ParticleGlobe.gif)
+
+### WorldMap
+![WorldMap](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/WorldMap.gif)
+
+### CrystalBall Shader
+![CrystalBallShader](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Shaders/CrystalBallShader.gif)
+
+### Roadmap
+![Roadmap](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Roadmap.gif)
+![Roadmap](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Roadmap2.gif)
+![Roadmap](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Roadmap3.gif)
+![Roadmap](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Roadmap4.gif)
+
+### Timeline2
+![Timeline2](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Timeline2.gif)
+
+### MagicKeyboard
+![MagicKeyboard](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/MagicKeyboard.gif)
+
+### TypeFlow
+![TypeFlow](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/TypeFlow.gif)
+
+### ProgressStepper
+![ProgressStepper](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ProgressStepper.gif)
+
+### VisualStepper
+![VisualStepper](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/VisualStepper.gif)
+
+### Antigravity
+![Antigravity](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Antigravity.gif)
+
+### SearchBox
+![SearchBox](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SearchBox.gif)
+
+### MotionWall
+![MotionWall](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/MotionWall.gif)
+![MotionWall](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/MotionWall2.gif)
+![MotionWall](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/MotionWall3.gif)
+![MotionWall](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/MotionWall4.gif)
+
+### Growl
+![Growl](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Growl.gif)
+![Growl](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Growl2.gif)
+
 ### Radar
-![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Radar3.gif)
+![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Radar3.gif)
 
-![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Radar2.gif)
+![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Radar2.gif)
 
-![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Radar1.gif)
+![Radar](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Radar1.gif)
 
 ### SegmentedMeter
 ![SegmentedMeter](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SegmentedMeter.gif)
 
 ### FlightStatusCard
-![FlightStatusCard](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/FlightStatusCard.gif)
+![FlightStatusCard](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/FlightStatusCard.gif)
 
 ### GlowingBorder
-![GlowingBorder](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/GlowingBorder.gif)
+![GlowingBorder](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/GlowingBorder.gif)
 
 ### PlayStationParticles
-![PlayStationParticles](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/PlayStationParticles.gif)
+![PlayStationParticles](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/PlayStationParticles.gif)
 
 ### DiffView
 ![DiffView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/DiffView.gif)
@@ -228,10 +281,10 @@ dotnet add package DevWinUI.Shader
 ![ScrollSplitCard](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ScrollSplitCard.gif)
 
 ### StatusMark
-![StatusMark](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/StatusMark.gif)
+![StatusMark](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/StatusMark.gif)
 
 ### StarBorder
-![StarBorder](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/StarBorder.gif)
+![StarBorder](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/StarBorder.gif)
 
 ### FizzyCover
 ![FizzyCover](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/FizzyCover.gif)
@@ -243,7 +296,7 @@ dotnet add package DevWinUI.Shader
 ![LoadingState](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/LoadingState.gif)
 
 ### BorderBeam
-![BorderBeam](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BorderBeam.gif)
+![BorderBeam](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BorderBeam.gif)
 
 ### BranchedMenu
 ![BranchedMenu](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BranchedMenu.gif)
@@ -252,7 +305,7 @@ dotnet add package DevWinUI.Shader
 ![DonutChart](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/DonutChart.gif)
 
 ### BlinkingSquares
-![BlinkingSquares](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BlinkingSquares.gif)
+![BlinkingSquares](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BlinkingSquares.gif)
 
 ### IssueLabel
 ![IssueLabel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/IssueLabel.png)
@@ -357,16 +410,16 @@ dotnet add package DevWinUI.Shader
 ![FogShader](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Shaders/FogShader.gif)
 
 ### BetterLyric
-![BetterLyric](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BetterLyric.gif)
+![BetterLyric](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BetterLyric.gif)
 
 ### MorphingAnimation
-![MorphingAnimation](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/MorphingAnimation.gif)
+![MorphingAnimation](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/MorphingAnimation.gif)
 
 ### AnimationPath
 ![AnimationPath](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AnimationPath.gif)
 
 ### LiveGraph
-![LiveGraph](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/LiveGraph.gif)
+![LiveGraph](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/LiveGraph.gif)
 
 ### PasswordGenerator
 ![PasswordGenerator](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/PasswordGenerator2.gif)
@@ -386,7 +439,7 @@ dotnet add package DevWinUI.Shader
 ![QRCode](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/QRCode.png)
 
 ### EdgeLighting
-![EdgeLighting](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/EdgeLighting.gif)
+![EdgeLighting](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/EdgeLighting.gif)
 
 ### RichButton
 ![RichButton](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/RichButton.gif)
@@ -419,77 +472,77 @@ dotnet add package DevWinUI.Shader
 ![LoopPanel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/LoopPanel.gif)
 
 ### CarouselView2
-![CarouselView2](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CarouselView2.gif)
-![CarouselView2](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CarouselView22.gif)
+![CarouselView2](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/CarouselView2.gif)
+![CarouselView2](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/CarouselView22.gif)
 
 ### CoverFlow
 ![CoverFlow](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CoverFlow.gif)
 
 ### ContentSlider
-![ContentSlider](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ContentSlider.gif)
+![ContentSlider](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ContentSlider.gif)
 
 ### CarouselView
-![CarouselView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CarouselView.gif)
+![CarouselView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/CarouselView.gif)
 
 ### EasyCarouselPanel
 ![EasyCarouselPanel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/EasyCarouselPanel.gif)
 
 ### Stars
-![Stars](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Stars.gif)
+![Stars](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Stars.gif)
 
 ### BannerView
-![BannerView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BannerView.gif)
+![BannerView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BannerView.gif)
 
 ### AudioWave
-![AudioWave](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AudioWave.gif)
+![AudioWave](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/AudioWave.gif)
 
 ### SpectrumVisualizer
-![SpectrumVisualizer](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SpectrumVisualizer.gif)
+![SpectrumVisualizer](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/SpectrumVisualizer.gif)
 
 ### LinearGradientBlurPanel
-![LinearGradientBlurPanel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/LinearGradientBlurPanel.gif)
+![LinearGradientBlurPanel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/LinearGradientBlurPanel.gif)
 
 ### OrbitLoadingIndicator
-![OrbitLoadingIndicator](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/OrbitLoadingIndicator.gif)
+![OrbitLoadingIndicator](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/OrbitLoadingIndicator.gif)
 
 ### ColorAnalyzer
 ![ColorAnalyzer](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ColorAnalyzer.png)
 
 ### StoreCarousel
-![StoreCarousel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/StoreCarousel.gif)
+![StoreCarousel](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/StoreCarousel.gif)
 
 ### Xaml Lights
 ![Xaml Lights](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/XamlLights.gif)
 
 ### AnimatedTextBlock
-![AnimatedTextBlock](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AnimatedTextBlock.gif)
+![AnimatedTextBlock](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/AnimatedTextBlock.gif)
 
 ### SnapLayoutManager
 ![SnapLayoutManager](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SnapLayoutManager.gif)
 
 ### BlendedImage
-![BlendedImage](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BlendedImage.gif)
+![BlendedImage](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BlendedImage.gif)
 
 ### Countdown
-![Countdown](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Countdown.gif)
+![Countdown](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Countdown.gif)
 
 ### CircleIcon
-![CircleIcon](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CircleIcon.gif)
+![CircleIcon](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/CircleIcon.gif)
 
 ### ImageFrame
-![ImageFrame](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ImageFrame.gif)
+![ImageFrame](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ImageFrame.gif)
 
 ### FrostedGlass
-![FrostedGlass](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/FrostedGlass.gif)
+![FrostedGlass](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/FrostedGlass.gif)
 
 ### ProfileControl
-![ProfileControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ProfileControl.gif)
+![ProfileControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ProfileControl.gif)
 
 ### FluidBanner
-![FluidBanner](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/FluidBanner.gif)
+![FluidBanner](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/FluidBanner.gif)
 
 ### ColorShadow
-![ColorShadow](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ColorShadow.png)
+![ColorShadow](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ColorShadow.png)
 
 ### Halo
 ![Halo](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Halo.gif)
@@ -527,7 +580,7 @@ dotnet add package DevWinUI.Shader
 ![Timeline](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Timeline.png)
 
 ### SpeedGraph
-![SpeedGraph](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/SpeedGraph.gif)
+![SpeedGraph](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/SpeedGraph.gif)
 
 ### WanderingParticles
 ![WanderingParticles](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/WanderingParticles.gif)
@@ -581,7 +634,7 @@ dotnet add package DevWinUI.Shader
 ![WindowedContentDialog](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/WindowedContentDialog.png)
 
 ### ConfettiCannon
-![ConfettiCannon](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ConfettiCannon.gif)
+![ConfettiCannon](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ConfettiCannon.gif)
 
 ### DepthLayerView
 ![DepthLayerView](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/DepthLayerView.gif)
@@ -593,13 +646,13 @@ dotnet add package DevWinUI.Shader
 ![Accordion](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Accordion.gif)
 
 ### ShyHeader
-![ShyHeader](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ShyHeader.gif)
+![ShyHeader](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ShyHeader.gif)
 
 ### AnimationExtensions
 ![AnimationExtensions](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AnimationExtensions.gif)
 
 ### FlipToReveal
-![FlipToReveal](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/FlipToReveal.gif)
+![FlipToReveal](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/FlipToReveal.gif)
 
 ### ArcProgress
 ![ArcProgress](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ArcProgress.gif)
@@ -620,25 +673,25 @@ dotnet add package DevWinUI.Shader
 ![BlurEffectBrush](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BlurEffectBrush.png)
 
 ### BlurEffectControl
-![BlurEffectControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/BlurEffectControl.gif)
+![BlurEffectControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/BlurEffectControl.gif)
 
 ### AnimatedGradient
-![AnimatedGradient](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AnimatedGradient.gif)
+![AnimatedGradient](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/AnimatedGradient.gif)
 
 ### ShimmerTextBlock
-![ShimmerTextBlock](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ShimmerTextBlock.gif)
+![ShimmerTextBlock](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ShimmerTextBlock.gif)
 
 ### ColorSlideControl
-![ColorSlideControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ColorSlideControl.gif)
+![ColorSlideControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ColorSlideControl.gif)
 
 ### ColorBloomControl
-![ColorBloomControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ColorBloomControl.gif)
+![ColorBloomControl](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ColorBloomControl.gif)
 
 ### ForegroundFocusEffects
-![ForegroundFocusEffects](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ForegroundFocusEffect.gif)
+![ForegroundFocusEffects](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/ForegroundFocusEffect.gif)
 
 ### PerspectiveZoom
-![PerspectiveZoom](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/PerspectiveZoom.gif)
+![PerspectiveZoom](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/PerspectiveZoom.gif)
 
 ### CompositionShadow
 ![CompositionShadow](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CompositionShadow.gif)
@@ -746,7 +799,7 @@ dotnet add package DevWinUI.Shader
 ![ElementGroup](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ElementGroup.gif)
 
 ### Hatch
-![Hatch](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Hatch.gif)
+![Hatch](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Win2d/Hatch.gif)
 
 ### CompareSlider
 ![CompareSlider](https://raw.githubusercontent.com/ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/CompareSlider.gif)
@@ -809,9 +862,6 @@ dotnet add package DevWinUI.Shader
 ### PagerControl
 ![PagerControl](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/PagerControl.png)
 
-### IndeterminateProgressBar
-![IndeterminateProgressBar](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/IndeterminateProgressBar.gif)
-
 ### ThemeService / Backdrop TintColor
 ![ThemeService](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/TintColor.gif)
 
@@ -822,9 +872,6 @@ dotnet add package DevWinUI.Shader
 ### AutoScrollView
 ![AutoScrollView](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AutoScrollView.gif)
 ![AutoScrollView](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/AutoScrollView2.gif)
-
-### ProgressRing
-![ProgressRing](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/ProgressRing.gif)
 
 ### WaveProgressBar
 ![WaveProgressBar](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/WaveProgressBar.gif)
@@ -875,9 +922,6 @@ dotnet add package DevWinUI.Shader
 
 ### Gravatar
 ![Gravatar](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Gravatar.gif)
-
-### Growl
-![Growl](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/Growl.gif)
 
 ### Transparent Backdrop
 ![Transparent Backdrop](https://raw.githubusercontent.com/Ghost1372/DevWinUI-Resources/refs/heads/main/DevWinUI-Docs/TransparentBackdrop.png)

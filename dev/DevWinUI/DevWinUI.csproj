@@ -51,6 +51,10 @@
     <EmbeddedResource Include="..\..\tools\Assets\Noise\Noise.jpg">
       <LogicalName>Assets.Noise.Noise.jpg</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\tools\Assets\WorldMap\WorldMap.bin">
+      <LogicalName>Assets.WorldMap.WorldMap.bin</LogicalName>
+    </EmbeddedResource>
+     <EmbeddedResource Update="..\..\tools\Assets\**\*" Visible="false" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DevWinUI.Base\DevWinUI.Base.csproj" />

@@ -19,6 +19,9 @@ public partial class BannerViewItem : FlipViewItem
         get => isCycleItemContainer;
         set
         {
+            if (isCycleItemContainer == value)
+                return;
+
             isCycleItemContainer = value;
             UpdateShadowAnimation();
         }
@@ -46,7 +49,9 @@ public partial class BannerViewItem : FlipViewItem
     {
         this.DefaultStyleKey = typeof(BannerViewItem);
         RegisterPropertyChangedCallback(FlipViewItem.IsSelectedProperty, IsSelectedPropertyChanged);
-        this.SizeChanged += (s, a) => UpdateShadow();
+        this.SizeChanged += OnSizeChanged;
+        this.Loaded += OnLoaded;
+        this.Unloaded += OnUnloaded;
     }
 
     protected override void OnApplyTemplate()
@@ -59,16 +64,70 @@ public partial class BannerViewItem : FlipViewItem
         InitComposition();
     }
 
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        InitComposition();
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        DisposeComposition();
+    }
+
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateShadow();
+    }
+
     private void IsSelectedPropertyChanged(DependencyObject sender, DependencyProperty dp)
     {
-        if (dropShadow != null)
+        try
         {
-            dropShadow.BlurRadius = IsSelected ? 8f : 0f;
+            if (dropShadow != null)
+            {
+                dropShadow.BlurRadius = IsSelected ? 8f : 0f;
+            }
+        }
+        catch (Exception ex) when (ex is ObjectDisposedException || ex is System.Runtime.InteropServices.COMException)
+        {
+        }
+    }
+
+    private void DisposeComposition()
+    {
+        try
+        {
+            if (shadowHost != null)
+            {
+                ElementCompositionPreview.SetElementChildVisual(shadowHost, null);
+            }
+        }
+        catch (Exception ex) when (ex is ObjectDisposedException || ex is System.Runtime.InteropServices.COMException)
+        {
+        }
+
+        var shadow = dropShadow;
+        var animations = imps;
+        dropShadow = null;
+        imps = null;
+
+        try
+        {
+            shadow?.Dispose();
+            animations?.Dispose();
+        }
+        catch (Exception ex) when (ex is ObjectDisposedException || ex is System.Runtime.InteropServices.COMException)
+        {
         }
     }
 
     private void InitComposition()
     {
+        if (shadowHost == null || backgroundRect == null)
+            return;
+
+        DisposeComposition();
+
         Compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
 
         var visual = Compositor.CreateSpriteVisual();
@@ -98,20 +157,29 @@ public partial class BannerViewItem : FlipViewItem
 
     private void UpdateShadowAnimation()
     {
-        if (imps == null) return;
-        if (IsCycleItemContainer)
+        if (dropShadow == null)
+            return;
+
+        try
         {
-            dropShadow.ImplicitAnimations = null;
+            dropShadow.ImplicitAnimations = IsCycleItemContainer ? null : imps;
         }
-        else
+        catch (Exception ex) when (ex is ObjectDisposedException || ex is System.Runtime.InteropServices.COMException)
         {
-            dropShadow.ImplicitAnimations = imps;
         }
     }
 
     private void UpdateShadow()
     {
-        if (dropShadow == null) return;
-        dropShadow.Mask = backgroundRect.GetAlphaMask();
+        if (dropShadow == null || backgroundRect == null || !IsLoaded)
+            return;
+
+        try
+        {
+            dropShadow.Mask = backgroundRect.GetAlphaMask();
+        }
+        catch (Exception ex) when (ex is ObjectDisposedException || ex is System.Runtime.InteropServices.COMException)
+        {
+        }
     }
 }
