@@ -1,16 +1,36 @@
 ﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevWinUI;
 
-public partial class PreviewViewerHelper : ObservableObject
+public partial class PreviewViewerHelper : INotifyPropertyChanged
 {
+    private PreviewType _previewMode;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public PreviewViewer? PreviewViewer { get; set; }
 
     public PreviewViewerHelperListViewSource? ListViewSource { get; set; }
 
-    [ObservableProperty]
-    public partial PreviewType PreviewMode { get; set; }
+    public PreviewType PreviewMode
+    {
+        get => _previewMode;
+        set
+        {
+            if (_previewMode == value)
+            {
+                return;
+            }
+
+            _previewMode = value;
+            OnPropertyChanged(nameof(PreviewMode));
+        }
+    }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
     public void SetUpPreviewViewer(object dataItem)
     {

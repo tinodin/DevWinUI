@@ -1,19 +1,31 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace DevWinUI;
 
-public partial class PreviewModuleViewModel : ObservableObject
+public partial class PreviewModuleViewModel : INotifyPropertyChanged
 {
+    private PreviewType _previewMode;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public ObservableCollection<object> Items { get; } = [];
 
     public ObservableCollection<object> PreviewItems { get; } = [];
 
-    [ObservableProperty]
-    public partial PreviewType PreviewMode { get; set; }
-
-    partial void OnPreviewModeChanged(PreviewType value)
+    public PreviewType PreviewMode
     {
-        RebuildPreviewItems();
+        get => _previewMode;
+        set
+        {
+            if (_previewMode == value)
+            {
+                return;
+            }
+
+            _previewMode = value;
+            RebuildPreviewItems();
+            OnPropertyChanged(nameof(PreviewMode));
+        }
     }
 
     internal void RebuildPreviewItems()
@@ -29,5 +41,10 @@ public partial class PreviewModuleViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(PreviewItems));
+    }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

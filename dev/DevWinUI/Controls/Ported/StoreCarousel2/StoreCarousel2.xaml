@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
                     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
                     xmlns:local="using:DevWinUI"
                     xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives">
@@ -234,7 +233,7 @@
     </Style>
 
     <DataTemplate x:Key="AgeRestrictedBlockedDataTemplate">
-        <controls:ConstrainedBox AspectRatio="16:9">
+        <local:ConstrainedBox AspectRatio="16:9">
             <Grid>
                 <local:Shimmer x:Name="Shimmer">
                     <local:Shimmer.Visibility>
@@ -251,11 +250,11 @@
                     <TextBlock MaxWidth="400" Style="{StaticResource BodyTextBlockStyle}" Text="{StaticResource AgeGatingBlockedMessage}" TextAlignment="Center" TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </Grid>
-        </controls:ConstrainedBox>
+        </local:ConstrainedBox>
     </DataTemplate>
 
     <DataTemplate x:Key="AgeRestrictedDataTemplate">
-        <controls:ConstrainedBox AspectRatio="16:9">
+        <local:ConstrainedBox AspectRatio="16:9">
             <Grid>
                 <local:Shimmer x:Name="Shimmer">
                     <local:Shimmer.Visibility>
@@ -274,17 +273,17 @@
                     <Button MinWidth="160" Margin="0,12,0,0" HorizontalAlignment="Center" Content="{StaticResource SignInButton}" />
                 </StackPanel>
             </Grid>
-        </controls:ConstrainedBox>
+        </local:ConstrainedBox>
     </DataTemplate>
 
     <DataTemplate x:Key="ScreenshotTileContentTemplate">
         <Grid x:Name="TileImageRootGrid">
-            <controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
-                <controls:ConstrainedBox.Visibility>
+            <local:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
+                <local:ConstrainedBox.Visibility>
                     <Binding Converter="{StaticResource InverseVisibilityConverter}" ElementName="TileImageControl" Path="ImageProcessed" />
-                </controls:ConstrainedBox.Visibility>
+                </local:ConstrainedBox.Visibility>
                 <local:Shimmer />
-            </controls:ConstrainedBox>
+            </local:ConstrainedBox>
             <local:TileImage x:Name="TileImageControl" ImageItem="{Binding}" RequestedImageHeight="316" ShowBackgroundColor="False">
                 <interactivity:Interaction.Behaviors>
                     <local:ViewDisplayedTrackerBehavior />

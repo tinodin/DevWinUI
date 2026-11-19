@@ -1,24 +1,81 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace DevWinUI;
 
-public partial class PreviewItemsViewModel : ObservableObject
+public partial class PreviewItemsViewModel : INotifyPropertyChanged
 {
-    public PreviewItemsViewModel()
+    private ObservableCollection<object> _items = [];
+    private object? _currentItem;
+    private int _selectedIndex = -1;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public ObservableCollection<object> Items
     {
-        Items = [];
-        SelectedIndex = -1;
+        get => _items;
+        set
+        {
+            if (!ReferenceEquals(_items, value))
+            {
+                _items = value;
+                OnPropertyChanged(nameof(Items));
+                OnPropertyChanged(nameof(TotalIndex));
+            }
+        }
     }
 
-    [ObservableProperty]
-    public partial ObservableCollection<object> Items { get; set; }
+    public object? CurrentItem
+    {
+        get => _currentItem;
+        set
+        {
+            if (!ReferenceEquals(_currentItem, value))
+            {
+                _currentItem = value;
+                OnPropertyChanged(nameof(CurrentItem));
+            }
+        }
+    }
 
-    [ObservableProperty]
-    public partial object? CurrentItem { get; set; }
+    public int SelectedIndex
+    {
+        get => _selectedIndex;
+        set
+        {
+            if (_selectedIndex == value)
+            {
+                return;
+            }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Caption), nameof(CurrentIndex), nameof(TotalIndex))]
-    public partial int SelectedIndex { get; set; }
+            int oldIndex = _selectedIndex;
+            _selectedIndex = value;
+
+            if (_items != null && value >= 0 && value < _items.Count)
+            {
+                CurrentItem = _items[value];
+            }
+
+            OnPropertyChanged(nameof(SelectedIndex));
+            OnPropertyChanged(nameof(Caption));
+            OnPropertyChanged(nameof(CurrentIndex));
+            OnPropertyChanged(nameof(TotalIndex));
+
+            if (_items != null && oldIndex >= 0 && oldIndex < _items.Count)
+            {
+                if (_items[oldIndex] is VideoPlayerSource oldVideo)
+                {
+                    try
+                    {
+                        if (oldVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
+                        {
+                            oldVideo.MediaPlayer.Pause();
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+    }
 
     public string Caption
     {
@@ -40,31 +97,8 @@ public partial class PreviewItemsViewModel : ObservableObject
 
     public string TotalIndex => Items != null ? Items.Count.ToString() : "0";
 
-    partial void OnItemsChanged(ObservableCollection<object> value)
+    protected virtual void OnPropertyChanged(string propertyName)
     {
-        OnPropertyChanged(nameof(TotalIndex));
-    }
-
-    partial void OnSelectedIndexChanged(int oldValue, int newValue)
-    {
-        if (Items != null && newValue >= 0 && newValue < Items.Count)
-        {
-            CurrentItem = Items[newValue];
-        }
-
-        if (Items != null && oldValue >= 0 && oldValue < Items.Count)
-        {
-            if (Items[oldValue] is VideoPlayerSource oldVideo)
-            {
-                try
-                {
-                    if (oldVideo.MediaPlayer?.PlaybackSession?.CanPause == true)
-                    {
-                        oldVideo.MediaPlayer.Pause();
-                    }
-                }
-                catch { }
-            }
-        }
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

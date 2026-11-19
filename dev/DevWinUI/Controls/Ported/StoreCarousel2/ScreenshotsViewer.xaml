@@ -1,7 +1,6 @@
 ﻿<UserControl x:Class="DevWinUI.ScreenshotsViewer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="using:CommunityToolkit.WinUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
              xmlns:local="using:DevWinUI"
@@ -12,9 +11,9 @@
         <DataTemplate x:Key="VideoPlaySourceTemplate">
             <Grid x:Name="VideoPlayerPreviewGrid">
                 <Grid.Children>
-                    <controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
+                    <local:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
                         <local:Shimmer />
-                    </controls:ConstrainedBox>
+                    </local:ConstrainedBox>
                     <Image>
                         <interactivity:Interaction.Behaviors>
                             <local:ImageOpenedEventTriggerBehavior>
@@ -40,9 +39,9 @@
         <DataTemplate x:Key="PreviewVideoThumbnailTemplate">
             <Grid x:Name="VideoPreviewImage">
                 <Grid.Children>
-                    <controls:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
+                    <local:ConstrainedBox x:Name="Shimmer" AspectRatio="16:9">
                         <local:Shimmer />
-                    </controls:ConstrainedBox>
+                    </local:ConstrainedBox>
                     <Image>
                         <interactivity:Interaction.Behaviors>
                             <local:ImageOpenedEventTriggerBehavior>
@@ -82,12 +81,12 @@
                         </ItemsPanelTemplate>
                     </local:NoPointerWheelListView.ItemsPanel>
                 </local:NoPointerWheelListView>
-                <Button x:Name="LeftScrollButton" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="LeftScrollButton" Style="{StaticResource LeftArrowScrollViewerButtonStyle}" Visibility="Collapsed">
+                <Button x:Name="LeftScrollButton" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="LeftScrollButton" Style="{StaticResource LeftArrowScrollViewerButtonStyle}" ToolTipService.ToolTip="Scroll backward" Visibility="Collapsed">
                     <Button.Command>
                         <local:ScrollCommand ScrollDirection="Left" />
                     </Button.Command>
                 </Button>
-                <Button x:Name="RightScrollButton" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="RightScrollButton" Style="{StaticResource RightArrowScrollViewerButtonStyle}" Visibility="Collapsed">
+                <Button x:Name="RightScrollButton" AutomationProperties.AccessibilityView="Raw" AutomationProperties.AutomationId="RightScrollButton" Style="{StaticResource RightArrowScrollViewerButtonStyle}" ToolTipService.ToolTip="Scroll forward" Visibility="Collapsed">
                     <Button.Command>
                         <local:ScrollCommand ScrollDirection="Right" />
                     </Button.Command>

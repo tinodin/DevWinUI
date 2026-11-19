@@ -125,6 +125,82 @@ internal static partial class InternalExtensions
 
         static Vector3 Throw(string text) => throw new FormatException($"Cannot convert \"{text}\" to {nameof(Vector3)}. Use the format \"float, float, float\"");
     }
+    internal static Vector4 ToVector4(this string text)
+    {
+        if (text.Length == 0)
+        {
+            return Vector4.Zero;
+        }
+        else
+        {
+            text = Unbracket(text);
+
+            if (text.IndexOf(',') == -1)
+            {
+                if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float x))
+                {
+                    return new(x);
+                }
+            }
+            else
+            {
+                string[] values = text.Split(',');
+
+                if (values.Length == 4)
+                {
+                    if (float.TryParse(values[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) &&
+                        float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) &&
+                        float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float z) &&
+                        float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float w))
+                    {
+                        return new(x, y, z, w);
+                    }
+                }
+                else if (values.Length == 3)
+                {
+                    return new(text.ToVector3(), 0);
+                }
+                else if (values.Length == 2)
+                {
+                    return new(text.ToVector2(), 0, 0);
+                }
+            }
+        }
+
+        return Throw(text);
+
+        static Vector4 Throw(string text) => throw new FormatException($"Cannot convert \"{text}\" to {nameof(Vector4)}. Use the format \"float, float, float, float\"");
+    }
+
+    internal static Quaternion ToQuaternion(this string text)
+    {
+        if (text.Length == 0)
+        {
+            return new();
+        }
+        else
+        {
+            text = Unbracket(text);
+
+            string[] values = text.Split(',');
+
+            if (values.Length == 4)
+            {
+                if (float.TryParse(values[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) &&
+                    float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) &&
+                    float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float z) &&
+                    float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float w))
+                {
+                    return new(x, y, z, w);
+                }
+            }
+        }
+
+        return Throw(text);
+
+        static Quaternion Throw(string text) => throw new FormatException($"Cannot convert \"{text}\" to {nameof(Quaternion)}. Use the format \"float, float, float, float\"");
+    }
+
     internal static bool IntersectsWith(this Rect rect1, Rect rect2)
     {
         if (rect1.IsEmpty || rect2.IsEmpty)
